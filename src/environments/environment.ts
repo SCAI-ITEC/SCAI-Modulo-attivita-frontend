@@ -1,6 +1,6 @@
-import { versions } from './versions';
+import { ENV_DEV } from "./envs";
 
 export const environment = {
-	production: false,
-	bootstrap: versions['bootstrap'],
+	name: ENV_DEV,
+    statoAvanzamentoUrl: "https://modulo-attivita-be-dot-itec-be-project-4.ew.r.appspot.com"
 };

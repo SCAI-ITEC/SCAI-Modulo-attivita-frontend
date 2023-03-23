@@ -104,7 +104,7 @@
             [class.form-select-lg]="size === 'lg'"
             [id]="_name"
         >
-            <option *ngFor="let opt of options" [ngValue]="opt.value">
+            <option *ngFor="let opt of options" [value]="opt.value">
                 {{ opt.text }}
             </option>
         </select>
@@ -180,7 +180,7 @@
             [id]="_name"
             [class.is-invalid]="isInvalid()" 
             [placeholder]="placeholder" 
-            [ngbTypeahead]="autocompleteSearch"
+            [ngbTypeahead]="search"
             [inputFormatter]="formatter"
             [resultFormatter]="formatter"
             [resultTemplate]="template"
@@ -192,6 +192,7 @@
             (click)="onAutocompleteClick(instance, $event)"
             (change)="markAsTouched()"
             (blur)="markAsTouched()"
+            (selectItem)="selectItem($event)"
         />
         <label [for]="_name">{{ label }}</label>
         <ng-container *ngTemplateOutlet="invalidFeedback; context: { $implicit: ngControl }"></ng-container>
@@ -381,7 +382,7 @@
             [id]="_name"
             [class.is-invalid]="isInvalid()"
             [placeholder]="placeholder"
-            [ngbTypeahead]="autocompleteSearch"
+            [ngbTypeahead]="search"
             [inputFormatter]="formatter"
             [resultFormatter]="formatter"
             [resultTemplate]="template"
@@ -393,6 +394,7 @@
             (click)="onAutocompleteClick(instance, $event)"
             (change)="markAsTouched()"
             (blur)="markAsTouched()"
+            (selectItem)="selectItem($event)"
         />
         <ng-container *ngTemplateOutlet="invalidFeedback; context: { $implicit: ngControl }"></ng-container>
     </div>
@@ -423,15 +425,15 @@
             [value]="opt.value"
             type="radio"
             [name]="name"
-            [id]="opt.id"
+            [id]="opt._id"
         >
-        <label class="form-check-label" [for]="disabled ? 'nowhere' : opt.id">
+        <label class="form-check-label" [for]="disabled ? 'nowhere' : opt._id">
           {{ opt.text }}
         </label>
     </div>
 </div>
 
-<div class="border rounded p-3 position-relative" *ngIf="type === 'tagger'">
+<div *ngIf="type === 'tagger'">
     <label class="form-label" *ngIf="label" [for]="_name">{{ label }}</label>
     <div class="d-flex flex-wrap gap-2 mb-2">
         <span
@@ -451,7 +453,7 @@
         [id]="_name"
         [class.is-invalid]="isInvalid()"
         [placeholder]="placeholder"
-        [ngbTypeahead]="autocompleteSearch"
+        [ngbTypeahead]="search"
         [inputFormatter]="formatter"
         [resultFormatter]="formatter"
         [resultTemplate]="template"

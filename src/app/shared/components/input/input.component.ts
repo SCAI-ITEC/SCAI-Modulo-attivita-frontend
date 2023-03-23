@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, interval, map, merge, Observable, OperatorFunction, Subject, takeUntil, tap } from 'rxjs';
+import { NgbTypeahead, NgbTypeaheadSelectItemEvent } from '@ng-bootstrap/ng-bootstrap';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, map, merge, Observable, OperatorFunction, Subject, takeUntil, tap } from 'rxjs';
 import { guid } from 'src/app/utils/uuid';
 
 const defaultFormatter = (item: any) => item; 
-const defaultFilter = (value: any, index?: number, array?: any[]) => true;
+const defaultFilter = (term: string, item: any) => true;
 
 @Component({
   selector: 'app-input',
@@ -15,6 +15,8 @@ const defaultFilter = (value: any, index?: number, array?: any[]) => true;
 export class InputComponent {
 
   destroy$ = new Subject<void>();
+
+  _name!: string;
 
   @Input("floatingLabel") floatingLabel = false;
   @Input("feedback") feedback = true;
@@ -26,18 +28,33 @@ export class InputComponent {
   @Input("min") min?: any;
   @Input("max") max?: any;
   @Input("maxlength") maxLength?: any;
+
+  @Input("name") name!: string;
+  @Input("label") label?: string;
+  @Input("helper") helper!: string;
+  @Input("mask") mask?: Array<string | RegExp>;
+  @Input("ngControl") ngControl!: FormControl;
   
   // Autocomplete and tagger properties
+  @Input("formatter") formatter = defaultFormatter;
+  @Input("filter") filter = defaultFilter;
+  @Input("template") template!: any;
+  @Output("selectItem") selectItemEmitter = new EventEmitter<NgbTypeaheadSelectItemEvent>();
+
+  @Input("customSearch") customSearch!: OperatorFunction<string, readonly any[]>;
+  search!: OperatorFunction<string, readonly any[]>;
   instance!: NgbTypeahead;
   focus$ = new Subject<string>();
   click$ = new Subject<string>();
 
-  autocompleteSearch!: OperatorFunction<string, readonly any[]>;
-  autocompleteChoice!: any;
-
-  @Input("formatter") formatter = defaultFormatter;
-  @Input("filter") filter = defaultFilter;
-  @Input("template") template!: any;
+  _autocompleteChoice!: any;
+  set autocompleteChoice(value: any) {
+    this._autocompleteChoice = value;
+    this.autocompleteOnChange(value);
+  }
+  get autocompleteChoice() {
+    return this._autocompleteChoice;
+  }
   
   options$ = new BehaviorSubject<any[]>([]);
   @Input("options")
@@ -50,18 +67,6 @@ export class InputComponent {
 
   tags: any[] = [];
 
-  // General properties
-  _name!: string;
-  @Input("ngControl") ngControl!: FormControl;
-  @Input("helper") helper!: string;
-  @Input("name") name!: string;
-  @Input("mask") mask?: Array<string | RegExp>;
-  @Input("label") label?: string;
-  
-  constructor(
-    private cdr: ChangeDetectorRef
-  ) {}
-
   ngOnInit() {
 
     this.handleErrors();
@@ -71,15 +76,15 @@ export class InputComponent {
     this.addOptionIds();
 
     if (this.type === 'autocomplete') {
-      this.setAutocompleteDefault();
-      this.setupAutocompleteSearch();
-      this.setupAutocompleteWatch();
+      this.setAutocompleteDefaultValue();
+      this.setAutocompleteSearch();
+      this.setupAutocompleteReactivity();
     }
 
     if (this.type === 'tagger') {
       this.setTaggerDefault();
-      this.setupAutocompleteSearch();
-      this.setupTaggerWatch();
+      this.setAutocompleteSearch();
+      this.setupAutocompleteReactivity();
     }
   }
 
@@ -89,21 +94,36 @@ export class InputComponent {
 
   handleErrors() {
 
+    const supportedTypes = [
+      "text",
+      "textarea",
+      "password",
+      "number",
+      "date",
+      "time",
+      "datetime",
+      "select",
+      "checkbox",
+      "radio",
+      "autocomplete",
+      "tagger"
+    ];
+    if (!supportedTypes.includes(this.type))
+      throw Error('Type ' + this.type + ' is not supported.');
+
     if (!this.ngControl)
       throw Error('app-input needs a ngControl');
 
     if (!this.name)
       throw Error('app-input needs a name');
 
-    if (this.type === 'select' || this.type === 'radio' || this.type === 'autocomplete')
+    if (this.type === 'select' || this.type === 'radio')
       if (!this.options || this.options && !Array.isArray(this.options))
-        throw Error('Select, radio and autocomplete need the options array');
+        throw Error('Select and radio need the options array');
 
-    if (this.type === 'autocomplete' && this.formatter == defaultFormatter)
-      throw Error('Autocomplete needs a formatter function');
-
-    if (this.type === 'autocomplete' && this.filter === defaultFilter)
-      throw Error('Autocomplete needs a filter function');
+    if (this.type === 'autocomplete' && !this.customSearch)
+      if (!this.options || this.options && !Array.isArray(this.options))
+        throw Error('Autocomplete without a custom search needs the options array');
   }
 
   addOptionIds() {
@@ -113,91 +133,72 @@ export class InputComponent {
       .pipe(
         takeUntil(this.destroy$),
         tap(options => {
-
           if (options && Array.isArray(options))
             options.forEach(opt =>
-              opt.id = this.name + '-' + guid()
+              opt._id = this.name + '-' + guid()
             );
         })
       )
       .subscribe();
   }
 
-  setAutocompleteDefault() {
-    if (this.ngControl.value)
-      this.autocompleteChoice = this.ngControl.value;
-  }
+  setAutocompleteSearch() {
 
-  setupAutocompleteSearch() {
-
-    this.autocompleteSearch = (text$: Observable<string>) => {
+    this.search = (text$: Observable<string>) => {
 
       const debouncedText$ = text$.pipe(debounceTime(200), distinctUntilChanged());
       const clicksWithClosedPopup$ = this.click$.pipe(filter(() => !this.instance.isPopupOpen()));
       const inputFocus$ = this.focus$;
 
-      return merge(
-        debouncedText$,
-        inputFocus$,
-        clicksWithClosedPopup$
-      )
-      .pipe(
-        takeUntil(this.destroy$),
-        debounceTime(200),
-        distinctUntilChanged(),
-        map((term) => {
-          return this.options.filter(value =>
-            this.filter(term, value)
-          );
-        }),
-      );
+      if (this.customSearch)
+        return this.customSearch(merge(debouncedText$, inputFocus$, clicksWithClosedPopup$));
+
+      return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$)
+        .pipe(
+          map((term: string) => {
+            return this.options.filter(value =>
+              this.filter(term, value)
+            );
+          })
+        );
     };
+  };
+
+  setAutocompleteDefaultValue() {
+    if (this.ngControl.value)
+      this.autocompleteChoice = this.ngControl.value;
   }
 
-  setupAutocompleteWatch() {
-
-    // Watch autocompleteChoice for changes
-    interval(100)
+  setupAutocompleteReactivity() {
+    this.ngControl.valueChanges
       .pipe(
         takeUntil(this.destroy$),
-        tap(() => {
-
-          const autocompleteInput = document.getElementById(this._name);
-
-          // Add/remove Bootstrap is-invalid class
-          if (this.isInvalid())
-            autocompleteInput?.classList.add('is-invalid');
-          else
-            autocompleteInput?.classList.remove('is-invalid');
-        }),
-        map(() => this.autocompleteChoice),
-        distinctUntilChanged(),
-        tap(choice =>
-          this.ngControl.setValue(choice) // Set control value
-        )
+        tap(value => this._autocompleteChoice = value)
       )
       .subscribe();
   }
 
-  setTaggerDefault() {
-    if (this.ngControl.value) {
-      this.tags = this.ngControl.value;
-    }
+  autocompleteOnChange(value: any) {
+
+    const autocompleteInput = document.getElementById(this._name);
+
+    // Add/remove Bootstrap is-invalid class
+    if (this.isInvalid())
+      autocompleteInput?.classList.add('is-invalid');
+    else
+      autocompleteInput?.classList.remove('is-invalid');
+
+    if (this.type !== "tagger" && this.ngControl.value !== value)
+      this.ngControl.setValue(value);
   }
 
-  setupTaggerWatch() {
+  selectItem(selectEvent: NgbTypeaheadSelectItemEvent) {
+    this.selectItemEmitter.emit(selectEvent);
+  }
 
-    // Watch tags for changes
-    interval(100)
-    .pipe(
-      takeUntil(this.destroy$),
-      map(() => this.tags),
-      distinctUntilChanged(),
-      tap(tags =>
-        this.ngControl.setValue(tags) // Set control value
-      )
-    )
-    .subscribe();
+  setTaggerDefault() {
+    if (this.ngControl.value)
+      this.tags = this.ngControl.value;
   }
 
   isInvalid() {
@@ -212,9 +213,10 @@ export class InputComponent {
   taggerChoiceSelected(value: any) {
 
     this.tags = [ ...this.tags, value.item ];
-    
-    this.autocompleteChoice = '';
-    this.cdr.detectChanges();
+    setTimeout(() =>
+      this._autocompleteChoice = null
+    , 0);
+    this.ngControl.setValue(this.tags);
   }
 
   removeTag(item: any) {

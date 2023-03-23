@@ -1,6 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { tap } from 'rxjs';
+import { ROLES } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -10,26 +13,69 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class LoginComponent {
 
-  email!: FormControl;
-  username!: FormControl;
-  password!: FormControl;
+  tokenCtrl!: FormControl;
+  idAziendaCtrl!: FormControl;
 
   loginForm!: FormGroup;
 
+  utenteCtrl!: FormControl;
+  idAzienda2Ctrl!: FormControl;
+  rolesCtrl!: FormControl;
+
+  aziende: { text: string, value: string }[] = [];
+  idAziendaUtenti: { [key: string]: { idUtente: number, nome: string, cognome: string }[] } = {};
+  utenti: { idUtente: number, nome: string, cognome: string }[] = [];
+  utentiFormatter = (user: any) => user.cognome + ' ' + user.nome;
+  utentiFilter = (term: string, utente: any) =>
+    (utente.cognome + ' ' + utente.nome).toLowerCase().includes(term.toLowerCase());
+
+  rolesFormatter = (role: any) => role.name?.split('-').pop().trim();
+  rolesFilter = (term: string, role: any) => role.name.toLowerCase().indexOf(term.toLowerCase()) > -1;
+  roles = ROLES.map(role => ({ text: role, name: role }));
+
+  fakeLoginForm!: FormGroup;
+
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) { }
 
   ngOnInit() {
 
-    this.email = new FormControl();
-    this.username = new FormControl("admin");
-    this.password = new FormControl("admin");
+    this.tokenCtrl = new FormControl("eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoiZXlKNmFYQWlPaUpFUlVZaUxDSmhiR2NpT2lKa2FYSWlMQ0psYm1NaU9pSkJNVEk0UjBOTkluMC4uLXItSDJ1UkxSZnhNckdMVi40Y0hpVS1IV19lTVB0ZXlKS0JHYkFFNzRDczRzTy1Ub0tOODdUaHpyd24wcDRMSi04RGJGZ0ZBVUlJXzJxaGhrUG5TQ2NoUDRkUDdlQi13TjBxT3BWdVNTQTBJLW8yNFNLbHNYNmpFUTlST2p2LW83SXM1VVJZWGdVU0xrSUVRcV90Vl9oUjZkWjByN0Q1Z3VVcHIzTkJibFJlRWlNTFUuSHdaU2lXMjhCS3Etc0FDb29nOGxsQSIsImV4cCI6MTY3OTE0OTkyMiwiaWF0IjoxNjc5MDYzNTIyfQ.9ZDrsYclyahxJZiA_m1aolCkt5VXE9DFCTAca8DqO1QKpJzbRU-oR5o2NXNXH455PlzxvJSCWdvzp6LoAT1sTA");
+    this.idAziendaCtrl = new FormControl(15);
 
     this.loginForm = new FormGroup({
-      username: this.username,
-      password: this.password
+      token: this.tokenCtrl,
+      idAzienda: this.idAziendaCtrl
+    });
+
+    this.utenteCtrl = new FormControl();
+    this.idAzienda2Ctrl = new FormControl();
+    this.rolesCtrl = new FormControl();
+
+    this.idAzienda2Ctrl.valueChanges
+      .pipe(
+        tap((idAzienda: string) => {
+          this.utenteCtrl.setValue(null);
+          if (this.idAziendaUtenti[idAzienda])
+            this.utenti = this.idAziendaUtenti[idAzienda];
+        })
+      )
+      .subscribe();
+
+    this.http.get('assets/json/users.json')
+      .subscribe((res: any) => {
+        this.idAziendaUtenti = res;
+        this.aziende = Object.keys(res).map(value => ({ text: value, value }))
+        this.idAzienda2Ctrl.setValue(15);
+      });
+
+    this.fakeLoginForm = new FormGroup({
+      utente: this.utenteCtrl,
+      idAzienda: this.idAzienda2Ctrl,
+      roles: this.rolesCtrl
     });
   }
 
@@ -37,13 +83,28 @@ export class LoginComponent {
 
     const val = this.loginForm.value;
 
-    if (!val.username || !val.password)
+    if (!val.token || !val.idAzienda)
       return;
 
-    this.authService.login(val.username, val.password)
+    this.authService.login(val.token, +val.idAzienda)
       .subscribe(() => {
-        this.router.navigateByUrl('/dashboard');
+        this.router.navigateByUrl('/');
       });
+  }
+
+  fakeLogin() {
+
+    const val = this.fakeLoginForm.value;
+
+    if (!val.utente || !val.idAzienda)
+      return;
+
+    this.authService.fakeLogin(
+      val.utente,
+      +val.idAzienda,
+      val.roles ? val.roles.map((role: any) => role.name) : []
+    );
+    this.router.navigateByUrl('/');
   }
 
 }
