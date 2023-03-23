@@ -14,7 +14,7 @@
 
 runtime: custom
 env: flex
-service: Modulo-Attivita-fe-collaudo
+service: modulo-attivita-fe-collaudo
 
 
 skip_files:
