@@ -10,6 +10,6 @@ RUN npm run build-coll
 
 # Stage 2
 FROM nginx:1.17.1-alpine
-COPY --from=build-step /attivita-frontend/dist/demo/ /usr/share/nginx/html
+COPY --from=build-step /attivita-frontend/dist/multi-layout/ /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 8080
