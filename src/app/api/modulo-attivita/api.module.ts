@@ -4,7 +4,10 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
+import { CommonsService } from './services/commons.service';
+import { SegreteriaService } from './services/segreteria.service';
 import { StatoAvanzamentoService } from './services/stato-avanzamento.service';
+import { TipiTrasfertaService } from './services/tipi-trasferta.service';
 import { UtentiService } from './services/utenti.service';
 
 /**
@@ -15,7 +18,10 @@ import { UtentiService } from './services/utenti.service';
   exports: [],
   declarations: [],
   providers: [
+    CommonsService,
+    SegreteriaService,
     StatoAvanzamentoService,
+    TipiTrasfertaService,
     UtentiService,
     ApiConfiguration
   ],

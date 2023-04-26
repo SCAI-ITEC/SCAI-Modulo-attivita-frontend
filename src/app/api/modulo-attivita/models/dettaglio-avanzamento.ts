@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
-import { Chiusura } from './chiusura';
 import { Commessa } from './commessa';
-export interface GetSottoCommesseAvanzamentoResponseDettaglio {
+import { DettaglioAvanzamentoStatoValidazione } from './dettaglio-avanzamento-stato-validazione';
+export interface DettaglioAvanzamento {
   avanzamentoTotale?: number;
   dataAggiornamento?: null | string;
   dataInserimento?: string;
@@ -16,6 +16,6 @@ export interface GetSottoCommesseAvanzamentoResponseDettaglio {
   meseValidazione?: string;
   ricavoCompetenza?: null | number;
   sottoCommessa?: Commessa;
-  statoValidazione?: Chiusura;
+  statoValidazione?: DettaglioAvanzamentoStatoValidazione;
   valido?: number;
 }

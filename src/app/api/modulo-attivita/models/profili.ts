@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-export interface ProfiloDto {
+export interface Profili {
   descrizione?: null | string;
-  idProfilo?: number;
+  id?: number;
 }
