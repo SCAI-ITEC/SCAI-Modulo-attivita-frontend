@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { catchError, combineLatest, filter, map, Subject, switchMap, takeUntil, tap, throwError } from 'rxjs';
-import { Dettaglio, EnumStatiChiusura, GetSottoCommessePerReferenteResponse, UtentiAnagrafica } from 'src/app/api/stato-avanzamento/models';
+import { catchError, combineLatest, filter, map, startWith, Subject, switchMap, takeUntil, tap, throwError } from 'rxjs';
+import { Dettaglio, EnumStatiChiusura, GetSottoCommessePerReferenteResponse, UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
 import { StatoAvanzamentoWrapService } from 'src/app/dashboard/features/stato-avanzamento/services/stato-avanzamento-wrap.service';
 import { GetAvanzamentoParam, SottocommessaAvanzamento, SottocommessaAvanzamentoDettaglio } from 'src/app/dashboard/features/stato-avanzamento/models/stato-avanzamento.models';
 import { ToastService } from 'src/app/services/toast.service';
@@ -28,6 +28,7 @@ export class StatoAvanzamentoComponent {
   @ViewChild("pmAutocomplete") pmAutocomplete!: InputComponent;
   @ViewChild("bmAutocomplete") bmAutocomplete!: InputComponent;
 
+  enforceMinMax = enforceMinMax;
   EnumStatiChiusura = EnumStatiChiusura;
   BUSINESS_MANAGER = BUSINESS_MANAGER;
 
@@ -399,21 +400,6 @@ export class StatoAvanzamentoComponent {
         )
       )
       .subscribe();
-  }
-
-  onPercInputChange(
-    percInput: HTMLInputElement,
-    avanzamento: SottocommessaAvanzamento,
-    dettaglio: SottocommessaAvanzamentoDettaglio
-  ) {
-
-    const min = 0;
-    const max = avanzamento.calcPercRimanente(dettaglio);
-    enforceMinMax(percInput, { min, max });
-
-    dettaglio.avanzamentoTotale = +percInput.value;
-    avanzamento.aggiornaAvanzamento();
-    dettaglio.dirty = true;
   }
 
   trackByIdCommessa(index: number, item: SottocommessaAvanzamento) {
