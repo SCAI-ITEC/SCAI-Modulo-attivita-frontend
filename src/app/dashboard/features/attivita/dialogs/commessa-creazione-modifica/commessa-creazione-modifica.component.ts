@@ -1,15 +1,15 @@
-import { Component, Input, ViewChild } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { startWith } from "rxjs";
-import { Dettaglio, UtentiAnagrafica } from "src/app/api/stato-avanzamento/models";
+import { Dettaglio, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
 import { ToastService } from "src/app/services/toast.service";
-import { InputComponent } from "src/app/shared/components/input/input.component";
 import { jsonCopy } from "src/app/utils/json";
 import { CommessaDto, CreateCommessaParam, SimpleDto, UpdateCommessaParam } from "../../models/commessa";
 import { DIALOG_MODE } from "../../models/dialog";
 import { CommessaService } from "../../services/commessa.service";
 import { MiscDataService } from "../../services/miscData.service";
+import { SEGRETERIA } from "src/app/models/user";
 
 @Component({
 	selector: 'app-commessa-creazione-modifica-dialog',
@@ -19,14 +19,13 @@ import { MiscDataService } from "../../services/miscData.service";
 export class CommessaCreazioneModifica {
 
     @Input("idCommessa") idCommessa!: number;
-
+    
+    SEGRETERIA = SEGRETERIA;
     DIALOG_MODE = DIALOG_MODE;
     dialogMode!: DIALOG_MODE;
     isLoading = false;
 
     commessa?: CommessaDto;
-
-    form!: FormGroup;
 
     clienteDirettoCtrl = new FormControl<Dettaglio | null>(null, [Validators.required]);
     get idClienteDiretto() {
@@ -68,14 +67,23 @@ export class CommessaCreazioneModifica {
     ];
 
     codiceCommessaCtrl = new FormControl<string | null>(null);
-
     descrizioneCtrl = new FormControl<string | null>(null, [Validators.required]);
-    
     tagCtrl = new FormControl<string | null>(null, [Validators.maxLength(5)]);
-
     dataCreazioneCtrl = new FormControl(new Date().toISOString().slice(0, 10));
-
     dataDecorrenzaCtrl = new FormControl();
+
+    form = new FormGroup({
+        cliente: this.clienteDirettoCtrl,
+        clienteFinale: this.clienteFinaleCtrl,
+        pm: this.pmCtrl,
+        bm: this.bmCtrl,
+        tipoAttivita: this.tipoAttivitaCtrl,
+        codiceCommessa: this.codiceCommessaCtrl,
+        descrizione: this.descrizioneCtrl,
+        tag: this.tagCtrl,
+        dataCreazione: this.dataCreazioneCtrl,
+        dataDecorrenza: this.dataDecorrenzaCtrl
+    });
 
 	constructor(
         public activeModal: NgbActiveModal,
@@ -103,19 +111,6 @@ export class CommessaCreazioneModifica {
         else {
             this.initCtrlValues();
         }
-
-        this.form = new FormGroup({
-            cliente: this.clienteDirettoCtrl,
-            clienteFinale: this.clienteFinaleCtrl,
-            pm: this.pmCtrl,
-            bm: this.bmCtrl,
-            tipoAttivita: this.tipoAttivitaCtrl,
-            codiceCommessa: this.codiceCommessaCtrl,
-            descrizione: this.descrizioneCtrl,
-            tag: this.tagCtrl,
-            dataCreazione: this.dataCreazioneCtrl,
-            dataDecorrenza: this.dataDecorrenzaCtrl
-        });
 
         // Dynamic validators
         this.tipoAttivitaCtrl.valueChanges
