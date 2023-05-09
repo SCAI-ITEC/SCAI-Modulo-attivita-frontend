@@ -25,7 +25,7 @@ export class SplashComponent {
       this.authService
         .login(bareToken, qp.idAziendaSelezionata)
         .subscribe(
-          () => this.router.navigate(['/rootatt']),
+          () => this.router.navigate(['/service-attivita']),
           () => this.toaster.show("Non è stato possibile recuperare le informazioni dell'utente collegato", { classname: 'bg-warning' })
         );
     }

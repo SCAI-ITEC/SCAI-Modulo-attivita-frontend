@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'rootatt',
+    path: 'service-attivita',
     loadChildren: () =>
       import('./dashboard/dashboard.module')
         .then(m => m.DashboardModule),
