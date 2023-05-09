@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
-    path: 'service-attivita',
+    path: '',
     loadChildren: () =>
       import('./dashboard/dashboard.module')
         .then(m => m.DashboardModule),
