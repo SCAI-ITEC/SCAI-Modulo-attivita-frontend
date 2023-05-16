@@ -5,6 +5,7 @@ import { ToastService } from "src/app/services/toast.service";
 import { AuthService } from "src/app/services/auth.service";
 import { SegreteriaService } from "src/app/api/modulo-attivita/services";
 import { Subject, takeUntil, tap } from "rxjs";
+import { euroMask, euroMask2numStr } from "src/app/utils/mask";
 
 @Component({
 	selector: 'app-straordinari-creazione-dialog',
@@ -17,8 +18,25 @@ export class StraordinariCreazioneComponent {
 
     dataInizioCtrl = new FormControl<string | null>(null, [Validators.required]);
     dataFineCtrl = new FormControl<string | null>(null, [Validators.required]);
+
     descrizioneCtrl = new FormControl<string | null>(null, [Validators.required]);
+    
+    straordinarioOrdinarioCtrl = new FormControl<string | null>(null);
+    straordinarioSabatoCtrl = new FormControl<string | null>(null);
+    straordinarioFestivoCtrl = new FormControl<string | null>(null);
+    straordinarioNotturnoCtrl = new FormControl<string | null>(null);
+
     autorizzazioneClienteCtrl = new FormControl<boolean>(false);
+
+    euroMask = euroMask;
+    // Get euro value from field with
+    //     const masked = this.importoCtrl.value!;
+    //     return euroMask2numStr(masked);
+    //
+    // Set euro value to field with 
+    //     const masked = numStr2euroMask(unmasked);
+    //     this.importoCtrl.setValue(masked);
+    //
 
     datesValidator = () => {
 
@@ -36,6 +54,10 @@ export class StraordinariCreazioneComponent {
             dataInizio: this.dataInizioCtrl,
             dataFine: this.dataFineCtrl,
             descrizione: this.descrizioneCtrl,
+            straordinarioOrdinario: this.straordinarioOrdinarioCtrl,
+            straordinarioSabato: this.straordinarioSabatoCtrl,
+            straordinarioFestivo: this.straordinarioFestivoCtrl,
+            straordinarioNotturno: this.straordinarioNotturnoCtrl,
             autorizzazioneCliente: this.autorizzazioneClienteCtrl
         },
         [ this.datesValidator ]
@@ -56,6 +78,22 @@ export class StraordinariCreazioneComponent {
 
         if (this.form.invalid) return;
 
+        const strOrdVal = this.straordinarioOrdinarioCtrl.value
+            ? +euroMask2numStr(this.straordinarioOrdinarioCtrl.value)
+            : null;
+
+        const strSabVal = this.straordinarioSabatoCtrl.value
+            ? +euroMask2numStr(this.straordinarioSabatoCtrl.value)
+            : null;
+
+        const strFestVal = this.straordinarioFestivoCtrl.value
+            ? +euroMask2numStr(this.straordinarioFestivoCtrl.value)
+            : null;
+
+        const strNottVal = this.straordinarioNotturnoCtrl.value
+            ? +euroMask2numStr(this.straordinarioNotturnoCtrl.value)
+            : null;
+
         this.segreteriaService
             .postStraordinariTerzeParti({
                 idAzienda: this.authService.user.idAzienda!,
@@ -65,6 +103,10 @@ export class StraordinariCreazioneComponent {
                     fine: this.dataFineCtrl.value,
                     idSottoCommessa: this.idSottocommessa,
                     descrizione: this.descrizioneCtrl.value,
+                    straordinarioOrdinarioCliente: strOrdVal,
+                    straordinarioSabatoCliente: strSabVal,
+                    straordinarioFestivoCliente: strFestVal,
+                    straordinarioNotturnoCliente: strNottVal,
                     autorizzazioneCliente: this.autorizzazioneClienteCtrl.value ? 1 : 0,
                     attivo: true
                 }

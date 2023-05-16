@@ -6,6 +6,7 @@ import { SegreteriaService } from 'src/app/api/modulo-attivita/services';
 import { AuthService } from 'src/app/services/auth.service';
 import { GetReperibilitaCommesseTotaliResponse } from 'src/app/api/modulo-attivita/models';
 import { ToastService } from 'src/app/services/toast.service';
+import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 
 @Component({
   selector: 'app-reperibilita',
@@ -35,7 +36,7 @@ export class ReperibilitaComponent {
         this.segreteriaService
           .getReperibilitaCommesseTotali({
             idAzienda: this.authService.user.idAzienda!,
-            IdSottoCommessa: this.idSottocommessa
+            idSottoCommessa: this.idSottocommessa
           })
           .subscribe(reperibilita => this.reperibilita = reperibilita)
       );
@@ -59,6 +60,21 @@ export class ReperibilitaComponent {
   }
 
   async delete(reperibilita: GetReperibilitaCommesseTotaliResponse) {
+
+    const modalRef = this.modalService
+      .open(
+        EliminazioneDialog,
+        {
+          size: 'md',
+          centered: true,
+          scrollable: true
+        }
+      );
+    modalRef.componentInstance.name = reperibilita.descrizione;
+    modalRef.componentInstance.message = "Stai eliminando definitivamente una reperibilità."
+
+    await modalRef.result;
+    
     this.segreteriaService
       .postReperibilitaCommesse({
         idAzienda: this.authService.user.idAzienda!,

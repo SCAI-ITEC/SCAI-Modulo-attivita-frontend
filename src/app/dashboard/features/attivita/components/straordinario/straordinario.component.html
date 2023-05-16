@@ -58,6 +58,10 @@
         <ng-template #thead>
             <th sortable="descrizione" (sort)="dt.sort($any($event))">Descrizione</th>
             <th sortable="autorizzazioneCliente" (sort)="dt.sort($any($event))">Autorizzazione</th>
+            <th sortable="straordinarioOrdinarioCliente" (sort)="dt.sort($any($event))">Str. ordinario</th>
+            <th sortable="straordinarioSabatoCliente" (sort)="dt.sort($any($event))">Str. sabato</th>
+            <th sortable="straordinarioFestivoCliente" (sort)="dt.sort($any($event))">Str. festivo</th>
+            <th sortable="straordinarioNotturnoCliente" (sort)="dt.sort($any($event))">Str. notturno</th>
             <th sortable="inizio" (sort)="dt.sort($any($event))">Inizio</th>
             <th sortable="fine" (sort)="dt.sort($any($event))">Fine</th>
             <th style="width: 10rem"></th>
@@ -68,6 +72,10 @@
                 <ngb-highlight [result]="item.descrizione" [term]="$any(term$ | async)"/>
             </td>
             <td data-label="Autorizzazione">{{ item.autorizzazioneCliente ? 'Si' : 'No' }}</td>
+            <td data-label="Str. ordinario">{{ item.straordinarioOrdinarioCliente }}</td>
+            <td data-label="Str. sabato">{{ item.straordinarioSabatoCliente }}</td>
+            <td data-label="Str. festivo">{{ item.straordinarioFestivoCliente }}</td>
+            <td data-label="Str. notturno">{{ item.straordinarioNotturnoCliente }}</td>
             <td data-label="Inizio">{{ item.inizio | date:'yyyy-MM-dd' }}</td>
             <td data-label="Fine">{{ item.fine | date:'yyyy-MM-dd' }}</td>
             <td>

@@ -111,6 +111,7 @@
             <td data-label="Nome">
                 <ngb-highlight [result]="item.utente?.nome" [term]="$any(term$ | async)"/>
             </td>
+            <td data-label="Diaria">{{ item.diaria }}</td>
             <td data-label="Inizio">{{ item.inizioAllocazione | date:'yyyy-MM-dd' }}</td>
             <td data-label="Fine">{{ item.fineAllocazione | date:'yyyy-MM-dd' }}</td>
             <td>
