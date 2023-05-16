@@ -59,6 +59,24 @@ export class ReperibilitaComponent {
     this.refresh$.next();
   }
 
+  async update(reperibilita: GetReperibilitaCommesseTotaliResponse) {
+
+    const modalRef = this.modalService
+      .open(
+        ReperibilitaCreazioneComponent,
+        {
+          size: 'lg',
+          centered: true,
+          scrollable: true
+        }
+      );
+    modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
+    modalRef.componentInstance.reperibilita = reperibilita;
+
+    const result = await modalRef.result;
+    this.refresh$.next();
+  }
+
   async delete(reperibilita: GetReperibilitaCommesseTotaliResponse) {
 
     const modalRef = this.modalService

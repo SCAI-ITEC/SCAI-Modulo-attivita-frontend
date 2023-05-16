@@ -5,7 +5,8 @@ import { ToastService } from "src/app/services/toast.service";
 import { AuthService } from "src/app/services/auth.service";
 import { SegreteriaService } from "src/app/api/modulo-attivita/services";
 import { Subject, takeUntil, tap } from "rxjs";
-import { euroMask, euroMask2numStr } from "src/app/utils/mask";
+import { euroMask, euroMask2numStr, numStr2euroMask } from "src/app/utils/mask";
+import { GetStraordinariTerzePartiTotaliResponse } from "src/app/api/modulo-attivita/models";
 
 @Component({
 	selector: 'app-straordinari-creazione-dialog',
@@ -14,6 +15,7 @@ import { euroMask, euroMask2numStr } from "src/app/utils/mask";
 })
 export class StraordinariCreazioneComponent {
 
+    @Input("straordinario") straordinario?: GetStraordinariTerzePartiTotaliResponse;
     @Input("idSottocommessa") idSottocommessa!: number;
 
     dataInizioCtrl = new FormControl<string | null>(null, [Validators.required]);
@@ -30,12 +32,12 @@ export class StraordinariCreazioneComponent {
 
     euroMask = euroMask;
     // Get euro value from field with
-    //     const masked = this.importoCtrl.value!;
+    //     const masked = ctrl.value!;
     //     return euroMask2numStr(masked);
     //
     // Set euro value to field with 
     //     const masked = numStr2euroMask(unmasked);
-    //     this.importoCtrl.setValue(masked);
+    //     ctrl.setValue(masked);
     //
 
     datesValidator = () => {
@@ -72,7 +74,33 @@ export class StraordinariCreazioneComponent {
         private toaster: ToastService
     ) { }
 
-    ngOnInit() { }
+    ngOnInit() {
+        if (this.straordinario) {
+
+            this.straordinarioOrdinarioCtrl.setValue(
+                numStr2euroMask(this.straordinario.straordinarioOrdinarioCliente + '')
+            );
+
+            this.straordinarioSabatoCtrl.setValue(
+                numStr2euroMask(this.straordinario.straordinarioSabatoCliente + '')
+            );
+
+            this.straordinarioFestivoCtrl.setValue(
+                numStr2euroMask(this.straordinario.straordinarioFestivoCliente + '')
+            );
+
+            this.straordinarioNotturnoCtrl.setValue(
+                numStr2euroMask(this.straordinario.straordinarioNotturnoCliente + '')
+            );
+
+            this.form.patchValue({
+                dataInizio: this.straordinario.inizio,
+                dataFine: this.straordinario.fine,
+                descrizione: this.straordinario.descrizione,
+                autorizzazioneCliente: !!this.straordinario.autorizzazioneCliente
+            });
+        }
+    }
 
     create() {
 
@@ -97,7 +125,7 @@ export class StraordinariCreazioneComponent {
         this.segreteriaService
             .postStraordinariTerzeParti({
                 idAzienda: this.authService.user.idAzienda!,
-                idLegameStraordinari: 0,
+                idLegameStraordinari: this.straordinario ? this.straordinario.idLegameStraordinari! : 0,
                 body: {
                     inizio: this.dataInizioCtrl.value!, // Why it does complain if it's undefined while for fine does not? Blame the BE!
                     fine: this.dataFineCtrl.value,
@@ -113,12 +141,12 @@ export class StraordinariCreazioneComponent {
             })
             .subscribe(
                 () => {
-                    const txt = "Reperibilità creata con successo!";
+                    const txt = "Straordinario creato con successo!";
                     this.toaster.show(txt, { classname: 'bg-success text-white' });
                     this.activeModal.close();
                 },
                 () => {
-                    const txt = "Non è stato possibile creare la reperibilità. Contattare il supporto tecnico.";
+                    const txt = "Non è stato possibile creare lo straordinario. Contattare il supporto tecnico.";
                     this.toaster.show(txt, { classname: 'bg-danger text-white' });
                 }
             );

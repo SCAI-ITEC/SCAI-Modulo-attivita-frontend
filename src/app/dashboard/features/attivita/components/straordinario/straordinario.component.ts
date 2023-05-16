@@ -59,6 +59,24 @@ export class StraordinarioComponent {
     this.refresh$.next();
   }
 
+  async update(straordinario: GetStraordinariTerzePartiTotaliResponse) {
+
+    const modalRef = this.modalService
+      .open(
+        StraordinariCreazioneComponent,
+        {
+          size: 'lg',
+          centered: true,
+          scrollable: true
+        }
+      );
+    modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
+    modalRef.componentInstance.straordinario = straordinario;
+
+    const result = await modalRef.result;
+    this.refresh$.next();
+  }
+
   async delete(straordinario: GetStraordinariTerzePartiTotaliResponse) {
 
     const modalRef = this.modalService
