@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject, startWith } from 'rxjs';
+import { Subject, map, startWith } from 'rxjs';
 import { StraordinariCreazioneComponent } from '../../dialogs/straordinari-creazione/straordinari-creazione.component';
 import { AuthService } from 'src/app/services/auth.service';
 import { SegreteriaService } from 'src/app/api/modulo-attivita/services';
@@ -38,6 +38,9 @@ export class StraordinarioComponent {
             idAzienda: this.authService.user.idAzienda!,
             IdSottoCommessa: this.idSottocommessa
           })
+          .pipe(
+            map(straordinari => straordinari.reverse())
+          )
           .subscribe(straordinari => this.straordinari = straordinari)
       );
   }

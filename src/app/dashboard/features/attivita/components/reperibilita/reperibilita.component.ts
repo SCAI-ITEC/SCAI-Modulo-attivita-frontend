@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject, startWith } from 'rxjs';
+import { Subject, map, startWith } from 'rxjs';
 import { ReperibilitaCreazioneComponent } from '../../dialogs/reperibilita-creazione/reperibilita-creazione.component';
 import { SegreteriaService } from 'src/app/api/modulo-attivita/services';
 import { AuthService } from 'src/app/services/auth.service';
@@ -38,6 +38,9 @@ export class ReperibilitaComponent {
             idAzienda: this.authService.user.idAzienda!,
             idSottoCommessa: this.idSottocommessa
           })
+          .pipe(
+            map(reperibilita => reperibilita.reverse())
+          )
           .subscribe(reperibilita => this.reperibilita = reperibilita)
       );
   }
