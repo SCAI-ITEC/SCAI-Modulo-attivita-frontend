@@ -88,11 +88,12 @@
                     <app-input
                         type="autocomplete"
                         name="diaria"
-                        placeholder="Aggiungi diaria"
+                        label="Diaria"
                         [options]="diarie"
                         [limit]="25"
                         [formatter]="diariaFormatter"
                         [ngControl]="diariaCtrl"
+                        [floatingLabel]="true"
                     ></app-input>
                 </div>
 

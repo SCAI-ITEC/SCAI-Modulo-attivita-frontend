@@ -6,7 +6,7 @@ import { ToastService } from "src/app/services/toast.service";
 import { DIALOG_MODE } from "../../models/dialog";
 import { TaskService } from "../../services/task.service";
 import { TaskDto } from "../../models/task";
-import { GetDiarieResponse, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
+import { GetDiarieResponse, GetDiarieUtentiResponse, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
 import { MiscDataService } from "../../services/miscData.service";
 import { RisorsaTaskWrap, UpsertLegameParam } from "../../models/risorsa";
 import { RisorsaService } from "../../services/risorsa.service";
@@ -25,8 +25,10 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
     @Input("idSottocommessa") idSottocommessa!: number;
     @Input("idTask") idTask!: number;
     @Input("idLegame") idLegame!: number;
+
     task?: TaskDto;
     legame?: RisorsaTaskWrap;
+    diariaUtente?: GetDiarieUtentiResponse;
 
     DIALOG_MODE = DIALOG_MODE;
     dialogMode!: DIALOG_MODE;
@@ -76,7 +78,7 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
         private miscData: MiscDataService
     ) { }
 
-    ngOnInit() {
+    async ngOnInit() {
 
         this.isLoading = true;
 
@@ -86,42 +88,47 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
 
         this.utenti = this.miscData.utenti;
 
+        const taskAndLegame$ = combineLatest([
+            this.taskService.getTaskById$(this.idTask),
+            this.risorsaService.getLegameById$(this.idLegame)
+        ]);
+
         if (this.dialogMode === DIALOG_MODE.Update) {
-            combineLatest([
-                this.taskService.getTaskById$(this.idTask),
-                this.risorsaService.getLegameById$(this.idLegame)
-            ])
-            .pipe(
-                switchMap(([ task, legame ]) =>
-                    combineLatest(
-                        of(task),
-                        of(legame),
-                        this.datiOperativiService
-                            .getDiarieUtenti({
-                                idAzienda: this.authService.user.idAzienda!,
-                                idAttivita: this.idTask,
-                                idUtente: legame.idUtente
-                            })
-                    )
-                )
-            )
-            .subscribe(([ task, legame, diarieUtenti ]) => {
-                console.log(diarieUtenti);
-                this.legame = legame;
-                this.task = task;
-                this.initCtrlValues();
-                this.isLoading = false;
-            });
+
+            // Get and assign task and legame
+            [ this.task, this.legame ]  = await lastValueFrom(taskAndLegame$);
+    
+            // Get diarieUtenti
+            const diarieUtenti = await lastValueFrom(
+                this.datiOperativiService
+                    .getDiarieUtenti({
+                        idAzienda: this.authService.user.idAzienda!,
+                        idAttivita: this.idTask,
+                        idUtente: this.legame!.idUtente
+                    })
+            );
+    
+            this.diariaUtente = diarieUtenti[0]; // It's always a single element array BLAME THE BACKEEEEEND!!!
         }
         else {
-            this.taskService
-                .getTaskById$(this.idTask)
-                .subscribe(task => {
-                    this.task = task;
-                    this.initCtrlValues();
-                    this.isLoading = false;
-                });
+
+            // Get task
+            this.task = await lastValueFrom(
+                this.taskService.getTaskById$(this.idTask)
+            );
         }
+
+        // Get diarie
+        this.diarie = await lastValueFrom(
+            this.tipiTrasfertaService
+                .getDiarie({
+                    IdAzienda: this.authService.user.idAzienda,
+                    Valido: true
+                })
+        );
+
+        this.initCtrlValues();
+        this.isLoading = false;
     }
 
     ngOnDestroy() {
@@ -139,25 +146,18 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
         //     "idUtente": 217,
         //     "inizioAllocazione": null,
         // }
-
-        this.tipiTrasfertaService
-            .getDiarie()
-            .pipe(
-                map(diarie => diarie.filter(d => d.valido && d.azienda?.id === this.authService.user.idAzienda)),
-                tap(diarie => this.diarie = diarie)
-            )
-            .subscribe();
-
-        if (this.dialogMode === DIALOG_MODE.Update) {
             
-            if (!this.legame) return;
+        if (!this.legame) return;
 
-            this.form.patchValue({
-                utente: [this.legame.utente],
-                dataInizio: this.legame.inizioAllocazione && this.legame.inizioAllocazione.slice(0, 10),
-                dataFine: this.legame.fineAllocazione && this.legame.fineAllocazione.slice(0, 10)
-            });
-        }
+        const diaria = this.diarie
+            .find(d => d.tipoTrasferta?.id === this.diariaUtente?.trasferta?.idTipoTrasferta);
+        this.diariaCtrl.setValue(diaria!);
+
+        this.form.patchValue({
+            utente: [this.legame.utente],
+            dataInizio: this.legame.inizioAllocazione && this.legame.inizioAllocazione.slice(0, 10),
+            dataFine: this.legame.fineAllocazione && this.legame.fineAllocazione.slice(0, 10)
+        });
     }
 
     dataInizioCtrlMin() {
@@ -286,7 +286,7 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
                         )
                 ];
 
-                // If diaria has a value, then add it to the current request
+                // If diaria has a value, then add postDiarieUtenti to the current request
                 if (this.diariaCtrl.value) {
 
                     const diariaUtente = {
@@ -346,8 +346,43 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
             fineAllocazione: this.dataFineCtrl.value!
         };
 
-        this.risorsaService
-            .updateLegame$(this.idLegame, legameTaskRisorsa)
+        const request = [
+            this.risorsaService.updateLegame$(this.idLegame, legameTaskRisorsa)
+        ];
+
+        // If diariaUtente is set but diariaCtrl is not (the user explicitly removed diaria), then "delete" diariaUtente
+        if (this.diariaUtente && !this.diariaCtrl.value) {
+
+            const diariaUtente = {
+                idAzienda: this.authService.user.idAzienda!,
+                idAttivita: this.idTask,
+                idUtente: this.legame.idUtente,
+                idDiaria: this.diariaUtente.trasferta?.idTipoTrasferta!,
+                body: { attivo: false }
+            };
+
+            request.push(
+                this.datiOperativiService.postDiarieUtenti(diariaUtente)
+            );
+        }
+
+        // If diariaCtrl is set, then create/update diariaUtente
+        if (this.diariaCtrl.value) {
+
+            const diariaUtente = {
+                idAzienda: this.authService.user.idAzienda!,
+                idAttivita: this.idTask,
+                idUtente: this.legame.idUtente,
+                idDiaria: this.diariaCtrl.value?.tipoTrasferta?.id!,
+                body: { attivo: true }
+            };
+
+            request.push(
+                this.datiOperativiService.postDiarieUtenti(diariaUtente)
+            );
+        }
+
+        combineLatest(request)
             .subscribe(
                 () => {
                     const txt = "Legame modificato con successo!";
