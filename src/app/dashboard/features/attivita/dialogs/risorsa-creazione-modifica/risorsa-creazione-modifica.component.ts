@@ -1,16 +1,18 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { Subject, catchError, combineLatest, lastValueFrom, map, of, takeUntil, tap } from 'rxjs';
+import { Subject, catchError, combineLatest, lastValueFrom, map, of, switchMap, tap } from 'rxjs';
 import { ToastService } from "src/app/services/toast.service";
 import { DIALOG_MODE } from "../../models/dialog";
 import { TaskService } from "../../services/task.service";
 import { TaskDto } from "../../models/task";
-import { UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
+import { GetDiarieResponse, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
 import { MiscDataService } from "../../services/miscData.service";
 import { RisorsaTaskWrap, UpsertLegameParam } from "../../models/risorsa";
 import { RisorsaService } from "../../services/risorsa.service";
 import { dedupe, intersection } from "src/app/utils/array";
+import { DatiOperativiService, TipiTrasfertaService } from "src/app/api/modulo-attivita/services";
+import { AuthService } from "src/app/services/auth.service";
 
 @Component({
 	selector: 'app-risorsa-creazione-modifica-dialog',
@@ -36,6 +38,10 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
 
     dataInizioCtrl = new FormControl<string | null>(null, [Validators.required]);
     dataFineCtrl = new FormControl<string | null>(null, [Validators.required]);
+
+    diariaCtrl = new FormControl<GetDiarieResponse | null>(null);
+    diarie: GetDiarieResponse[] = [];
+    diariaFormatter = (d: GetDiarieResponse) => d.tipoTrasferta?.descrizione;
 
     datesValidator = () => {
 
@@ -64,6 +70,9 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
         private toaster: ToastService,
         private risorsaService: RisorsaService,
         private taskService: TaskService,
+        private tipiTrasfertaService: TipiTrasfertaService,
+        private datiOperativiService: DatiOperativiService,
+        private authService: AuthService,
         private miscData: MiscDataService
     ) { }
 
@@ -82,7 +91,22 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
                 this.taskService.getTaskById$(this.idTask),
                 this.risorsaService.getLegameById$(this.idLegame)
             ])
-            .subscribe(([ task, legame ]) => {
+            .pipe(
+                switchMap(([ task, legame ]) =>
+                    combineLatest(
+                        of(task),
+                        of(legame),
+                        this.datiOperativiService
+                            .getDiarieUtenti({
+                                idAzienda: this.authService.user.idAzienda!,
+                                idAttivita: this.idTask,
+                                idUtente: legame.idUtente
+                            })
+                    )
+                )
+            )
+            .subscribe(([ task, legame, diarieUtenti ]) => {
+                console.log(diarieUtenti);
                 this.legame = legame;
                 this.task = task;
                 this.initCtrlValues();
@@ -115,6 +139,14 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
         //     "idUtente": 217,
         //     "inizioAllocazione": null,
         // }
+
+        this.tipiTrasfertaService
+            .getDiarie()
+            .pipe(
+                map(diarie => diarie.filter(d => d.valido && d.azienda?.id === this.authService.user.idAzienda)),
+                tap(diarie => this.diarie = diarie)
+            )
+            .subscribe();
 
         if (this.dialogMode === DIALOG_MODE.Update) {
             
@@ -219,10 +251,10 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
 
         // Filter out any existing user, throw an error toast
         const utentiToSave = utentiSelezione
-            .filter(u => {
+            .filter(utente => {
 
-                if (idUtentiToExclude.includes(u.idUtente)) {
-                    const txt = u.cognome + " " + u.nome + " è già presente pertanto non è stato salvato.";
+                if (idUtentiToExclude.includes(utente.idUtente)) {
+                    const txt = utente.cognome + " " + utente.nome + " è già presente pertanto non è stato salvato.";
                     this.toaster.show(txt, { classname: 'bg-danger text-white' });
                     return false;
                 }
@@ -231,26 +263,56 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
             });
 
         const requests = utentiToSave
-            .map(u => {
+            .map(utente => {
 
                 const legameTaskRisorsa: UpsertLegameParam = {
                     idTask: this.idTask,
-                    idUtente: u.idUtente!,
+                    idUtente: utente.idUtente!,
                     inizioAllocazione: this.dataInizioCtrl.value!,
                     fineAllocazione: this.dataFineCtrl.value!
                 };
 
-                return this.risorsaService
-                    .createLegame$(legameTaskRisorsa)
-                    .pipe(
-                        catchError(() => {
+                const request = [
+                    this.risorsaService
+                        .createLegame$(legameTaskRisorsa)
+                        .pipe(
+                            catchError(() => {
 
-                            const txt = `Non è stato possibile creare il Legame per ${u.cognome} ${u.nome}. Contattare il supporto tecnico.`;
-                            this.toaster.show(txt, { classname: 'bg-danger text-white' });
+                                const txt = `Non è stato possibile creare il Legame per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
+                                this.toaster.show(txt, { classname: 'bg-danger text-white' });
 
-                            return of(-1);
-                        })
+                                return of(-1);
+                            })
+                        )
+                ];
+
+                // If diaria has a value, then add it to the current request
+                if (this.diariaCtrl.value) {
+
+                    const diariaUtente = {
+                        idAzienda: this.authService.user.idAzienda!,
+                        idAttivita: this.idTask,
+                        idUtente: utente.idUtente!,
+                        idDiaria: this.diariaCtrl.value?.tipoTrasferta?.id!,
+                        body: { attivo: true }
+                    };
+        
+                    request.push(
+                        this.datiOperativiService
+                            .postDiarieUtenti(diariaUtente)
+                            .pipe(
+                                catchError(() => {
+
+                                    const txt = `Non è stato possibile assegnare la diaria per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
+                                    this.toaster.show(txt, { classname: 'bg-danger text-white' });
+
+                                    return of(-1);
+                                })
+                            )
                     );
+                }
+
+                return combineLatest(request);
             });
 
         combineLatest(requests)
@@ -259,11 +321,7 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
                 const txt = "Operazione terminata!";
                 this.toaster.show(txt, { classname: 'bg-success text-white' });
 
-                this.activeModal
-                    .close({
-                        dialogMode: this.dialogMode,
-                        // idLegame
-                    });
+                this.activeModal.close({ dialogMode: this.dialogMode });
             });
     }
 
