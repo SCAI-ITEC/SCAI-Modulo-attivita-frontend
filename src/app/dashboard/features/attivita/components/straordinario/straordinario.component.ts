@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject, startWith } from 'rxjs';
+import { Subject, map, startWith } from 'rxjs';
 import { StraordinariCreazioneComponent } from '../../dialogs/straordinari-creazione/straordinari-creazione.component';
 import { AuthService } from 'src/app/services/auth.service';
 import { SegreteriaService } from 'src/app/api/modulo-attivita/services';
 import { GetStraordinariTerzePartiTotaliResponse } from 'src/app/api/modulo-attivita/models';
 import { ToastService } from 'src/app/services/toast.service';
+import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 
 @Component({
   selector: 'app-straordinario',
@@ -37,6 +38,9 @@ export class StraordinarioComponent {
             idAzienda: this.authService.user.idAzienda!,
             IdSottoCommessa: this.idSottocommessa
           })
+          .pipe(
+            map(straordinari => straordinari.reverse())
+          )
           .subscribe(straordinari => this.straordinari = straordinari)
       );
   }
@@ -58,7 +62,40 @@ export class StraordinarioComponent {
     this.refresh$.next();
   }
 
+  async update(straordinario: GetStraordinariTerzePartiTotaliResponse) {
+
+    const modalRef = this.modalService
+      .open(
+        StraordinariCreazioneComponent,
+        {
+          size: 'lg',
+          centered: true,
+          scrollable: true
+        }
+      );
+    modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
+    modalRef.componentInstance.straordinario = straordinario;
+
+    const result = await modalRef.result;
+    this.refresh$.next();
+  }
+
   async delete(straordinario: GetStraordinariTerzePartiTotaliResponse) {
+
+    const modalRef = this.modalService
+      .open(
+        EliminazioneDialog,
+        {
+          size: 'md',
+          centered: true,
+          scrollable: true
+        }
+      );
+    modalRef.componentInstance.name = straordinario.descrizione;
+    modalRef.componentInstance.message = "Stai eliminando definitivamente uno straordinario."
+
+    await modalRef.result;
+    
     this.segreteriaService
       .postStraordinariTerzeParti({
         idAzienda: this.authService.user.idAzienda!,

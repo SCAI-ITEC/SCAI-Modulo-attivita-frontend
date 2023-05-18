@@ -1,13 +1,13 @@
 <div class="text-center mb-5">
-    <h1 class="display-6">Gestione Eventi</h1>
-    <p class="lead">Da questo componente puoi creare/modificare gli eventi della commessa.</p>
+    <h1 class="display-6">Gestione Opportunità</h1>
+    <p class="lead">Da questo componente puoi creare/modificare gli opportunità della commessa.</p>
 </div>
 
 <div class="card pt-3 shadow">
 
     <div class="table-plus">
 
-        <h5 class="table-plus__title">Tabella eventi</h5>
+        <h5 class="table-plus__title">Tabella opportunità</h5>
 
         <button
             type="button"
@@ -15,7 +15,7 @@
             (click)="create()"
         >
             <i class="bi bi-plus"></i>
-            Crea evento
+            Crea opportunità
         </button>
     </div>
 
@@ -23,22 +23,22 @@
         <div style="
             display: grid;
             gap: 0.75rem;
-            justify-content: center;
+            justify-items: center;
             margin: 0 auto;
-            max-width: 300px;
+            max-width: 400px;
             padding: 3rem 1rem;
             text-align: center;
         ">
 
-            <img class="img-fluid" src="assets/images/not-found.png" alt="nessun risultato trovato">
+            <img class="img-fluid" style="max-height: 150px;" src="assets/images/not-found.png" alt="nessun risultato trovato">
 
-            <div class="lead">Nessun evento trovato.</div>
+            <div class="lead">Nessuna opportunità trovata.</div>
 
             <button
                 class="btn btn-outline-success"
                 (click)="create()"
             >
-                Crea evento
+                Crea opportunità
             </button>
         </div>
     </ng-template>

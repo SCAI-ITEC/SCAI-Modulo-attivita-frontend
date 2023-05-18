@@ -18,7 +18,7 @@
         ></button>
         </div>
 
-        <div class="modal-body" style="min-height: 40vh">
+        <div class="modal-body" style="min-height: 45vh">
 
             <form [formGroup]="form">
 
@@ -80,6 +80,19 @@
                         [min]="dataFineCtrlMin()"
                         [max]="dataFineCtrlMax()"
                         [ngControl]="dataFineCtrl"
+                        [floatingLabel]="true"
+                    ></app-input>
+                </div>
+
+                <div class="flexgrid flexgrid--1">
+                    <app-input
+                        type="autocomplete"
+                        name="diaria"
+                        label="Diaria"
+                        [options]="diarie"
+                        [limit]="25"
+                        [formatter]="diariaFormatter"
+                        [ngControl]="diariaCtrl"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>

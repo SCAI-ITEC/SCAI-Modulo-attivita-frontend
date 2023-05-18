@@ -59,6 +59,15 @@
 
         <div class="flexgrid flexgrid--1">
             <app-input
+                name="costoRep"
+                label="Costo reperibilità"
+                [mask]="euroMask"
+                [ngControl]="costoReperibilitaCtrl"
+            ></app-input>
+        </div>
+
+        <div class="flexgrid flexgrid--1">
+            <app-input
                 type="checkbox"
                 name="reperibilitaSenzaAvviso"
                 label="Reperibilita senza avviso"

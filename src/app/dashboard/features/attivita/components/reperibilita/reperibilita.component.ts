@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject, startWith } from 'rxjs';
+import { Subject, map, startWith } from 'rxjs';
 import { ReperibilitaCreazioneComponent } from '../../dialogs/reperibilita-creazione/reperibilita-creazione.component';
 import { SegreteriaService } from 'src/app/api/modulo-attivita/services';
 import { AuthService } from 'src/app/services/auth.service';
 import { GetReperibilitaCommesseTotaliResponse } from 'src/app/api/modulo-attivita/models';
 import { ToastService } from 'src/app/services/toast.service';
+import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 
 @Component({
   selector: 'app-reperibilita',
@@ -37,6 +38,9 @@ export class ReperibilitaComponent {
             idAzienda: this.authService.user.idAzienda!,
             idSottoCommessa: this.idSottocommessa
           })
+          .pipe(
+            map(reperibilita => reperibilita.reverse())
+          )
           .subscribe(reperibilita => this.reperibilita = reperibilita)
       );
   }
@@ -58,7 +62,40 @@ export class ReperibilitaComponent {
     this.refresh$.next();
   }
 
+  async update(reperibilita: GetReperibilitaCommesseTotaliResponse) {
+
+    const modalRef = this.modalService
+      .open(
+        ReperibilitaCreazioneComponent,
+        {
+          size: 'lg',
+          centered: true,
+          scrollable: true
+        }
+      );
+    modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
+    modalRef.componentInstance.reperibilita = reperibilita;
+
+    const result = await modalRef.result;
+    this.refresh$.next();
+  }
+
   async delete(reperibilita: GetReperibilitaCommesseTotaliResponse) {
+
+    const modalRef = this.modalService
+      .open(
+        EliminazioneDialog,
+        {
+          size: 'md',
+          centered: true,
+          scrollable: true
+        }
+      );
+    modalRef.componentInstance.name = reperibilita.descrizione;
+    modalRef.componentInstance.message = "Stai eliminando definitivamente una reperibilità."
+
+    await modalRef.result;
+    
     this.segreteriaService
       .postReperibilitaCommesse({
         idAzienda: this.authService.user.idAzienda!,

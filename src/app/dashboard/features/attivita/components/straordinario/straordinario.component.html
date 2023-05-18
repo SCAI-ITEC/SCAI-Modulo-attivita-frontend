@@ -23,14 +23,14 @@
         <div style="
             display: grid;
             gap: 0.75rem;
-            justify-content: center;
+            justify-items: center;
             margin: 0 auto;
-            max-width: 300px;
+            max-width: 400px;
             padding: 3rem 1rem;
             text-align: center;
         ">
 
-            <img class="img-fluid" src="assets/images/results-not-found.jpg" alt="nessun risultato trovato">
+            <img class="img-fluid" style="max-height: 150px;" src="assets/images/results-not-found.jpg" alt="nessun risultato trovato">
 
             <div class="lead">Nessun straordinario trovato.</div>
 
@@ -58,6 +58,10 @@
         <ng-template #thead>
             <th sortable="descrizione" (sort)="dt.sort($any($event))">Descrizione</th>
             <th sortable="autorizzazioneCliente" (sort)="dt.sort($any($event))">Autorizzazione</th>
+            <th sortable="straordinarioOrdinarioCliente" (sort)="dt.sort($any($event))">Str. ordinario</th>
+            <th sortable="straordinarioSabatoCliente" (sort)="dt.sort($any($event))">Str. sabato</th>
+            <th sortable="straordinarioFestivoCliente" (sort)="dt.sort($any($event))">Str. festivo</th>
+            <th sortable="straordinarioNotturnoCliente" (sort)="dt.sort($any($event))">Str. notturno</th>
             <th sortable="inizio" (sort)="dt.sort($any($event))">Inizio</th>
             <th sortable="fine" (sort)="dt.sort($any($event))">Fine</th>
             <th style="width: 10rem"></th>
@@ -68,10 +72,23 @@
                 <ngb-highlight [result]="item.descrizione" [term]="$any(term$ | async)"/>
             </td>
             <td data-label="Autorizzazione">{{ item.autorizzazioneCliente ? 'Si' : 'No' }}</td>
+            <td data-label="Str. ordinario">{{ item.straordinarioOrdinarioCliente | currency: "EUR" }}</td>
+            <td data-label="Str. sabato">{{ item.straordinarioSabatoCliente | currency: "EUR" }}</td>
+            <td data-label="Str. festivo">{{ item.straordinarioFestivoCliente | currency: "EUR" }}</td>
+            <td data-label="Str. notturno">{{ item.straordinarioNotturnoCliente | currency: "EUR" }}</td>
             <td data-label="Inizio">{{ item.inizio | date:'yyyy-MM-dd' }}</td>
             <td data-label="Fine">{{ item.fine | date:'yyyy-MM-dd' }}</td>
             <td>
                 <div class="d-flex gap-2 justify-content-center">
+
+                    <button
+                        type="button"
+                        class="btn btn-warning shadow"
+                        (click)="update(item)"
+                    >
+                        <i class="bi bi-pen"></i>
+                    </button>
+
                     <button
                         type="button"
                         class="btn btn-danger shadow"

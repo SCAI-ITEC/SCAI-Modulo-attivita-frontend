@@ -1,15 +1,7 @@
 import { format } from "date-fns";
 import { jsonCopy } from "src/app/utils/json";
 import { guid } from "src/app/utils/uuid";
-import {
-    StatoValidazione,
-    Commessa,
-    Dettaglio,
-    EnumStatiChiusura,
-    GetSottoCommesseAvanzamentoResponse,
-    DettaglioAvanzamento,
-    UtentiAnagrafica
-} from "../../../../api/modulo-attivita/models";
+import { StatoValidazione, Commessa, Dettaglio, EnumStatiChiusura, GetSottoCommesseAvanzamentoResponse, DettaglioAvanzamento, UtentiAnagrafica } from "../../../../api/modulo-attivita/models";
 
 export interface GetAvanzamentoParam {
     idAzienda?: number;
