@@ -39,6 +39,12 @@ export class DashboardSidebarComponent {
     },
     {
       isActive: false,
+      title: 'Diarie',
+      icon: 'bi bi-briefcase',
+      path: '/diarie-azienda',
+    },
+    {
+      isActive: false,
       title: 'Stato Avanzamento',
       icon: 'fa fa-tasks',
       path: '/stato-avanzamento',

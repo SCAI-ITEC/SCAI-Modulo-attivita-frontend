@@ -11,7 +11,7 @@ export interface GetReperibilitaCommesseTotaliResponse {
   idLegameReperibilita?: number;
   idSottocommessa?: number;
   idTerzaParte?: number;
-  idcommessa?: null | number;
+  idcommessa?: number;
   inizio?: null | string;
   note?: null | string;
   reperibilitaSenzaAvviso?: null | number;

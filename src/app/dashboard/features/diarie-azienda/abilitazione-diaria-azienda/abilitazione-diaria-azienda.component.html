@@ -1,0 +1,93 @@
+<div class="card m-3 pt-3 shadow">
+
+    <div class="table-plus">
+
+        <h5 class="table-plus__title">Tabella abilitazione diarie</h5>
+
+        <button
+            type="button"
+            class="table-plus__action btn btn-success shadow"
+            (click)="create()"
+        >
+            <i class="bi bi-plus"></i>
+            Assegna diaria
+        </button>
+    </div>
+
+    <ng-template #emptyTmpl>
+        <div style="
+            display: grid;
+            gap: 0.75rem;
+            justify-items: center;
+            margin: 0 auto;
+            max-width: 400px;
+            padding: 3rem 1rem;
+            text-align: center;
+        ">
+
+            <img class="img-fluid" style="max-height: 150px;" src="assets/images/no-results.svg" alt="nessun risultato trovato">
+
+            <div class="lead">Nessuna diaria assegnata.</div>
+
+            <button
+                class="btn btn-outline-success"
+                (click)="create()"
+            >
+                Assegna diaria
+            </button>
+        </div>
+    </ng-template>
+    
+    <app-table
+        #dt
+        [thead]="thead"
+        [tbody]="tbody"
+        [animated]="true"
+        [items]="assegnazioniDiarie"
+        [paginated]="true"
+        [pageSize]="5"
+        [emptyTemplate]="emptyTmpl"
+        [searchable]="['azienda.descrizione', 'tipoTrasferta.descrizione']"
+    >
+    
+        <ng-template #thead>
+            <th sortable="azienda" (sort)="dt.sort($any($event))">Azienda</th>
+            <th sortable="diaria" (sort)="dt.sort($any($event))">Diaria</th>
+            <th sortable="tipoTrasferta" (sort)="dt.sort($any($event))">Tipo trasferta</th>
+            <th sortable="valido" (sort)="dt.sort($any($event))">Valido</th>
+            <th style="width: 10rem"></th>
+        </ng-template>
+    
+        <ng-template #tbody let-item let-term$="term$">
+            <td data-label="Codice foglio stipendi">
+                <ngb-highlight [result]="item.azienda.descrizione" [term]="$any(term$ | async)"/>
+            </td>
+
+            <td data-label="Codice foglio stipendi">
+                <ngb-highlight [result]="item.diaria" [term]="$any(term$ | async)"/>
+            </td>
+
+            <td data-label="Codice foglio stipendi">
+                <ngb-highlight [result]="item.tipoTrasferta.descrizione" [term]="$any(term$ | async)"/>
+            </td>
+
+            <td data-label="Codice foglio stipendi">
+                <ngb-highlight [result]="item.valido" [term]="$any(term$ | async)"/>
+            </td>
+
+            <td>
+                <div class="d-flex justify-content-center">
+                    <button
+                        type="button"
+                        class="btn btn-danger shadow"
+                        (click)="delete(item)"
+                    >
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </div>
+            </td>
+        </ng-template>
+    </app-table>
+    
+</div>
+

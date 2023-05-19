@@ -4,14 +4,22 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { RouterModule, Routes } from '@angular/router';
 import { DiarieAziendaComponent } from './diarie-azienda.component';
+import { CreazioneTipoTrasfertaComponent } from './creazione-tipo-trasferta/creazione-tipo-trasferta.component';
+import { TrasfertaCreazioneModificaComponent } from './dialogs/trasferta-creazione-modifica/trasferta-creazione-modifica/trasferta-creazione-modifica.component';
+import { AbilitazioneDiariaAziendaComponent } from './abilitazione-diaria-azienda/abilitazione-diaria-azienda.component';
+import { AbilitazioneDiariaCreazioneComponent } from './dialogs/abilitazione-diaria-creazione/abilitazione-diaria-creazione.component';
 
 const routes: Routes = [
-  { path: "", component: DiarieAziendaComponent }
+  { path: '', component: DiarieAziendaComponent }
 ];
 
 @NgModule({
   declarations: [
-    DiarieAziendaComponent
+    DiarieAziendaComponent,
+    CreazioneTipoTrasfertaComponent,
+    TrasfertaCreazioneModificaComponent,
+    AbilitazioneDiariaAziendaComponent,
+    AbilitazioneDiariaCreazioneComponent
   ],
   imports: [
     CommonModule,
