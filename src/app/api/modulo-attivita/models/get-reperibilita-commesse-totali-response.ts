@@ -2,6 +2,7 @@
 /* eslint-disable */
 export interface GetReperibilitaCommesseTotaliResponse {
   attivo?: boolean;
+  costoReperibilita?: null | number;
   descrizione?: null | string;
   descrizioneSottocommessa?: null | string;
   descrizioneTerzaParte?: null | string;
@@ -9,6 +10,7 @@ export interface GetReperibilitaCommesseTotaliResponse {
   fine?: null | string;
   idLegameReperibilita?: number;
   idSottocommessa?: number;
+  idTerzaParte?: number;
   idcommessa?: null | number;
   inizio?: null | string;
   note?: null | string;

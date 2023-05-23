@@ -177,16 +177,16 @@
                     <div style="
                         display: grid;
                         gap: 0.75rem;
-                        justify-content: center;
+                        justify-items: center;
                         margin: 0 auto;
-                        max-width: 300px;
+                        max-width: 400px;
                         padding: 3rem 1rem;
                         text-align: center;
                     ">
 
                         <ng-container *ngIf="init; else abc">
 
-                            <img class="img-fluid" src="assets/images/no-results.svg" alt="nessun risultato trovato">
+                            <img class="img-fluid" style="max-height: 150px;" src="assets/images/no-results.svg" alt="nessun risultato trovato">
 
                             <div class="lead">Nessuna commessa trovata.</div>
                         </ng-container>

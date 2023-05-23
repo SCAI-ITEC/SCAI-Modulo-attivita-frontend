@@ -1,16 +1,18 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { Subject, catchError, combineLatest, lastValueFrom, map, of, takeUntil, tap } from 'rxjs';
+import { Subject, catchError, combineLatest, lastValueFrom, map, of, switchMap, tap } from 'rxjs';
 import { ToastService } from "src/app/services/toast.service";
 import { DIALOG_MODE } from "../../models/dialog";
 import { TaskService } from "../../services/task.service";
 import { TaskDto } from "../../models/task";
-import { UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
+import { GetDiarieResponse, GetDiarieUtentiResponse, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
 import { MiscDataService } from "../../services/miscData.service";
 import { RisorsaTaskWrap, UpsertLegameParam } from "../../models/risorsa";
 import { RisorsaService } from "../../services/risorsa.service";
 import { dedupe, intersection } from "src/app/utils/array";
+import { DatiOperativiService, TipiTrasfertaService } from "src/app/api/modulo-attivita/services";
+import { AuthService } from "src/app/services/auth.service";
 
 @Component({
 	selector: 'app-risorsa-creazione-modifica-dialog',
@@ -23,8 +25,10 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
     @Input("idSottocommessa") idSottocommessa!: number;
     @Input("idTask") idTask!: number;
     @Input("idLegame") idLegame!: number;
+
     task?: TaskDto;
     legame?: RisorsaTaskWrap;
+    diariaUtente?: GetDiarieUtentiResponse;
 
     DIALOG_MODE = DIALOG_MODE;
     dialogMode!: DIALOG_MODE;
@@ -36,6 +40,10 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
 
     dataInizioCtrl = new FormControl<string | null>(null, [Validators.required]);
     dataFineCtrl = new FormControl<string | null>(null, [Validators.required]);
+
+    diariaCtrl = new FormControl<GetDiarieResponse | null>(null);
+    diarie: GetDiarieResponse[] = [];
+    diariaFormatter = (d: GetDiarieResponse) => d.tipoTrasferta?.descrizione;
 
     datesValidator = () => {
 
@@ -64,10 +72,13 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
         private toaster: ToastService,
         private risorsaService: RisorsaService,
         private taskService: TaskService,
+        private tipiTrasfertaService: TipiTrasfertaService,
+        private datiOperativiService: DatiOperativiService,
+        private authService: AuthService,
         private miscData: MiscDataService
     ) { }
 
-    ngOnInit() {
+    async ngOnInit() {
 
         this.isLoading = true;
 
@@ -77,27 +88,47 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
 
         this.utenti = this.miscData.utenti;
 
+        const taskAndLegame$ = combineLatest([
+            this.taskService.getTaskById$(this.idTask),
+            this.risorsaService.getLegameById$(this.idLegame)
+        ]);
+
         if (this.dialogMode === DIALOG_MODE.Update) {
-            combineLatest([
-                this.taskService.getTaskById$(this.idTask),
-                this.risorsaService.getLegameById$(this.idLegame)
-            ])
-            .subscribe(([ task, legame ]) => {
-                this.legame = legame;
-                this.task = task;
-                this.initCtrlValues();
-                this.isLoading = false;
-            });
+
+            // Get and assign task and legame
+            [ this.task, this.legame ]  = await lastValueFrom(taskAndLegame$);
+    
+            // Get diarieUtenti
+            const diarieUtenti = await lastValueFrom(
+                this.datiOperativiService
+                    .getDiarieUtenti({
+                        idAzienda: this.authService.user.idAzienda!,
+                        idAttivita: this.idTask,
+                        idUtente: this.legame!.idUtente
+                    })
+            );
+    
+            this.diariaUtente = diarieUtenti[0]; // It's always a single element array BLAME THE BACKEEEEEND!!!
         }
         else {
-            this.taskService
-                .getTaskById$(this.idTask)
-                .subscribe(task => {
-                    this.task = task;
-                    this.initCtrlValues();
-                    this.isLoading = false;
-                });
+
+            // Get task
+            this.task = await lastValueFrom(
+                this.taskService.getTaskById$(this.idTask)
+            );
         }
+
+        // Get diarie
+        this.diarie = await lastValueFrom(
+            this.tipiTrasfertaService
+                .getDiarie({
+                    IdAzienda: this.authService.user.idAzienda,
+                    Valido: true
+                })
+        );
+
+        this.initCtrlValues();
+        this.isLoading = false;
     }
 
     ngOnDestroy() {
@@ -115,17 +146,18 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
         //     "idUtente": 217,
         //     "inizioAllocazione": null,
         // }
-
-        if (this.dialogMode === DIALOG_MODE.Update) {
             
-            if (!this.legame) return;
+        if (!this.legame) return;
 
-            this.form.patchValue({
-                utente: [this.legame.utente],
-                dataInizio: this.legame.inizioAllocazione && this.legame.inizioAllocazione.slice(0, 10),
-                dataFine: this.legame.fineAllocazione && this.legame.fineAllocazione.slice(0, 10)
-            });
-        }
+        const diaria = this.diarie
+            .find(d => d.tipoTrasferta?.id === this.diariaUtente?.trasferta?.idTipoTrasferta);
+        this.diariaCtrl.setValue(diaria!);
+
+        this.form.patchValue({
+            utente: [this.legame.utente],
+            dataInizio: this.legame.inizioAllocazione && this.legame.inizioAllocazione.slice(0, 10),
+            dataFine: this.legame.fineAllocazione && this.legame.fineAllocazione.slice(0, 10)
+        });
     }
 
     dataInizioCtrlMin() {
@@ -219,10 +251,10 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
 
         // Filter out any existing user, throw an error toast
         const utentiToSave = utentiSelezione
-            .filter(u => {
+            .filter(utente => {
 
-                if (idUtentiToExclude.includes(u.idUtente)) {
-                    const txt = u.cognome + " " + u.nome + " è già presente pertanto non è stato salvato.";
+                if (idUtentiToExclude.includes(utente.idUtente)) {
+                    const txt = utente.cognome + " " + utente.nome + " è già presente pertanto non è stato salvato.";
                     this.toaster.show(txt, { classname: 'bg-danger text-white' });
                     return false;
                 }
@@ -231,26 +263,56 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
             });
 
         const requests = utentiToSave
-            .map(u => {
+            .map(utente => {
 
                 const legameTaskRisorsa: UpsertLegameParam = {
                     idTask: this.idTask,
-                    idUtente: u.idUtente!,
+                    idUtente: utente.idUtente!,
                     inizioAllocazione: this.dataInizioCtrl.value!,
                     fineAllocazione: this.dataFineCtrl.value!
                 };
 
-                return this.risorsaService
-                    .createLegame$(legameTaskRisorsa)
-                    .pipe(
-                        catchError(() => {
+                const request = [
+                    this.risorsaService
+                        .createLegame$(legameTaskRisorsa)
+                        .pipe(
+                            catchError(() => {
 
-                            const txt = `Non è stato possibile creare il Legame per ${u.cognome} ${u.nome}. Contattare il supporto tecnico.`;
-                            this.toaster.show(txt, { classname: 'bg-danger text-white' });
+                                const txt = `Non è stato possibile creare il Legame per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
+                                this.toaster.show(txt, { classname: 'bg-danger text-white' });
 
-                            return of(-1);
-                        })
+                                return of(-1);
+                            })
+                        )
+                ];
+
+                // If diaria has a value, then add postDiarieUtenti to the current request
+                if (this.diariaCtrl.value) {
+
+                    const diariaUtente = {
+                        idAzienda: this.authService.user.idAzienda!,
+                        idAttivita: this.idTask,
+                        idUtente: utente.idUtente!,
+                        idDiaria: this.diariaCtrl.value?.tipoTrasferta?.id!,
+                        body: { attivo: true }
+                    };
+        
+                    request.push(
+                        this.datiOperativiService
+                            .postDiarieUtenti(diariaUtente)
+                            .pipe(
+                                catchError(() => {
+
+                                    const txt = `Non è stato possibile assegnare la diaria per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
+                                    this.toaster.show(txt, { classname: 'bg-danger text-white' });
+
+                                    return of(-1);
+                                })
+                            )
                     );
+                }
+
+                return combineLatest(request);
             });
 
         combineLatest(requests)
@@ -259,11 +321,7 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
                 const txt = "Operazione terminata!";
                 this.toaster.show(txt, { classname: 'bg-success text-white' });
 
-                this.activeModal
-                    .close({
-                        dialogMode: this.dialogMode,
-                        // idLegame
-                    });
+                this.activeModal.close({ dialogMode: this.dialogMode });
             });
     }
 
@@ -288,8 +346,43 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
             fineAllocazione: this.dataFineCtrl.value!
         };
 
-        this.risorsaService
-            .updateLegame$(this.idLegame, legameTaskRisorsa)
+        const request = [
+            this.risorsaService.updateLegame$(this.idLegame, legameTaskRisorsa)
+        ];
+
+        // If diariaUtente is set but diariaCtrl is not (the user explicitly removed diaria), then "delete" diariaUtente
+        if (this.diariaUtente && !this.diariaCtrl.value) {
+
+            const diariaUtente = {
+                idAzienda: this.authService.user.idAzienda!,
+                idAttivita: this.idTask,
+                idUtente: this.legame.idUtente,
+                idDiaria: this.diariaUtente.trasferta?.idTipoTrasferta!,
+                body: { attivo: false }
+            };
+
+            request.push(
+                this.datiOperativiService.postDiarieUtenti(diariaUtente)
+            );
+        }
+
+        // If diariaCtrl is set, then create/update diariaUtente
+        if (this.diariaCtrl.value) {
+
+            const diariaUtente = {
+                idAzienda: this.authService.user.idAzienda!,
+                idAttivita: this.idTask,
+                idUtente: this.legame.idUtente,
+                idDiaria: this.diariaCtrl.value?.tipoTrasferta?.id!,
+                body: { attivo: true }
+            };
+
+            request.push(
+                this.datiOperativiService.postDiarieUtenti(diariaUtente)
+            );
+        }
+
+        combineLatest(request)
             .subscribe(
                 () => {
                     const txt = "Legame modificato con successo!";

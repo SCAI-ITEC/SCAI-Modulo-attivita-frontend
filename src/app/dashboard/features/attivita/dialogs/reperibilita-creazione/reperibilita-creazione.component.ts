@@ -5,6 +5,8 @@ import { ToastService } from "src/app/services/toast.service";
 import { SegreteriaService } from "src/app/api/modulo-attivita/services";
 import { AuthService } from "src/app/services/auth.service";
 import { Subject, takeUntil, tap } from "rxjs";
+import { GetReperibilitaCommesseTotaliResponse } from "src/app/api/modulo-attivita/models";
+import { euroMask, euroMask2numStr, numStr2euroMask } from "src/app/utils/mask";
 
 @Component({
 	selector: 'app-reperibilita-creazione-dialog',
@@ -13,12 +15,26 @@ import { Subject, takeUntil, tap } from "rxjs";
 })
 export class ReperibilitaCreazioneComponent implements OnInit, OnDestroy {
 
+    @Input("reperibilita") reperibilita?: GetReperibilitaCommesseTotaliResponse;
     @Input("idSottocommessa") idSottocommessa!: number;
 
     dataInizioCtrl = new FormControl<string | null>(null, [Validators.required]);
     dataFineCtrl = new FormControl<string | null>(null, [Validators.required]);
     descrizioneCtrl = new FormControl<string | null>(null, [Validators.required]);
+
+    costoReperibilitaCtrl = new FormControl<string | null>(null);
+
     reperibilitaSenzaAvvisoCtrl = new FormControl<boolean>(false);
+
+    euroMask = euroMask;
+    // Get euro value from field with
+    //     const masked = ctrl.value!;
+    //     return euroMask2numStr(masked);
+    //
+    // Set euro value to field with 
+    //     const masked = numStr2euroMask(unmasked);
+    //     ctrl.setValue(masked);
+    //
 
     datesValidator = () => {
 
@@ -50,7 +66,22 @@ export class ReperibilitaCreazioneComponent implements OnInit, OnDestroy {
         private toaster: ToastService
     ) { }
 
-    ngOnInit() { }
+    ngOnInit() {
+        console.log(this.reperibilita);
+        if (this.reperibilita) {
+
+            this.costoReperibilitaCtrl.setValue(
+                numStr2euroMask(this.reperibilita.costoReperibilita + '')
+            );
+
+            this.form.patchValue({
+                dataInizio: this.reperibilita.inizio?.slice(0, 10),
+                dataFine: this.reperibilita.fine?.slice(0, 10),
+                descrizione: this.reperibilita.descrizione,
+                reperibilitaSenzaAvviso: !!this.reperibilita.reperibilitaSenzaAvviso
+            });
+        }
+    }
 
     ngOnDestroy() {
         this.destroy$.next();
@@ -60,15 +91,20 @@ export class ReperibilitaCreazioneComponent implements OnInit, OnDestroy {
 
         if (this.form.invalid) return;
 
+        const costoRep = this.costoReperibilitaCtrl.value
+            ? +euroMask2numStr(this.costoReperibilitaCtrl.value)
+            : null;
+
         this.segreteriaService
             .postReperibilitaCommesse({
                 idAzienda: this.authService.user.idAzienda!,
-                idLegameReperibilita: 0,
+                idLegameReperibilita: this.reperibilita ? this.reperibilita.idLegameReperibilita! : 0,
                 body: {
                     inizio: this.dataInizioCtrl.value,
                     fine: this.dataFineCtrl.value,
                     idSottoCommessa: this.idSottocommessa,
                     descrizione: this.descrizioneCtrl.value,
+                    costoReperibilita: costoRep,
                     reperibilitaSenzaAvviso: this.reperibilitaSenzaAvvisoCtrl.value ? 1 : 0,
                     attivo: true
                 }

@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { catchError, combineLatest, filter, map, startWith, Subject, switchMap, takeUntil, tap, throwError } from 'rxjs';
-import { Dettaglio, EnumStatiChiusura, GetSottoCommessePerReferenteResponse, UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
+import { Dettaglio, EnumAvanzamento, EnumStatiChiusura, GetSottoCommessePerReferenteResponse, UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
 import { StatoAvanzamentoWrapService } from 'src/app/dashboard/features/stato-avanzamento/services/stato-avanzamento-wrap.service';
 import { GetAvanzamentoParam, SottocommessaAvanzamento, SottocommessaAvanzamentoDettaglio } from 'src/app/dashboard/features/stato-avanzamento/models/stato-avanzamento.models';
 import { ToastService } from 'src/app/services/toast.service';
@@ -9,6 +9,8 @@ import { enforceMinMax } from 'src/app/utils/input';
 import { BUSINESS_MANAGER } from 'src/app/models/user';
 import { jsonCopy } from 'src/app/utils/json';
 import { InputComponent } from 'src/app/shared/components/input/input.component';
+import { MonthpickerStruct } from 'src/app/shared/components/monthpicker/monthpicker.component';
+import { structToIso } from 'src/app/utils/date';
 
 interface Tab {
   id: number;
@@ -77,13 +79,32 @@ export class StatoAvanzamentoComponent {
     { text: 'Vistato', value: 3 },
   ];
 
+  statoAvanzamentoCtrl = new FormControl<string>("");
+  statiAvanzamento = [["", "Tutti"], ...Object.entries(EnumAvanzamento)]
+    .map(([value, text]) => ({text, value}));
+  
+  dataInizioCtrl = new FormControl();
+  get dataInizio() {
+    return this.dataInizioCtrl.value;
+  }
+
+  dataFineCtrl = new FormControl();
+  get dataFine() {
+    return this.dataFineCtrl.value;
+  }
+
+  meseCtrl = new FormControl<MonthpickerStruct | null>(null);
+  get mese() {
+    return this.meseCtrl.value;
+  }
+
   constructor(
     private statoAvanzamentoWrap: StatoAvanzamentoWrapService,
     private toastService: ToastService
   ) { }
   
   ngOnInit() {
-
+    
     this.initializeAutocompleteValues();
 
     this.setupAutocompletes();
@@ -97,7 +118,11 @@ export class StatoAvanzamentoComponent {
             idBusinessManager: this.idBm,
             idSottoCommessa: this.idSottocommessa,
             idCliente: this.idCliente,
-            stato: this.statoCtrl.value!
+            stato: this.statoCtrl.value || undefined,
+            avanzamento: this.statoAvanzamentoCtrl.value || undefined,
+            dataInizio: this.dataInizio,
+            dataFine: this.dataFine,
+            mese: this.mese ? structToIso(this.mese) : undefined
           })
         ),
         tap(searchParam =>
@@ -286,6 +311,10 @@ export class StatoAvanzamentoComponent {
     this.initializeAutocompleteValues();
     
     this.statoCtrl.setValue(0);
+    this.statoAvanzamentoCtrl.setValue("");
+    this.dataInizioCtrl.reset();
+    this.dataFineCtrl.reset();
+    this.meseCtrl.reset();
   }
 
   updateResults(avanzamento: SottocommessaAvanzamento[]) {
@@ -367,16 +396,6 @@ export class StatoAvanzamentoComponent {
         )
       )
     );
-  }
-
-  salvaDettagliSelezionati(dettagli: SottocommessaAvanzamentoDettaglio[]) {
-    console.log(dettagli);
-    this.toastService.show("Non implementato", { classname: 'bg-warning' });
-  }
-
-  chiudiDettagliSelezionati(dettagli: SottocommessaAvanzamentoDettaglio[]) {
-    console.log(dettagli);
-    this.toastService.show("Non implementato", { classname: 'bg-warning' });
   }
 
   salvaDettaglio(dettaglio: SottocommessaAvanzamentoDettaglio) {
