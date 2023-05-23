@@ -1,191 +1,185 @@
 <div class="container-xxxl py-5 px-3">
-    <div class="card shadow">
-        <div class="card-body pb-4">
 
-            <h5 class="mb-4">Ricerca avanzamento</h5>
+    <div class="col-md-8 mx-auto mb-5 card card-body shadow">
 
-            <div class="col-md-8 mx-auto">
+        <h5>Filtri ricerca</h5>
 
-                <div class="flexgrid flexgrid--2">
+        <div class="flexgrid flexgrid--2">
 
-                    <app-input
-                        #clienteAutocomplete
-                        type="autocomplete"
-                        name="cliente"
-                        label="Cliente"
-                        [options]="clienti"
-                        [limit]="25"
-                        [formatter]="clienteFormatter"
-                        [ngControl]="clienteCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
+            <app-input
+                #clienteAutocomplete
+                type="autocomplete"
+                name="cliente"
+                label="Cliente"
+                [options]="clienti"
+                [limit]="25"
+                [formatter]="clienteFormatter"
+                [ngControl]="clienteCtrl"
+                [floatingLabel]="true"
+            ></app-input>
 
-                    <app-input
-                        type="select"
-                        name="stato"
-                        label="Stato"
-                        [ngControl]="statoCtrl"
-                        [options]="stati"
-                        [floatingLabel]="true"
-                    ></app-input>
-                    
-                </div>
+            <app-input
+                type="select"
+                name="stato"
+                label="Stato"
+                [ngControl]="statoCtrl"
+                [options]="stati"
+                [floatingLabel]="true"
+            ></app-input>
+            
+        </div>
                 
-                <div class="flexgrid flexgrid--3">
-                    <app-monthpicker
-                        name="mese"
-                        label="Mese"                        
-                        [ngControl]="meseCtrl"  
-                        [floatingLabel]="true"        
-                    ></app-monthpicker>
+        <div class="flexgrid flexgrid--3">
+            <app-monthpicker
+                name="mese"
+                label="Mese"                        
+                [ngControl]="meseCtrl"  
+                [floatingLabel]="true"        
+            ></app-monthpicker>
 
-                    <app-input
-                        type="select"
-                        name="statoAvanzamento"
-                        label="Stato avanzamento"
-                        [ngControl]="statoAvanzamentoCtrl"
-                        [options]="statiAvanzamento"
-                        [floatingLabel]="true"
-                    ></app-input>                   
+            <app-input
+                type="select"
+                name="statoAvanzamento"
+                label="Stato avanzamento"
+                [ngControl]="statoAvanzamentoCtrl"
+                [options]="statiAvanzamento"
+                [floatingLabel]="true"
+            ></app-input>                   
+        </div>
+
+        <div class="flexgrid flexgrid--3">
+
+            <app-input
+                #sottocommessaAutocomplete
+                type="autocomplete"
+                name="sottocommessa"
+                label="Sottocommessa"
+                [options]="sottocommesse"
+                [formatter]="sottocommessaFormatter"
+                [template]="scTmpl"
+                [ngControl]="sottocommessaCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+            <ng-template #scTmpl let-r="result" let-t="term">
+                <div class="my-1">
+                    <div class="small">{{ r.sottoCommessa?.codice }}</div>
+                    <ngb-highlight [result]="r.sottoCommessa?.descrizione" [term]="t"></ngb-highlight>
                 </div>
+            </ng-template>
 
-                <div class="flexgrid flexgrid--3">
-
-                    <app-input
-                        #sottocommessaAutocomplete
-                        type="autocomplete"
-                        name="sottocommessa"
-                        label="Sottocommessa"
-                        [options]="sottocommesse"
-                        [formatter]="sottocommessaFormatter"
-                        [template]="scTmpl"
-                        [ngControl]="sottocommessaCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-                    <ng-template #scTmpl let-r="result" let-t="term">
-                        <div class="my-1">
-                            <div class="small">{{ r.sottoCommessa?.codice }}</div>
-                            <ngb-highlight [result]="r.sottoCommessa?.descrizione" [term]="t"></ngb-highlight>
-                        </div>
-                    </ng-template>
-
-                    <app-input
-                        #pmAutocomplete
-                        type="autocomplete"
-                        name="projectManager"
-                        label="Project manager"
-                        [options]="pmList"
-                        [formatter]="pmFormatter"
-                        [template]="pmTmpl"
-                        [ngControl]="pmCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-                    <ng-template #pmTmpl let-r="result" let-t="term">
-                        <div class="my-1">
-                            <div class="small">{{ r.idUtente }}</div>
-                            <ngb-highlight [result]="r.cognome + ' '  + r.nome" [term]="t"></ngb-highlight>
-                        </div>
-                    </ng-template>
-
-                    <app-input
-                        #bmAutocomplete
-                        type="autocomplete"
-                        name="businessManager"
-                        label="Business manager"
-                        [options]="bmList"
-                        [formatter]="pmFormatter"
-                        [template]="pmTmpl"
-                        [ngControl]="bmCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
+            <app-input
+                #pmAutocomplete
+                type="autocomplete"
+                name="projectManager"
+                label="Project manager"
+                [options]="pmList"
+                [formatter]="pmFormatter"
+                [template]="pmTmpl"
+                [ngControl]="pmCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+            <ng-template #pmTmpl let-r="result" let-t="term">
+                <div class="my-1">
+                    <div class="small">{{ r.idUtente }}</div>
+                    <ngb-highlight [result]="r.cognome + ' '  + r.nome" [term]="t"></ngb-highlight>
                 </div>
+            </ng-template>
 
-                <!-- <p class="small text-muted mt-2">
-                    È necessario inserire obbligatoriamente almeno un parametro tra: Sottocommessa, project manager o business manager
-                </p> -->
+            <app-input
+                #bmAutocomplete
+                type="autocomplete"
+                name="businessManager"
+                label="Business manager"
+                [options]="bmList"
+                [formatter]="pmFormatter"
+                [template]="pmTmpl"
+                [ngControl]="bmCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+        </div>
 
-                <div class="text-center mt-3 mb-5">
-                    <div class="btn-group shadow">
+        <div class="text-center my-3">
+            <div class="btn-group shadow">
 
-                        <button
-                            class="btn btn-outline-primary"
-                            (click)="resetControls()"
-                        >
-                            <i class="bi bi-x-lg pe-2"></i>
-                            Reset
-                        </button>
-    
-                        <button
-                            class="btn btn-primary"
-                            (click)="searchClick$.next()"
-                        >
-                            Cerca
-                            <i class="bi bi-search ps-2"></i>
-                        </button>
-                    </div>
-                </div>
+                <button
+                    class="btn btn-outline-primary"
+                    (click)="resetControls()"
+                >
+                    <i class="bi bi-x-lg pe-2"></i>
+                    Reset
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    (click)="searchClick$.next()"
+                >
+                    Cerca
+                    <i class="bi bi-search ps-2"></i>
+                </button>
             </div>
+        </div>
+    </div>
 
-            <ul
-                class="app-tabbable nav-tabs"
-                ngbNav
-                #nav="ngbNav"
-                [destroyOnHide]="false"
-                [(activeId)]="activeTabId"
-            >
-                <li *ngFor="let tab of tabs" [ngbNavItem]="tab.id">
-                    <a ngbNavLink>
-                        {{ tab.title }}
-                    </a>
-                    <ng-template ngbNavContent>
+    <ul
+        class="app-tabbable nav-tabs"
+        ngbNav
+        #nav="ngbNav"
+        [destroyOnHide]="false"
+        [(activeId)]="activeTabId"
+    >
+        <li *ngFor="let tab of tabs" [ngbNavItem]="tab.id">
+            <a ngbNavLink>
+                {{ tab.title }}
+            </a>
+            <ng-template ngbNavContent>
 
-                        <app-table
-                            class="avanzamento-table"
-                            #dt
-                            [thead]="thead"
-                            [tbody]="tbody"
-                            [rowExpand]="rowExpand"
-                            [items]="tab.avanzamento"
-                            [searchable]="[
-                                'commessa.descrizione',
-                                'commessa.codice',
-                                'cliente.descrizione',
-                                'clienteFinale.descrizione'
-                            ]"
-                            [paginated]="true"
-                            [pageSize]="10"
-                            [trackByFn]="trackByIdCommessa"
-                            emptyMessage="Nessun risultato, effettua una ricerca"
-                        >
+                <app-table
+                    class="avanzamento-table"
+                    #dt
+                    [thead]="thead"
+                    [tbody]="tbody"
+                    [rowExpand]="rowExpand"
+                    [items]="tab.avanzamento"
+                    [searchable]="[
+                        'commessa.descrizione',
+                        'commessa.codice',
+                        'cliente.descrizione',
+                        'clienteFinale.descrizione'
+                    ]"
+                    [paginated]="true"
+                    [pageSize]="10"
+                    [trackByFn]="trackByIdCommessa"
+                    emptyMessage="Nessun risultato, effettua una ricerca"
+                >
 
-                            <ng-template #thead>
-                                <th sortable="dettaglio.length" (sort)="dt.sort($any($event))"></th>
-                                <th class="col-4" sortable="commessa.codice" (sort)="dt.sort($any($event))">Commessa</th>
-                                <th class="col-4" sortable="sottoCommessa.codice" (sort)="dt.sort($any($event))">Sottocomm.</th>
-                                <th class="col-4" sortable="cliente.descrizione" (sort)="dt.sort($any($event))">Cliente</th>
-                                <th sortable="dataInizio" (sort)="dt.sort($any($event))">Inizio</th>
-                                <th sortable="dataFine" (sort)="dt.sort($any($event))">Fine</th>
-                                <th class="text-end" sortable="percentualeRimanente" (sort)="dt.sort($any($event))">Totale %</th>
-                            </ng-template>
+                    <ng-template #thead>
+                        <th sortable="dettaglio.length" (sort)="dt.sort($any($event))"></th>
+                        <th class="col-4" sortable="commessa.codice" (sort)="dt.sort($any($event))">Commessa</th>
+                        <th class="col-4" sortable="sottoCommessa.codice" (sort)="dt.sort($any($event))">Sottocomm.</th>
+                        <th class="col-4" sortable="cliente.descrizione" (sort)="dt.sort($any($event))">Cliente</th>
+                        <th sortable="dataInizio" (sort)="dt.sort($any($event))">Inizio</th>
+                        <th sortable="dataFine" (sort)="dt.sort($any($event))">Fine</th>
+                        <th class="text-end" sortable="percentualeRimanente" (sort)="dt.sort($any($event))">Totale %</th>
+                    </ng-template>
 
-                            <ng-template #tbody let-avanzamento>
-                                <td class="text-muted">({{ avanzamento.dettaglio.length }})</td>
-                                <td>
-                                    <div class="small fw-bold">{{ avanzamento.commessa.codice }}</div>
-                                    {{ avanzamento.commessa.descrizione }}
-                                </td>
-                                <td>
-                                    <div class="small fw-bold">{{ avanzamento.sottoCommessa.codice }}</div>
-                                    {{ avanzamento.sottoCommessa.descrizione }}
-                                </td>
-                                <td>
-                                    <div class="small fw-bold">{{ avanzamento.clienteFinale.descrizione }}</div>
-                                    {{ avanzamento.cliente.descrizione }}
-                                </td>
-                                <td class="no-text-break">{{ avanzamento.dataInizio }}</td>
-                                <td class="no-text-break">{{ avanzamento.dataFine }}</td>
-                                <td class="text-end">{{ 1 - avanzamento.percentualeRimanente | percent }}</td>
-                            </ng-template>
+                    <ng-template #tbody let-avanzamento>
+                        <td class="text-muted">({{ avanzamento.dettaglio.length }})</td>
+                        <td>
+                            <div class="small fw-bold">{{ avanzamento.commessa.codice }}</div>
+                            {{ avanzamento.commessa.descrizione }}
+                        </td>
+                        <td>
+                            <div class="small fw-bold">{{ avanzamento.sottoCommessa.codice }}</div>
+                            {{ avanzamento.sottoCommessa.descrizione }}
+                        </td>
+                        <td>
+                            <div class="small fw-bold">{{ avanzamento.clienteFinale.descrizione }}</div>
+                            {{ avanzamento.cliente.descrizione }}
+                        </td>
+                        <td class="no-text-break">{{ avanzamento.dataInizio }}</td>
+                        <td class="no-text-break">{{ avanzamento.dataFine }}</td>
+                        <td class="text-end">{{ 1 - avanzamento.percentualeRimanente | percent }}</td>
+                    </ng-template>
 
                             <ng-template #rowExpand let-avanzamento>
                                 <div class="bg-white py-5 px-4" style="box-shadow: inset 0 0 9px 3px #0001;">
@@ -203,7 +197,6 @@
                                             <th sortable="meseValidazione" (sort)="dt2.sort($any($event))">Mese</th>
                                             <th class="text-end" sortable="avanzamentoTotale" (sort)="dt2.sort($any($event))">Mese %</th>
                                             <th class="text-end" sortable="avanzamentoSommatorio" (sort)="dt2.sort($any($event))">Totale %</th>
-                                            <th class="text-end" sortable="costoCompetenza" (sort)="dt2.sort($any($event))">Costo Competenza</th>
                                             <th class="text-end" sortable="ricavoCompetenza" (sort)="dt2.sort($any($event))">Ricavo Competenza</th>
                                             <th class="text-center" sortable="statoValidazione.id" (sort)="dt2.sort($any($event))">Stato</th>
                                             <th class="text-center"></th>
@@ -248,99 +241,94 @@
                                                 </div>
                                             </td>
                                             <td class="text-end">{{ dettaglio.avanzamentoSommatorio | percent }}</td>
-                                            <td class="text-end">{{ dettaglio.costoCompetenza | currency:"EUR" }}</td>
-                                            <td class="text-end">{{ dettaglio.ricavoCompetenza | currency:"EUR" }}</td>
+                                            <td class="text-end">{{ dettaglio.ricavoCompetenza | currency:"EUR":"symbol" }}</td>
                                             <td class="text-center">
                                                 <fieldset
                                                     class="d-flex flex-wrap justify-content-center gap-2"
                                                     [disabled]="dettaglio.raw.statoValidazione.id === EnumStatiChiusura.Vistato"
                                                 >
 
-                                                    <div class="form-check">
-                                                        <input
-                                                            class="form-check-input"
-                                                            type="radio"
-                                                            [name]="'stato-' + dettaglio._id"
-                                                            [id]="'stato-' + dettaglio._id + '-aperto'"
-                                                            [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Aperto"
-                                                            (change)="
-                                                                dettaglio.statoValidazione.id = EnumStatiChiusura.Aperto;
-                                                                dettaglio.dirty = true
-                                                            "
-                                                        >
-                                                        <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-aperto'">
-                                                            Aperto
-                                                        </label>
-                                                    </div>
-
-                                                    <div class="form-check">
-                                                        <input
-                                                            class="form-check-input"
-                                                            type="radio"
-                                                            [name]="'stato-' + dettaglio._id"
-                                                            [id]="'stato-' + dettaglio._id + '-chiuso'"
-                                                            [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Chiuso"
-                                                            (change)="
-                                                                dettaglio.statoValidazione.id = EnumStatiChiusura.Chiuso;
-                                                                dettaglio.dirty = true
-                                                            "
-                                                        >
-                                                        <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-chiuso'">
-                                                            Chiuso
-                                                        </label>
-                                                    </div>
-
-                                                    <div class="form-check" *rbacAllow="[BUSINESS_MANAGER]">
-                                                        <input
-                                                            class="form-check-input"
-                                                            type="radio"
-                                                            [name]="'stato-' + dettaglio._id"
-                                                            [id]="'stato-' + dettaglio._id + '-vistato'"
-                                                            [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
-                                                            (change)="
-                                                                dettaglio.statoValidazione.id = EnumStatiChiusura.Vistato;
-                                                                dettaglio.dirty = true
-                                                            "
-                                                        >
-                                                        <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-vistato'">
-                                                            Vistato
-                                                        </label>
-                                                    </div>
-                                                </fieldset>
-                                            </td>
-                                            <td class="text-center">
-                                                <button
-                                                    class="btn btn-outline-primary"
-                                                    [class.pulse]="dettaglio.dirty"
-                                                    [disabled]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
-                                                    (click)="salvaDettaglio(dettaglio)"
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    [name]="'stato-' + dettaglio._id"
+                                                    [id]="'stato-' + dettaglio._id + '-aperto'"
+                                                    [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Aperto"
+                                                    (change)="
+                                                        dettaglio.statoValidazione.id = EnumStatiChiusura.Aperto;
+                                                        dettaglio.dirty = true
+                                                    "
                                                 >
-                                                    <i class="bi bi-save pe-2"></i>
-                                                    Save
-                                                </button>
-                                            </td>
-                                        </ng-template>
-                                    </app-table>
-                                </div>
-                            </ng-template>
-                        </app-table>
+                                                <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-aperto'">
+                                                    Aperto
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    [name]="'stato-' + dettaglio._id"
+                                                    [id]="'stato-' + dettaglio._id + '-chiuso'"
+                                                    [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Chiuso"
+                                                    (change)="
+                                                        dettaglio.statoValidazione.id = EnumStatiChiusura.Chiuso;
+                                                        dettaglio.dirty = true
+                                                    "
+                                                >
+                                                <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-chiuso'">
+                                                    Chiuso
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check" *rbacAllow="[BUSINESS_MANAGER]">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    [name]="'stato-' + dettaglio._id"
+                                                    [id]="'stato-' + dettaglio._id + '-vistato'"
+                                                    [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
+                                                    (change)="
+                                                        dettaglio.statoValidazione.id = EnumStatiChiusura.Vistato;
+                                                        dettaglio.dirty = true
+                                                    "
+                                                >
+                                                <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-vistato'">
+                                                    Vistato
+                                                </label>
+                                            </div>
+                                        </fieldset>
+                                    </td>
+                                    <td class="text-center">
+                                        <button
+                                            class="btn btn-outline-primary"
+                                            [class.pulse]="dettaglio.dirty"
+                                            [disabled]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
+                                            (click)="salvaDettaglio(dettaglio)"
+                                        >
+                                            <i class="bi bi-save pe-2"></i>
+                                            Save
+                                        </button>
+                                    </td>
+                                </ng-template>
+                            </app-table>
+                        </div>
                     </ng-template>
-                </li>
-            </ul>
-            
-            <div class="border shadow" style="border-top: none !important; border-radius: 0 0 5px 5px;">
-                
-                <div [ngbNavOutlet]="nav"></div>
+                </app-table>
+            </ng-template>
+        </li>
+    </ul>
     
-                <div
-                    *ngIf="this.tabs.length === 0"
-                    class="p-3 text-center text-muted"
-                >
-                    <div class="p-3">
-                        Cerca per aggiungere schede
-                    </div>
-                </div>
-            </div>
+    <div class="card pt-3 shadow">
+        
+        <div [ngbNavOutlet]="nav"></div>
+
+        <div
+            *ngIf="this.tabs.length === 0"
+            class="p-3 mb-3 text-center text-muted"
+        >
+            Cerca <i class="bi bi-search"></i> per aggiungere schede
         </div>
     </div>
 </div>
