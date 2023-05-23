@@ -1,15 +1,7 @@
 import { format } from "date-fns";
 import { jsonCopy } from "src/app/utils/json";
 import { guid } from "src/app/utils/uuid";
-import {
-    StatoValidazione,
-    Commessa,
-    Dettaglio,
-    EnumStatiChiusura,
-    GetSottoCommesseAvanzamentoResponse,
-    DettaglioAvanzamento,
-    UtentiAnagrafica
-} from "../../../../api/modulo-attivita/models";
+import { StatoValidazione, Commessa, Dettaglio, EnumStatiChiusura, GetSottoCommesseAvanzamentoResponse, DettaglioAvanzamento, UtentiAnagrafica } from "../../../../api/modulo-attivita/models";
 
 export interface GetAvanzamentoParam {
     idAzienda?: number;
@@ -43,6 +35,7 @@ export class SottocommessaAvanzamentoDettaglio {
     idcommessaAvanzamentiMensili: number;
     meseValidazione: string;
     ricavoCompetenza: number;
+    costoCompetenza: number;
     sottoCommessa: Commessa;
     statoValidazione: StatoValidazione;
     valido: number;
@@ -64,6 +57,7 @@ export class SottocommessaAvanzamentoDettaglio {
         this.idcommessaAvanzamentiMensili = raw.idcommessaAvanzamentiMensili!;
         this.meseValidazione = raw.meseValidazione!;
         this.ricavoCompetenza = raw.ricavoCompetenza!;
+        this.costoCompetenza = raw.costoCompetenza!;
         this.sottoCommessa = raw.sottoCommessa!;
         this.statoValidazione = raw.statoValidazione!;
         this.valido = raw.valido!;
