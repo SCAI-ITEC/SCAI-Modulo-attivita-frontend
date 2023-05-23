@@ -61,11 +61,15 @@
 
 ::-webkit-scrollbar-track {
   background: rgba(var(--app-gray_200), 1);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, rgba(var(--app-primary_200), 1), rgba(var(--app-primary_500), 1));
-  border-radius: 8px;
+  background: linear-gradient(
+    rgba(var(--app-blue_200), 1),
+    rgba(var(--app-blue_500), 1)
+  );
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -104,10 +108,13 @@ body {
 }
 
 .app-tabbable.nav-tabs {
+  border: none;
+  flex-wrap: nowrap;
+  margin: 0 auto;
+  padding: 0 2px;
   overflow-x: auto;
   overflow-y: hidden;
-  flex-wrap: nowrap;
-  border: none;
+  width: calc(100% - 6px);
 }
 
 .app-tabbable.nav-tabs .nav-link {

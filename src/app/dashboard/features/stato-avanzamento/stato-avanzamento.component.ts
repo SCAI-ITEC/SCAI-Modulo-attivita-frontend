@@ -97,7 +97,7 @@ export class StatoAvanzamentoComponent {
             idBusinessManager: this.idBm,
             idSottoCommessa: this.idSottocommessa,
             idCliente: this.idCliente,
-            stato: this.statoCtrl.value!
+            // stato: this.statoCtrl.value!
           })
         ),
         tap(searchParam =>
