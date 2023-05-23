@@ -5,6 +5,7 @@ export { BusinessUnit } from './models/business-unit';
 export { Commessa } from './models/commessa';
 export { Dettaglio } from './models/dettaglio';
 export { DettaglioAvanzamento } from './models/dettaglio-avanzamento';
+export { EnumAvanzamento } from './models/enum-avanzamento';
 export { EnumStatiChiusura } from './models/enum-stati-chiusura';
 export { GetAttoreResponse } from './models/get-attore-response';
 export { GetDiarieResponse } from './models/get-diarie-response';
@@ -41,6 +42,7 @@ export { PostTipiTrasfertaResponse } from './models/post-tipi-trasferta-response
 export { Profili } from './models/profili';
 export { RagioneSociale } from './models/ragione-sociale';
 export { ReperibilitaTerzeParti } from './models/reperibilita-terze-parti';
+export { SottoCommessa } from './models/sotto-commessa';
 export { StatoValidazione } from './models/stato-validazione';
 export { TerzaParteValidiByAziendaDto } from './models/terza-parte-validi-by-azienda-dto';
 export { TerzePartiStraordinari } from './models/terze-parti-straordinari';

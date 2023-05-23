@@ -280,8 +280,8 @@ export class SegreteriaService extends BaseService {
   getGiorniPerUtente$Response(params: {
     idAzienda: number;
     idSottoCommessa: number;
-    IdUtente?: number;
-    Nome?: string;
+    idUtente?: number;
+    nome?: string;
     Page?: number;
     PageSize?: number;
   },
@@ -293,8 +293,8 @@ export class SegreteriaService extends BaseService {
     if (params) {
       rb.path('idAzienda', params.idAzienda, {});
       rb.path('idSottoCommessa', params.idSottoCommessa, {});
-      rb.query('IdUtente', params.IdUtente, {});
-      rb.query('Nome', params.Nome, {});
+      rb.query('idUtente', params.idUtente, {});
+      rb.query('nome', params.nome, {});
       rb.query('Page', params.Page, {});
       rb.query('PageSize', params.PageSize, {});
     }
@@ -320,8 +320,8 @@ export class SegreteriaService extends BaseService {
   getGiorniPerUtente(params: {
     idAzienda: number;
     idSottoCommessa: number;
-    IdUtente?: number;
-    Nome?: string;
+    idUtente?: number;
+    nome?: string;
     Page?: number;
     PageSize?: number;
   },

@@ -35,6 +35,7 @@ export class SottocommessaAvanzamentoDettaglio {
     idcommessaAvanzamentiMensili: number;
     meseValidazione: string;
     ricavoCompetenza: number;
+    costoCompetenza: number;
     sottoCommessa: Commessa;
     statoValidazione: StatoValidazione;
     valido: number;
@@ -56,6 +57,7 @@ export class SottocommessaAvanzamentoDettaglio {
         this.idcommessaAvanzamentiMensili = raw.idcommessaAvanzamentiMensili!;
         this.meseValidazione = raw.meseValidazione!;
         this.ricavoCompetenza = raw.ricavoCompetenza!;
+        this.costoCompetenza = raw.costoCompetenza!;
         this.sottoCommessa = raw.sottoCommessa!;
         this.statoValidazione = raw.statoValidazione!;
         this.valido = raw.valido!;
