@@ -36,6 +36,7 @@ export class StatoAvanzamentoComponent {
 
   destroy$ = new Subject<void>();
   searchClick$ = new Subject<void>();
+  loading = false;
 
   activeTabId!: number;
   tabs: Tab[] = [];
@@ -93,7 +94,8 @@ export class StatoAvanzamentoComponent {
     return this.dataFineCtrl.value;
   }
 
-  meseCtrl = new FormControl<MonthpickerStruct | null>(null);
+  now = new Date();
+  meseCtrl = new FormControl<MonthpickerStruct>({ year: this.now.getFullYear(), month: this.now.getMonth() + 1 });
   get mese() {
     return this.meseCtrl.value;
   }
@@ -112,6 +114,7 @@ export class StatoAvanzamentoComponent {
     this.searchClick$
       .pipe(
         takeUntil(this.destroy$),
+        tap(() => this.loading = true),
         map(() =>
           ({
             idReferente: this.idPm,
@@ -138,9 +141,10 @@ export class StatoAvanzamentoComponent {
           this.statoAvanzamentoWrap
             .getAvanzamento$(searchParam)
         ),
-        tap(avanzamento =>
-          this.updateResults(avanzamento)
-        )
+        tap(avanzamento => {
+          this.updateResults(avanzamento);
+          this.loading = false;
+        })
       )
       .subscribe();
   }
