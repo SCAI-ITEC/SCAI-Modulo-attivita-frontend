@@ -182,7 +182,7 @@
                     </ng-template>
 
                             <ng-template #rowExpand let-avanzamento>
-                                <div class="bg-white py-5 px-4" style="box-shadow: inset 0 0 9px 3px #0001;">
+                                <div class="bg-white py-5 px-4">
                                     <app-table
                                         #dt2
                                         class="shadow"
@@ -322,10 +322,18 @@
     
     <div class="card pt-3 shadow">
         
-        <div [ngbNavOutlet]="nav"></div>
+        <div class="my-4 text-center" style="padding-top: 8px" *ngIf="loading; else showResults">
+            <app-linear-loading-indicator text="scai"></app-linear-loading-indicator>
+            <div class="mt-2 text-muted fst-italic">
+                <small>Potrebbe metterci un po'</small>
+            </div>
+        </div>
+        <ng-template #showResults>
+            <div [ngbNavOutlet]="nav"></div>
+        </ng-template>
 
         <div
-            *ngIf="this.tabs.length === 0"
+            *ngIf="!loading && this.tabs.length === 0"
             class="p-3 mb-3 text-center text-muted"
         >
             Cerca <i class="bi bi-search"></i> per aggiungere schede
