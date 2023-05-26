@@ -5,6 +5,7 @@ import { EventoCreazioneModifica } from '../../dialogs/evento-creazione-modifica
 import { EventoDto } from '../../models/evento';
 import { EventoService } from '../../services/evento.service';
 import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 @Component({
   selector: 'app-evento',
@@ -22,6 +23,7 @@ export class EventoComponent {
   eventi: EventoDto[] = [];
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
     private eventoService: EventoService,
     private modalService: NgbModal
   ) { }

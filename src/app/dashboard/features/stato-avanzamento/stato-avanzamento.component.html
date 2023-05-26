@@ -20,16 +20,16 @@
 
             <app-input
                 type="select"
-                name="stato"
-                label="Stato"
-                [ngControl]="statoCtrl"
-                [options]="stati"
+                name="statoAvanzamento"
+                label="Stato avanzamento"
+                [ngControl]="statoAvanzamentoCtrl"
+                [options]="statiAvanzamento"
                 [floatingLabel]="true"
             ></app-input>
-            
         </div>
                 
         <div class="flexgrid flexgrid--3">
+
             <app-monthpicker
                 name="mese"
                 label="Mese"                        
@@ -39,12 +39,12 @@
 
             <app-input
                 type="select"
-                name="statoAvanzamento"
-                label="Stato avanzamento"
-                [ngControl]="statoAvanzamentoCtrl"
-                [options]="statiAvanzamento"
+                name="stato"
+                label="Stato"
+                [ngControl]="statoCtrl"
+                [options]="stati"
                 [floatingLabel]="true"
-            ></app-input>                   
+            ></app-input>     
         </div>
 
         <div class="flexgrid flexgrid--3">
@@ -157,15 +157,15 @@
                         <th class="col-4" sortable="commessa.codice" (sort)="dt.sort($any($event))">Commessa</th>
                         <th class="col-4" sortable="sottoCommessa.codice" (sort)="dt.sort($any($event))">Sottocomm.</th>
                         <th class="col-4" sortable="cliente.descrizione" (sort)="dt.sort($any($event))">Cliente</th>
-                        <th class="text-end" sortable="sottoCommessa.importo" (sort)="dt.sort($any($event))">Importo</th>
                         <th class="text-end" sortable="sottoCommessa.costoCompetenza" (sort)="dt.sort($any($event))">Costo competenza</th>
+                        <th class="text-end" sortable="sottoCommessa.importo" (sort)="dt.sort($any($event))">Importo</th>
                         <th sortable="dataInizio" (sort)="dt.sort($any($event))">Inizio</th>
                         <th sortable="dataFine" (sort)="dt.sort($any($event))">Fine</th>
                         <th class="text-end" sortable="percentualeRimanente" (sort)="dt.sort($any($event))">Totale %</th>
                     </ng-template>
 
                     <ng-template #tbody let-avanzamento>
-                        <td class="text-muted">({{ avanzamento.dettaglio.length }})</td>
+                        <td class="text-muted">({{ avanzamento.dettaglioAvanzamento.length }})</td>
                         <td>
                             <div class="small fw-bold">{{ avanzamento.commessa.codice }}</div>
                             {{ avanzamento.commessa.descrizione }}
@@ -178,8 +178,8 @@
                             <div class="small fw-bold">{{ avanzamento.clienteFinale.descrizione }}</div>
                             {{ avanzamento.cliente.descrizione }}
                         </td>
-                        <td class="text-end">{{ avanzamento.sottoCommessa.importo | currency:"EUR":"symbol" }}</td>
                         <td class="text-end">{{ avanzamento.sottoCommessa.costoCompetenza | currency:"EUR":"symbol" }}</td>
+                        <td class="text-end">{{ avanzamento.sottoCommessa.importo | currency:"EUR":"symbol" }}</td>
                         <td class="no-text-break">{{ avanzamento.dataInizio }}</td>
                         <td class="no-text-break">{{ avanzamento.dataFine }}</td>
                         <td class="text-end">{{ 1 - avanzamento.percentualeRimanente | percent }}</td>
@@ -192,7 +192,7 @@
                                         class="shadow"
                                         [thead]="thead2"
                                         [tbody]="tbody2"
-                                        [items]="avanzamento.dettaglio"
+                                        [items]="avanzamento.dettaglioAvanzamento"
                                         maxHeight="65vh"
                                         [stickyHead]="true"
                                     >
@@ -201,56 +201,39 @@
                                             <th sortable="meseValidazione" (sort)="dt2.sort($any($event))">Mese</th>
                                             <th class="text-end" sortable="avanzamentoTotale" (sort)="dt2.sort($any($event))">Mese %</th>
                                             <th class="text-end" sortable="avanzamentoSommatorio" (sort)="dt2.sort($any($event))">Totale %</th>
+                                            <th class="text-end" sortable="costoCompetenza" (sort)="dt2.sort($any($event))">Costo Competenza</th>
                                             <th class="text-end" sortable="ricavoCompetenza" (sort)="dt2.sort($any($event))">Ricavo Competenza</th>
                                             <th class="text-center" sortable="statoValidazione.id" (sort)="dt2.sort($any($event))">Stato</th>
                                             <th class="text-center"></th>
                                         </ng-template>
 
-                                        <ng-template #tbody2 let-dettaglio>
+                                        <ng-template #tbody2 let-dettaglio let-index="index">
                                             <td>{{ dettaglio.meseValidazione }}</td>
                                             <td>
                                                 <div class="d-flex align-items-center justify-content-end gap-2">
                                                     <input
-                                                        #perc
+                                                        #percEl
                                                         style="max-width: 5rem"
                                                         type="number"
                                                         class="form-control"
-                                                        min="0"
-                                                        step="0.01"
-                                                        [max]="
-                                                            (avanzamento.percentualeRimanente <= 0)
-                                                                ? (dettaglio.avanzamentoTotale <= 1)
-                                                                    ? dettaglio.avanzamentoTotale
-                                                                    : 1
-                                                                : 1
-                                                        "
+                                                        step="1"
                                                         [value]="dettaglio.avanzamentoTotale"
                                                         [disabled]="dettaglio.statoValidazione.id !== EnumStatiChiusura.Aperto"
-                                                        (input)="
-                                                            enforceMinMax(perc);
-                                                            dettaglio.avanzamentoTotale = +perc.value;
-                                                            avanzamento.aggiornaAvanzamento();
-                                                            dettaglio.dirty = true;
-                                                        "
-                                                        (keyup)="
-                                                            enforceMinMax(perc);
-                                                            dettaglio.avanzamentoTotale = +perc.value;
-                                                            avanzamento.aggiornaAvanzamento();
-                                                            dettaglio.dirty = true;
-                                                        "
+                                                        (input)="updateCumulativePercentages(avanzamento, dettaglio, percEl)"
+                                                        (keyup)="updateCumulativePercentages(avanzamento, dettaglio, percEl)"
                                                     >
-                                                    <div style="text-align: right; width: 2.5rem">
-                                                        {{ dettaglio.avanzamentoTotale | percent }}
+                                                    <div class="no-text-break" style="text-align: right; width: 3rem">
+                                                        {{ dettaglio.avanzamentoTotale }} %
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="text-end">{{ dettaglio.avanzamentoSommatorio | percent }}</td>
+                                            <td class="text-end">{{ dettaglio.cumulato }} %</td>
                                             <td class="text-end">{{ dettaglio.costoCompetenza | currency:"EUR":"symbol" }}</td>
                                             <td class="text-end">{{ dettaglio.ricavoCompetenza | currency:"EUR":"symbol" }}</td>
                                             <td class="text-center">
                                                 <fieldset
                                                     class="d-flex flex-wrap justify-content-center gap-2"
-                                                    [disabled]="dettaglio.raw.statoValidazione.id === EnumStatiChiusura.Vistato"
+                                                    [disabled]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
                                                 >
 
                                             <div class="form-check">
@@ -260,13 +243,10 @@
                                                     [name]="'stato-' + dettaglio._id"
                                                     [id]="'stato-' + dettaglio._id + '-aperto'"
                                                     [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Aperto"
-                                                    (change)="
-                                                        dettaglio.statoValidazione.id = EnumStatiChiusura.Aperto;
-                                                        dettaglio.dirty = true
-                                                    "
+                                                    (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Aperto)"
                                                 >
                                                 <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-aperto'">
-                                                    Aperto
+                                                    {{ EnumStatiChiusura.Aperto }}
                                                 </label>
                                             </div>
 
@@ -277,13 +257,10 @@
                                                     [name]="'stato-' + dettaglio._id"
                                                     [id]="'stato-' + dettaglio._id + '-chiuso'"
                                                     [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Chiuso"
-                                                    (change)="
-                                                        dettaglio.statoValidazione.id = EnumStatiChiusura.Chiuso;
-                                                        dettaglio.dirty = true
-                                                    "
+                                                    (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Chiuso)"
                                                 >
                                                 <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-chiuso'">
-                                                    Chiuso
+                                                    {{ EnumStatiChiusura.Chiuso }}
                                                 </label>
                                             </div>
 
@@ -294,13 +271,10 @@
                                                     [name]="'stato-' + dettaglio._id"
                                                     [id]="'stato-' + dettaglio._id + '-vistato'"
                                                     [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
-                                                    (change)="
-                                                        dettaglio.statoValidazione.id = EnumStatiChiusura.Vistato;
-                                                        dettaglio.dirty = true
-                                                    "
+                                                    (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Vistato)"
                                                 >
                                                 <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-vistato'">
-                                                    Vistato
+                                                    {{ EnumStatiChiusura.Vistato }}
                                                 </label>
                                             </div>
                                         </fieldset>
@@ -308,7 +282,7 @@
                                     <td class="text-center">
                                         <button
                                             class="btn btn-outline-primary"
-                                            [class.pulse]="dettaglio.dirty"
+                                            [class.pulse]="dettaglio._dirty"
                                             [disabled]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
                                             (click)="salvaDettaglio(dettaglio)"
                                         >

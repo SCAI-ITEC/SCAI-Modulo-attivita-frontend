@@ -2,12 +2,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommessaDto } from '../../models/commessa';
 import { SottocommessaService } from '../../services/sottocommessa.service';
 import { MiscDataService } from '../../services/miscData.service';
-import { TaskService } from '../../services/task.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ToastService } from 'src/app/services/toast.service';
 import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-creazione-modifica/sottocommessa-creazione-modifica.component';
 import { UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
 import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 @Component({
   selector: 'app-sottocommessa-navigation',
@@ -28,6 +27,7 @@ export class SottocommessaNavigationComponent {
   activeTabId?: number;
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
     private sottocommessaService: SottocommessaService,
     private miscDataService: MiscDataService,
     private modalService: NgbModal

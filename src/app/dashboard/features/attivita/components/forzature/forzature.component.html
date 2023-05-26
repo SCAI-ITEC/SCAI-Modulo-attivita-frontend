@@ -10,7 +10,13 @@
         <h5 class="table-plus__title">Tabella {{ categoria }}</h5>
 
         <button
-            *rbacAllow="[ ROLES.RESPONSABILE_COMMERCIALE, ROLES.CONTROLLER, ROLES.SEGRETERIA, ROLES.AMMINISTRATORE ]"
+            *rbacAllow="[
+                ROLES.RESPONSABILE_COMMERCIALE,
+                ROLES.CONTROLLER,
+                ROLES.SEGRETERIA,
+                ROLES.AMMINISTRATORE,
+                attivitaNavState.userBmRole
+            ]"
             type="button"
             class="table-plus__action btn btn-success shadow"
             (click)="create()"
@@ -77,7 +83,13 @@
                 <div class="d-flex gap-2 justify-content-center">
 
                     <button
-                        *rbacAllow="[ ROLES.RESPONSABILE_COMMERCIALE, ROLES.CONTROLLER, ROLES.SEGRETERIA, ROLES.AMMINISTRATORE ]"
+                        *rbacAllow="[
+                            ROLES.RESPONSABILE_COMMERCIALE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA,
+                            ROLES.AMMINISTRATORE,
+                            attivitaNavState.userBmRole
+                        ]"
                         type="button"
                         class="btn btn-warning shadow"
                         (click)="update(item)"
@@ -86,7 +98,13 @@
                     </button>
 
                     <button
-                        *rbacAllow="[ ROLES.RESPONSABILE_COMMERCIALE, ROLES.CONTROLLER, ROLES.SEGRETERIA, ROLES.AMMINISTRATORE ]"
+                        *rbacAllow="[
+                            ROLES.RESPONSABILE_COMMERCIALE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA,
+                            ROLES.AMMINISTRATORE,
+                            attivitaNavState.userBmRole
+                        ]"
                         type="button"
                         class="btn btn-danger shadow"
                         (click)="delete(item)"

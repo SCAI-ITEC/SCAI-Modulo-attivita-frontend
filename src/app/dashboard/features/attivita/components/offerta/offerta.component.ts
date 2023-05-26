@@ -4,6 +4,8 @@ import { combineLatest } from 'rxjs';
 import { ToastService } from 'src/app/services/toast.service';
 import { Offerta } from '../../models/offerta';
 import { OffertaService } from '../../services/offerta.service';
+import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 @Component({
   selector: 'app-offerta',
@@ -11,6 +13,8 @@ import { OffertaService } from '../../services/offerta.service';
   styleUrls: ['./offerta.component.css']
 })
 export class OffertaComponent {
+
+  ROLES = ROLES;
 
   @Input("idCommessa") idCommessa!: number;
   @Output("offertaUpsert") offertaUpsertEmitter = new EventEmitter<Offerta>();
@@ -29,6 +33,7 @@ export class OffertaComponent {
   codIdentificativoCtrl = new FormControl<string | null>(null);
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
     private offertaService: OffertaService,
     private toaster: ToastService
   ) { }

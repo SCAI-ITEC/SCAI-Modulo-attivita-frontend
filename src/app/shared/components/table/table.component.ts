@@ -52,7 +52,7 @@ export class TableComponent {
   @Input("selectable") selectable = false;
   get selectedRows() {
     return this.paginatedItems$.getValue()
-      .filter(item => item._.selected);
+      .filter(item => item._selected);
   }
   
   ngOnInit() {
@@ -161,7 +161,10 @@ export class TableComponent {
 
   paginate() {
 
-    this.sortedItems.forEach(item => Object.setPrototypeOf(item, { _: { selected: false } }));
+    this.sortedItems.forEach(item => {
+      const newPrototype = { _selected: false, ...Object.getPrototypeOf(item) };
+      Object.setPrototypeOf(item, newPrototype);
+    });
 
 		const sliceOfItems = this.sortedItems.slice(
       (this.page - 1) * this.pageSize,
@@ -181,11 +184,11 @@ export class TableComponent {
 
   onEveryRowSelect() {
     const items = this.paginatedItems$.getValue();
-    items.forEach(item => item._.selected = true);
+    items.forEach(item => item._selected = true);
   }
 
   onEveryRowDeselect() {
     const items = this.paginatedItems$.getValue();
-    items.forEach(item => item._.selected = false);
+    items.forEach(item => item._selected = false);
   }
 }

@@ -63,6 +63,13 @@
     <div class="text-center my-4">
 
         <button
+            *rbacAllow="[
+                ROLES.RESPONSABILE_COMMERCIALE,
+                ROLES.CONTROLLER,
+                ROLES.SEGRETERIA,
+                ROLES.AMMINISTRATORE,
+                attivitaNavState.userBmRole
+            ]"
             class="btn btn-primary btn-lg shadow"
             [disabled]="!offerta || !dataOffertaCtrl.value"
             (click)="upsert()"

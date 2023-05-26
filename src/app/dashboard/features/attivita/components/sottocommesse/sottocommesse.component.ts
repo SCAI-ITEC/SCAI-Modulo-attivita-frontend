@@ -8,6 +8,8 @@ import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-crea
 import { CommessaDto } from '../../models/commessa';
 import { SottocommessaService } from '../../services/sottocommessa.service';
 import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 interface Tab {
   id: number;
@@ -35,12 +37,15 @@ export class SottocommesseComponent {
   sottocommesse: CommessaDto[] = [];
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
+    public authService: AuthService,
     private sottocommessaService: SottocommessaService,
     private toaster: ToastService,
     private modalService: NgbModal
   ) {}
 
   ngOnInit() {
+
     this.refresh$
       .pipe(
         startWith(null),

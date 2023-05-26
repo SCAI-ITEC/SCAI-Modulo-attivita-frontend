@@ -10,6 +10,7 @@ import { ToastService } from 'src/app/services/toast.service';
 import { Subject, startWith, switchMap } from 'rxjs';
 import { TaskCreazioneModifica } from '../../dialogs/task-creazione-modifica/task-creazione-modifica.component';
 import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 @Component({
   selector: 'app-risorse',
@@ -31,6 +32,7 @@ export class RisorseComponent {
   risorseTask: RisorsaTaskWrap[] = [];
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
     private taskService: TaskService,
     private risorsaService: RisorsaService,
     private modalService: NgbModal,

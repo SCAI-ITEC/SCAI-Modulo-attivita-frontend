@@ -8,6 +8,7 @@ import { GetReperibilitaCommesseTotaliResponse } from 'src/app/api/modulo-attivi
 import { ToastService } from 'src/app/services/toast.service';
 import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 @Component({
   selector: 'app-reperibilita',
@@ -26,6 +27,7 @@ export class ReperibilitaComponent {
   reperibilita: GetReperibilitaCommesseTotaliResponse[] = [];
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
     private authService: AuthService,
     private segreteriaService: SegreteriaService,
     private modalService: NgbModal,

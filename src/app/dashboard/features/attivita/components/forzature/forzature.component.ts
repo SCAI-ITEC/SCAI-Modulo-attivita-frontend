@@ -7,6 +7,7 @@ import { ForzaturaCreazioneModifica } from '../../dialogs/forzatura-creazione-mo
 import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { ToastService } from 'src/app/services/toast.service';
 import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 @Component({
   selector: 'app-forzature',
@@ -25,6 +26,7 @@ export class ForzatureComponent {
   forzature: ForzaturaDto[] = [];
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
     private forzatureService: ForzaturaService,
     private modalService: NgbModal,
     private toaster: ToastService
