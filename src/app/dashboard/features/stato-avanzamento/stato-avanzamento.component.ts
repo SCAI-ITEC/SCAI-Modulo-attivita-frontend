@@ -6,7 +6,7 @@ import { StatoAvanzamentoWrapService } from 'src/app/dashboard/features/stato-av
 import { GetAvanzamentoParam } from 'src/app/dashboard/features/stato-avanzamento/models/stato-avanzamento.models';
 import { ToastService } from 'src/app/services/toast.service';
 import { enforceMinMax } from 'src/app/utils/input';
-import { BUSINESS_MANAGER } from 'src/app/models/user';
+import { BUSINESS_MANAGER, ROLES } from 'src/app/models/user';
 import { jsonCopy } from 'src/app/utils/json';
 import { InputComponent } from 'src/app/shared/components/input/input.component';
 import { MonthpickerStruct } from 'src/app/shared/components/monthpicker/monthpicker.component';
@@ -25,13 +25,13 @@ interface Tab {
 })
 export class StatoAvanzamentoComponent {
 
+  EnumStatiChiusura = EnumStatiChiusura;
+  ROLES = ROLES;
+
   @ViewChild("clienteAutocomplete") clienteAutocomplete!: InputComponent;
   @ViewChild("sottocommessaAutocomplete") sottocommessaAutocomplete!: InputComponent;
   @ViewChild("pmAutocomplete") pmAutocomplete!: InputComponent;
   @ViewChild("bmAutocomplete") bmAutocomplete!: InputComponent;
-
-  EnumStatiChiusura = EnumStatiChiusura;
-  BUSINESS_MANAGER = BUSINESS_MANAGER;
 
   destroy$ = new Subject<void>();
   searchClick$ = new Subject<void>();
