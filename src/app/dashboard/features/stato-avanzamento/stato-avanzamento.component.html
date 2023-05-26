@@ -236,48 +236,48 @@
                                                     [disabled]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
                                                 >
 
-                                            <div class="form-check">
-                                                <input
-                                                    class="form-check-input"
-                                                    type="radio"
-                                                    [name]="'stato-' + dettaglio._id"
-                                                    [id]="'stato-' + dettaglio._id + '-aperto'"
-                                                    [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Aperto"
-                                                    (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Aperto)"
-                                                >
-                                                <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-aperto'">
-                                                    {{ EnumStatiChiusura.Aperto }}
-                                                </label>
-                                            </div>
+                                                    <div class="form-check">
+                                                        <input
+                                                            class="form-check-input"
+                                                            type="radio"
+                                                            [name]="'stato-' + dettaglio._id"
+                                                            [id]="'stato-' + dettaglio._id + '-aperto'"
+                                                            [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Aperto"
+                                                            (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Aperto)"
+                                                        >
+                                                        <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-aperto'">
+                                                            {{ EnumStatiChiusura.Aperto }}
+                                                        </label>
+                                                    </div>
 
-                                            <div class="form-check">
-                                                <input
-                                                    class="form-check-input"
-                                                    type="radio"
-                                                    [name]="'stato-' + dettaglio._id"
-                                                    [id]="'stato-' + dettaglio._id + '-chiuso'"
-                                                    [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Chiuso"
-                                                    (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Chiuso)"
-                                                >
-                                                <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-chiuso'">
-                                                    {{ EnumStatiChiusura.Chiuso }}
-                                                </label>
-                                            </div>
+                                                    <div class="form-check">
+                                                        <input
+                                                            class="form-check-input"
+                                                            type="radio"
+                                                            [name]="'stato-' + dettaglio._id"
+                                                            [id]="'stato-' + dettaglio._id + '-chiuso'"
+                                                            [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Chiuso"
+                                                            (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Chiuso)"
+                                                        >
+                                                        <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-chiuso'">
+                                                            {{ EnumStatiChiusura.Chiuso }}
+                                                        </label>
+                                                    </div>
 
-                                            <div class="form-check" *rbacAllow="[ ROLES.BUSINESS_MANAGER, ROLES.AMMINISTRATORE ]">
-                                                <input
-                                                    class="form-check-input"
-                                                    type="radio"
-                                                    [name]="'stato-' + dettaglio._id"
-                                                    [id]="'stato-' + dettaglio._id + '-vistato'"
-                                                    [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
-                                                    (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Vistato)"
-                                                >
-                                                <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-vistato'">
-                                                    {{ EnumStatiChiusura.Vistato }}
-                                                </label>
-                                            </div>
-                                        </fieldset>
+                                                    <div class="form-check" *rbacAllow="[ ROLES.BUSINESS_MANAGER, ROLES.AMMINISTRATORE ]">
+                                                        <input
+                                                            class="form-check-input"
+                                                            type="radio"
+                                                            [name]="'stato-' + dettaglio._id"
+                                                            [id]="'stato-' + dettaglio._id + '-vistato'"
+                                                            [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
+                                                            (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Vistato)"
+                                                        >
+                                                        <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-vistato'">
+                                                            {{ EnumStatiChiusura.Vistato }}
+                                                        </label>
+                                                    </div>
+                                                </fieldset>
                                     </td>
                                     <td class="text-center">
                                         <button
