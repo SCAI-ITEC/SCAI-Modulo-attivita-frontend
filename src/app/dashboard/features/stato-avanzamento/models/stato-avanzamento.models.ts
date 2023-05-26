@@ -95,8 +95,8 @@ export class SottocommessaAvanzamento {
         this.sottoCommessa = raw.sottoCommessa!;
         this.stato = raw.stato!;
 
-        this.aggiungiRigaImplicita();
         this.aggiornaAvanzamento();
+        this.aggiungiRigaImplicita();
     }
 
     aggiungiRigaImplicita() {
@@ -109,7 +109,9 @@ export class SottocommessaAvanzamento {
 
         const oggi = format(new Date(), 'yyyy-MM-dd');
 
-        if (!contieneMeseCorrente)
+        const percentualeRimanente = Math.round(this.percentualeRimanente * 100) / 100;
+
+        if (!contieneMeseCorrente && percentualeRimanente > 0) {
             this.dettaglio.push(
                 new SottocommessaAvanzamentoDettaglio({
                     avanzamentoTotale: 0,
@@ -132,17 +134,19 @@ export class SottocommessaAvanzamento {
                     valido: 1,
                 })
             );
+        }
     }
 
     aggiornaAvanzamento() {
 
         this.dettaglio.forEach((d, i, a) => {
+
             const prev = a[i - 1];
             const curr = d;
-            if (prev)
-                curr.avanzamentoSommatorio = curr.avanzamentoTotale + prev.avanzamentoSommatorio;
-            else
-                curr.avanzamentoSommatorio = curr.avanzamentoTotale;
+
+            curr.avanzamentoSommatorio = prev
+                ? curr.avanzamentoTotale + prev.avanzamentoSommatorio
+                : curr.avanzamentoTotale;
         });
 
         this.percentualeRimanente = 1 - this.dettaglio.map(d => d.avanzamentoTotale).reduce((a, b) => a + b, 0);
