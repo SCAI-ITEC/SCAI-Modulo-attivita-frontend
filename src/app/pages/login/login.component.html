@@ -9,11 +9,9 @@
             <h2>Login</h2>
 
             <app-input
-                type="textarea"
                 name="token"
-                label="Token"
+                placeholder="Paste valid token here 📋"
                 [ngControl]="loginForm.controls.token"
-                [floatingLabel]="true"
             ></app-input>
 
             <app-input
@@ -27,7 +25,7 @@
 
             <button
                 class="btn btn-primary"
-                [disabled]="loginForm.invalid"
+                [disabled]="loginForm.invalid || !isValidToken($any(loginForm.controls.token.value))"
                 (click)="login()"
             >
                 <i class="bi bi-send-fill"></i> Send
@@ -39,11 +37,9 @@
             <h2>Impersonate</h2>
 
             <app-input
-                type="textarea"
                 name="token"
-                label="Token"
+                placeholder="Paste valid token here 📋"
                 [ngControl]="impersonateForm.controls.token"
-                [floatingLabel]="true"
             ></app-input>
 
             <app-input
@@ -82,7 +78,7 @@
             
             <button
                 class="btn btn-primary"
-                [disabled]="impersonateForm.invalid"
+                [disabled]="impersonateForm.invalid || !isValidToken($any(loginForm.controls.token.value))"
                 (click)="impersonateLogin()"
             >
                 <i class="bi bi-send-fill"></i> Send

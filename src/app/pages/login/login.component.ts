@@ -118,4 +118,15 @@ export class LoginComponent {
       });
   }
 
+  isValidToken(token: string) {
+    try {
+      const sections = token.split(".");
+      JSON.parse(atob(sections[1]));
+      return sections.every(section => /^[\w-]+$/.test(section));
+    }
+    catch(e) {
+      return false;
+    }
+  }
+
 }
