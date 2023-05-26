@@ -37,7 +37,7 @@ export class AuthService {
     if (!isSplash) this.autoLogin();
   }
 
-  login(token: string, idAzienda: number) {
+  login(token: string, idAzienda: number, fakeUser?: User, fakeRoles: string[] = []) {
 
     localStorage.setItem('token', token);
     localStorage.setItem('id_azienda', JSON.stringify(idAzienda));
@@ -50,49 +50,34 @@ export class AuthService {
       .pipe(
         tap((u: GetAttoreResponse) => {
 
-          const user = {
-            idUtente: u.utente?.idUtente,
-            idAzienda: u.idAzienda,
-            nome: u.utente?.nome,
-            cognome: u.utente?.cognome,
-            roles: [
-              UTENTE_BASE,
-              ...(u.profili as Array<any>)
-                .map(p => p.descrizione)
-            ]
-          } as User;
+          // Why can "u.utente" be undefined? Blame the backend!!!
+          const { idUtente, cognome, nome } = u.utente as any;
+          const roles = (u.profili || []).map(p => p.descrizione) as string[];
 
-          localStorage.setItem('user_data', JSON.stringify(user));
+          this.user = {
+            idAzienda,
+            idUtente, 
+            cognome,
+            nome,
+            roles: [ UTENTE_BASE, ...roles ]
+          };
 
-          this.user = user;
+          if (fakeUser) {
+
+            const { idUtente, cognome, nome } = fakeUser;
+
+            this.user = {
+              ...this.user,
+              idUtente,
+              cognome,
+              nome,
+              roles: [ UTENTE_BASE, ...fakeRoles ]
+            };
+          }
+
+          localStorage.setItem('user_data', JSON.stringify(this.user));
         })
       );
-  }
-
-  fakeLogin(
-    utente: { idUtente: number, nome: string, cognome: string},
-    idAzienda: number,
-    roles: string[]
-  ) {
-
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiRG9ua2V5IEtvbmcifQ.QeBhkODg6wc3TYXhmn7swjqUh2USVxI86bdRl57eAUA');
-    localStorage.setItem('id_azienda', JSON.stringify(idAzienda));
-    localStorage.setItem("expires_at", JSON.stringify(10000000000000));
-
-    const user = {
-      idUtente: utente.idUtente,
-      nome: utente.nome,
-      cognome: utente.cognome,
-      idAzienda,
-      roles: [
-        UTENTE_BASE,
-        ...roles
-      ]
-    } as User;
-
-    localStorage.setItem('user_data', JSON.stringify(user));
-
-    this.user = user;
   }
 
   autoLogin() {

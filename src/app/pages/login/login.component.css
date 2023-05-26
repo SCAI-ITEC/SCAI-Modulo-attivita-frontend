@@ -4,7 +4,7 @@
     height: 100vh;
     place-items: center;
     --container-width: 400px;
-    --container-height: 500px;
+    --container-height: 600px;
 }
 
 .subscription-wrapper {
