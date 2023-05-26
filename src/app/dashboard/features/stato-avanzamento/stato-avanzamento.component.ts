@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { catchError, combineLatest, filter, map, of, startWith, Subject, switchMap, takeUntil, tap, throwError } from 'rxjs';
+import { catchError, combineLatest, filter, map, NEVER, of, startWith, Subject, switchMap, takeUntil, tap, throwError } from 'rxjs';
 import { Dettaglio, EnumAvanzamento, EnumStatiChiusura, GetSottoCommessePerReferenteResponse, UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
 import { StatoAvanzamentoWrapService } from 'src/app/dashboard/features/stato-avanzamento/services/stato-avanzamento-wrap.service';
 import { GetAvanzamentoParam, SottocommessaAvanzamento, SottocommessaAvanzamentoDettaglio } from 'src/app/dashboard/features/stato-avanzamento/models/stato-avanzamento.models';
@@ -141,8 +141,8 @@ export class StatoAvanzamentoComponent {
           this.statoAvanzamentoWrap
             .getAvanzamento$(searchParam)
             .pipe(
-              catchError(err => {
-                this.toastService.show(err.error, { classname: 'bg-danger text-light', delay: 10000 });
+              catchError(() => {
+                this.toastService.show("Non è stato possibile recuperare i dati. Contattare il supporto tecnico.", { classname: 'bg-danger text-light', delay: 10000 });
                 return of([]);
               })
             )
