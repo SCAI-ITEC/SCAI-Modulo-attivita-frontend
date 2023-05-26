@@ -120,7 +120,7 @@
 
 <div *ngIf="sottocommesse.length" class="mt-4">
     <ul
-        class="app-tabbable nav-tabs ms-1"
+        class="app-tabbable nav-tabs"
         ngbNav
         #nav="ngbNav"
         [destroyOnHide]="false"
@@ -142,7 +142,7 @@
         </li>
     </ul>
     
-    <div class="app-callout app-callout--orange p-3 pb-4 shadow">
+    <div class="app-callout app-callout--orange card card-body pb-4 shadow">
         
         <div [ngbNavOutlet]="nav"></div>
 
