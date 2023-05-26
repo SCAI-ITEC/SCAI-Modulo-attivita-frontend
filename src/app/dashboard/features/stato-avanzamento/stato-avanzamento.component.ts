@@ -432,30 +432,30 @@ export class StatoAvanzamentoComponent {
     percentElement: HTMLInputElement
   ) {
 
-    // Set percent value onto the object
+    const dettagli = avanzamento.dettaglioAvanzamento!;
+
+    // Calculate the sum of other avanzamenti
+    const sumOfTheRest = dettagli
+      .filter(d => d !== dettaglio)
+      .reduce((a, b: any) => a + b.avanzamentoTotale, 0);
+
+    // Enforce min-max on input
+    enforceMinMax(percentElement, 0, 100 - Math.ceil(sumOfTheRest));
     dettaglio.avanzamentoTotale = parseInt(percentElement.value) || 0;
 
-    // Calculate cumulative values
-    const dettagli = avanzamento.dettaglioAvanzamento!;
+    // Recalculate cumulato
     for (let i = 0; i < dettagli.length; i++) {
-
       const prev = dettagli[i - 1] as any;
       const curr = dettagli[i] as any;
-      
       curr.cumulato = curr.avanzamentoTotale + (prev ? prev.cumulato : 0);
     }
 
-    // Ensure cumulative percentage cannot exceed 100%
-    const residue = Math.floor(dettaglio.avanzamentoTotale + 100 - (dettagli[dettagli.length - 1] as any).cumulato);
-    enforceMinMax(percentElement, 0, residue);
-
-    // Set the object as dirty
     Object.getPrototypeOf(dettaglio)._dirty = true;
   }
 
   changeStatoValidazione(dettaglio: DettaglioAvanzamento, stato: EnumStatiChiusura) {
     dettaglio.statoValidazione!.id = stato;
-    Object.getPrototypeOf(dettaglio)._dirty = true
+    Object.getPrototypeOf(dettaglio)._dirty = true;
   }
 
   trackByIdCommessa(index: number, avanzamento: GetSottoCommesseAvanzamentoResponse) {

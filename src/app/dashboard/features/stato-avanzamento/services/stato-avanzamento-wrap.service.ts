@@ -41,7 +41,6 @@ export class StatoAvanzamentoWrapService {
   }
 
   private enrichAvanzamenti(avanzamenti: GetSottoCommesseAvanzamentoResponse[]) {
-
     return avanzamenti.map(avanzamento => {
 
       const dettagli = avanzamento.dettaglioAvanzamento!;
@@ -57,25 +56,22 @@ export class StatoAvanzamentoWrapService {
       });
 
       const hasCurrMonth = dettagli.some(dettaglio => {
-
         const dettaglioYear = new Date(dettaglio.meseValidazione!).getFullYear();
-        const todayYear = new Date().getFullYear();
-
         const dettaglioMonth = new Date(dettaglio.meseValidazione!).getMonth();
+        const todayYear = new Date().getFullYear();
         const todayMonth = new Date().getMonth();
-
         return dettaglioYear === todayYear && dettaglioMonth === todayMonth;
       });
 
       const today = format(new Date(), 'yyyy-MM-dd');
 
-      const lastDettaglio = dettagli[dettagli.length - 1] as any;
+      const totalProgress = dettagli.reduce((a, b) => a + b.avanzamentoTotale!, 0);
 
-      // Add implicit row if necessary
-      if (!hasCurrMonth) {
+      // Add implicit
+      if (!hasCurrMonth && totalProgress < 100) {
         (dettagli as any).push({
           avanzamentoTotale: 0,
-          cumulato: lastDettaglio.cumulato,
+          cumulato: totalProgress,
           dataAggiornamento: today,
           dataInserimento: today,
           descrizione: 'Riga autogenerata',
