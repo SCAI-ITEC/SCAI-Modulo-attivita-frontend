@@ -157,6 +157,8 @@
                         <th class="col-4" sortable="commessa.codice" (sort)="dt.sort($any($event))">Commessa</th>
                         <th class="col-4" sortable="sottoCommessa.codice" (sort)="dt.sort($any($event))">Sottocomm.</th>
                         <th class="col-4" sortable="cliente.descrizione" (sort)="dt.sort($any($event))">Cliente</th>
+                        <th class="text-end" sortable="sottoCommessa.importo" (sort)="dt.sort($any($event))">Importo</th>
+                        <th class="text-end" sortable="sottoCommessa.costoCompetenza" (sort)="dt.sort($any($event))">Costo competenza</th>
                         <th sortable="dataInizio" (sort)="dt.sort($any($event))">Inizio</th>
                         <th sortable="dataFine" (sort)="dt.sort($any($event))">Fine</th>
                         <th class="text-end" sortable="percentualeRimanente" (sort)="dt.sort($any($event))">Totale %</th>
@@ -176,6 +178,8 @@
                             <div class="small fw-bold">{{ avanzamento.clienteFinale.descrizione }}</div>
                             {{ avanzamento.cliente.descrizione }}
                         </td>
+                        <td class="text-end">{{ avanzamento.sottoCommessa.importo | currency:"EUR":"symbol" }}</td>
+                        <td class="text-end">{{ avanzamento.sottoCommessa.costoCompetenza | currency:"EUR":"symbol" }}</td>
                         <td class="no-text-break">{{ avanzamento.dataInizio }}</td>
                         <td class="no-text-break">{{ avanzamento.dataFine }}</td>
                         <td class="text-end">{{ 1 - avanzamento.percentualeRimanente | percent }}</td>
@@ -241,6 +245,7 @@
                                                 </div>
                                             </td>
                                             <td class="text-end">{{ dettaglio.avanzamentoSommatorio | percent }}</td>
+                                            <td class="text-end">{{ dettaglio.costoCompetenza | currency:"EUR":"symbol" }}</td>
                                             <td class="text-end">{{ dettaglio.ricavoCompetenza | currency:"EUR":"symbol" }}</td>
                                             <td class="text-center">
                                                 <fieldset
