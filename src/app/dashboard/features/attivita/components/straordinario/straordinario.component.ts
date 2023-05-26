@@ -7,6 +7,7 @@ import { SegreteriaService } from 'src/app/api/modulo-attivita/services';
 import { GetStraordinariTerzePartiTotaliResponse } from 'src/app/api/modulo-attivita/models';
 import { ToastService } from 'src/app/services/toast.service';
 import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
+import { ROLES } from 'src/app/models/user';
 
 @Component({
   selector: 'app-straordinario',
@@ -14,6 +15,8 @@ import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
   styleUrls: ['./straordinario.component.css']
 })
 export class StraordinarioComponent {
+
+  ROLES = ROLES;
 
   @Input("idCommessa") idCommessa!: number;
   @Input("idSottocommessa") idSottocommessa!: number;

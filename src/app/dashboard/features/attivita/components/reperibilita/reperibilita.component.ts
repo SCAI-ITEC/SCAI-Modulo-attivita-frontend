@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { GetReperibilitaCommesseTotaliResponse } from 'src/app/api/modulo-attivita/models';
 import { ToastService } from 'src/app/services/toast.service';
 import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
+import { ROLES } from 'src/app/models/user';
 
 @Component({
   selector: 'app-reperibilita',
@@ -14,6 +15,8 @@ import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
   styleUrls: ['./reperibilita.component.css']
 })
 export class ReperibilitaComponent {
+
+  ROLES = ROLES;
 
   @Input("idCommessa") idCommessa!: number;
   @Input("idSottocommessa") idSottocommessa!: number;

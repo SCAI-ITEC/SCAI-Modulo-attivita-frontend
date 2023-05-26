@@ -52,7 +52,7 @@ export class TableComponent {
   @Input("selectable") selectable = false;
   get selectedRows() {
     return this.paginatedItems$.getValue()
-      .filter(item => item._selected);
+      .filter(item => item._.selected);
   }
   
   ngOnInit() {
@@ -112,12 +112,12 @@ export class TableComponent {
 
     this.filteredItems = this.items.filter(item => {
 
-      const term = this.lastTerm$.getValue().toLowerCase();
+      const term = (this.lastTerm$.getValue() || "").toLowerCase();
 
       if (this.searchable && Array.isArray(this.searchable) && this.searchable.length)
         return this.searchable.some(path => {
-          const resolved = resolve(path, item) || '';
-          return (resolved + '').toLowerCase().includes(term)
+          const resolved = resolve(path, item) || "";
+          return (resolved + "").toLowerCase().includes(term);
         });
 
       // Global hacky search
@@ -161,7 +161,7 @@ export class TableComponent {
 
   paginate() {
 
-    this.sortedItems.forEach(item => item._selected = false);
+    this.sortedItems.forEach(item => Object.setPrototypeOf(item, { _: { selected: false } }));
 
 		const sliceOfItems = this.sortedItems.slice(
       (this.page - 1) * this.pageSize,
@@ -181,11 +181,11 @@ export class TableComponent {
 
   onEveryRowSelect() {
     const items = this.paginatedItems$.getValue();
-    items.forEach(item => item._selected = true);
+    items.forEach(item => item._.selected = true);
   }
 
   onEveryRowDeselect() {
     const items = this.paginatedItems$.getValue();
-    items.forEach(item => item._selected = false);
+    items.forEach(item => item._.selected = false);
   }
 }

@@ -9,6 +9,7 @@ import { CommessaService } from '../../services/commessa.service';
 import { OffertaService } from '../../services/offerta.service';
 import { SottocommessaService } from '../../services/sottocommessa.service';
 import { MiscDataService } from '../../services/miscData.service';
+import { ROLES } from 'src/app/models/user';
 
 @Component({
   selector: 'app-attivita-navigation',
@@ -16,6 +17,8 @@ import { MiscDataService } from '../../services/miscData.service';
   styleUrls: ['./attivita-navigation.component.css']
 })
 export class AttivitaNavigationComponent {
+
+	ROLES = ROLES;
 
   	@Input("idCommessa") idCommessa!: number;
 	@Output("commessaUpdate") commessaUpdateEmitter = new EventEmitter<CommessaDto>();

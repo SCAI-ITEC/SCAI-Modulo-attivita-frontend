@@ -31,7 +31,7 @@ export class LoginComponent {
   utenti: { idUtente: number, nome: string, cognome: string }[] = [];
   utentiFormatter = (user: any) => user.cognome + ' ' + user.nome;
 
-  roles = ROLES.map(role => ({ text: role, name: role }));
+  roles = Object.values(ROLES).map(role => ({ text: role, name: role }));
   rolesFormatter = (role: any) => role.name?.split('-').pop().trim();
 
   constructor(

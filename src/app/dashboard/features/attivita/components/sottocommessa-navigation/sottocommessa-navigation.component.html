@@ -39,6 +39,7 @@
             </div>
         
             <button
+                *rbacAllow="[ ROLES.RESPONSABILE_COMMERCIALE, ROLES.CONTROLLER, ROLES.SEGRETERIA, ROLES.AMMINISTRATORE ]"
                 type="button"
                 class="btn btn-warning btn-lg shadow"
                 (click)="updateSottocommessa()"

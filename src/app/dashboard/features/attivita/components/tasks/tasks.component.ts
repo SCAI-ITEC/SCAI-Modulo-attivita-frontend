@@ -8,6 +8,7 @@ import { ToastService } from 'src/app/services/toast.service';
 import { Subject, startWith, switchMap } from 'rxjs';
 import { TaskCreazioneModifica } from '../../dialogs/task-creazione-modifica/task-creazione-modifica.component';
 import { SottocommessaService } from '../../services/sottocommessa.service';
+import { ROLES } from 'src/app/models/user';
 
 interface Tab {
   id: number;
@@ -20,6 +21,8 @@ interface Tab {
   styleUrls: ['./tasks.component.css']
 })
 export class TasksComponent {
+
+  ROLES = ROLES;
 
   @Input("idCommessa") idCommessa!: number;
   @Input("idSottocommessa") idSottocommessa!: number;

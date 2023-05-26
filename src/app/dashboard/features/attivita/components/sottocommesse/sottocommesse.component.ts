@@ -7,6 +7,7 @@ import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-creazione-modifica/sottocommessa-creazione-modifica.component';
 import { CommessaDto } from '../../models/commessa';
 import { SottocommessaService } from '../../services/sottocommessa.service';
+import { ROLES } from 'src/app/models/user';
 
 interface Tab {
   id: number;
@@ -19,6 +20,8 @@ interface Tab {
   styleUrls: ['./sottocommesse.component.css']
 })
 export class SottocommesseComponent {
+
+  ROLES = ROLES;
 
   @Input("idCommessa") idCommessa!: number;
 

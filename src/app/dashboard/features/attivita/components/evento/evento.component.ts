@@ -4,6 +4,7 @@ import { startWith, Subject } from 'rxjs';
 import { EventoCreazioneModifica } from '../../dialogs/evento-creazione-modifica/evento-creazione-modifica.component';
 import { EventoDto } from '../../models/evento';
 import { EventoService } from '../../services/evento.service';
+import { ROLES } from 'src/app/models/user';
 
 @Component({
   selector: 'app-evento',
@@ -11,6 +12,8 @@ import { EventoService } from '../../services/evento.service';
   styleUrls: ['./evento.component.css']
 })
 export class EventoComponent {
+
+  ROLES = ROLES;
 
   @Input("idCommessa") idCommessa!: number;
 

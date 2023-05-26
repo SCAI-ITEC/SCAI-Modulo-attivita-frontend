@@ -7,6 +7,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastService } from 'src/app/services/toast.service';
 import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-creazione-modifica/sottocommessa-creazione-modifica.component';
 import { UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
+import { ROLES } from 'src/app/models/user';
 
 @Component({
   selector: 'app-sottocommessa-navigation',
@@ -14,6 +15,8 @@ import { UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
   styleUrls: ['./sottocommessa-navigation.component.css']
 })
 export class SottocommessaNavigationComponent {
+
+  ROLES = ROLES;
 
   @Input("idCommessa") idCommessa!: number;
   @Input("idSottocommessa") idSottocommessa!: number;

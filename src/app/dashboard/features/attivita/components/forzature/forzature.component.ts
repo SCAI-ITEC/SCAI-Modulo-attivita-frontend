@@ -6,6 +6,7 @@ import { ForzaturaDto } from '../../models/forzatura';
 import { ForzaturaCreazioneModifica } from '../../dialogs/forzatura-creazione-modifica/forzatura-creazione-modifica.component';
 import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { ToastService } from 'src/app/services/toast.service';
+import { ROLES } from 'src/app/models/user';
 
 @Component({
   selector: 'app-forzature',
@@ -13,6 +14,8 @@ import { ToastService } from 'src/app/services/toast.service';
   styleUrls: ['./forzature.component.css']
 })
 export class ForzatureComponent {
+
+  ROLES = ROLES;
 
   @Input("idCommessa") idCommessa!: number;
   @Input("categoria") categoria!: "costo" | "ricavo";

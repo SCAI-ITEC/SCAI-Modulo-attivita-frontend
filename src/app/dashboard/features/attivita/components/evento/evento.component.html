@@ -10,6 +10,7 @@
         <h5 class="table-plus__title">Tabella opportunità</h5>
 
         <button
+            *rbacAllow="[ ROLES.RESPONSABILE_COMMERCIALE, ROLES.CONTROLLER, ROLES.SEGRETERIA, ROLES.AMMINISTRATORE ]"
             type="button"
             class="table-plus__action btn btn-success shadow"
             (click)="create()"
@@ -33,13 +34,6 @@
             <img class="img-fluid" style="max-height: 150px;" src="assets/images/not-found.png" alt="nessun risultato trovato">
 
             <div class="lead">Nessuna opportunità trovata.</div>
-
-            <button
-                class="btn btn-outline-success"
-                (click)="create()"
-            >
-                Crea opportunità
-            </button>
         </div>
     </ng-template>
     
@@ -73,6 +67,7 @@
             <td>
                 <div class="d-flex gap-2 justify-content-center">
                     <button
+                        *rbacAllow="[ ROLES.RESPONSABILE_COMMERCIALE, ROLES.CONTROLLER, ROLES.SEGRETERIA, ROLES.AMMINISTRATORE ]"
                         type="button"
                         class="btn btn-warning shadow"
                         (click)="update(item)"
