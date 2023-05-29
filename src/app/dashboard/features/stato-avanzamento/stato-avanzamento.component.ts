@@ -6,7 +6,7 @@ import { StatoAvanzamentoWrapService } from 'src/app/dashboard/features/stato-av
 import { GetAvanzamentoParam } from 'src/app/dashboard/features/stato-avanzamento/models/stato-avanzamento.models';
 import { ToastService } from 'src/app/services/toast.service';
 import { enforceMinMax } from 'src/app/utils/input';
-import { BUSINESS_MANAGER, ROLES } from 'src/app/models/user';
+import { ROLES } from 'src/app/models/user';
 import { jsonCopy } from 'src/app/utils/json';
 import { InputComponent } from 'src/app/shared/components/input/input.component';
 import { MonthpickerStruct } from 'src/app/shared/components/monthpicker/monthpicker.component';
@@ -113,7 +113,6 @@ export class StatoAvanzamentoComponent {
     this.searchClick$
       .pipe(
         takeUntil(this.destroy$),
-        tap(() => this.loading = true),
         map(() =>
           ({
             idReferente: this.idPm,
@@ -136,6 +135,7 @@ export class StatoAvanzamentoComponent {
             _confirm = confirm("Hai del lavoro in sospeso, e rilanciando la ricerca potresti perderlo. Vuoi comunque continuare?");
           return _confirm;
         }),
+        tap(() => this.loading = true),
         switchMap(searchParam =>
           this.statoAvanzamentoWrap
             .getAvanzamento$(searchParam)
@@ -393,7 +393,7 @@ export class StatoAvanzamentoComponent {
     if (t)
       return t.avanzamento.some(a =>
         a.dettaglioAvanzamento!.some(d =>
-          (d as any).dirty
+          (d as any)._dirty
         )
       );
 
@@ -401,7 +401,7 @@ export class StatoAvanzamentoComponent {
     return this.tabs.some(t =>
       t.avanzamento.some(a =>
         a.dettaglioAvanzamento!.some(d =>
-          (d as any).dirty
+          (d as any)._dirty
         )
       )
     );
