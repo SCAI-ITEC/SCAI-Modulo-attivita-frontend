@@ -45,6 +45,8 @@ export class MiscDataService {
         private commesseService: CommessaService
     ) {
 
+        console.log("MiscDataService instance", this);
+
         this.http.get('assets/json/id-azienda-azienda.json')
             .subscribe(res => this.idAziendaAzienda = res);
 

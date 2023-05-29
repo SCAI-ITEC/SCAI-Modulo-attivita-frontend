@@ -8,6 +8,8 @@ import { ToastService } from 'src/app/services/toast.service';
 import { Subject, startWith, switchMap } from 'rxjs';
 import { TaskCreazioneModifica } from '../../dialogs/task-creazione-modifica/task-creazione-modifica.component';
 import { SottocommessaService } from '../../services/sottocommessa.service';
+import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 interface Tab {
   id: number;
@@ -21,6 +23,8 @@ interface Tab {
 })
 export class TasksComponent {
 
+  ROLES = ROLES;
+
   @Input("idCommessa") idCommessa!: number;
   @Input("idSottocommessa") idSottocommessa!: number;
 
@@ -32,6 +36,7 @@ export class TasksComponent {
   tasks: TaskDto[] = [];
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
     private sottocommessaService: SottocommessaService,
     private taskService: TaskService,
     private modalService: NgbModal,

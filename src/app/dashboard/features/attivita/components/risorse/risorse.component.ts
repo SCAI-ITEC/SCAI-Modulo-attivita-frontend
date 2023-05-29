@@ -9,6 +9,8 @@ import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { ToastService } from 'src/app/services/toast.service';
 import { Subject, startWith, switchMap } from 'rxjs';
 import { TaskCreazioneModifica } from '../../dialogs/task-creazione-modifica/task-creazione-modifica.component';
+import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 @Component({
   selector: 'app-risorse',
@@ -16,6 +18,8 @@ import { TaskCreazioneModifica } from '../../dialogs/task-creazione-modifica/tas
   styleUrls: ['./risorse.component.css']
 })
 export class RisorseComponent {
+
+  ROLES = ROLES;
 
   @Input("idCommessa") idCommessa!: number;
   @Input("idSottocommessa") idSottocommessa!: number;
@@ -28,6 +32,7 @@ export class RisorseComponent {
   risorseTask: RisorsaTaskWrap[] = [];
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
     private taskService: TaskService,
     private risorsaService: RisorsaService,
     private modalService: NgbModal,

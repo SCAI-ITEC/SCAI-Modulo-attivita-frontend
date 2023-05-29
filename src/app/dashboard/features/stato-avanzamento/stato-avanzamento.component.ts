@@ -1,12 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { catchError, combineLatest, filter, map, NEVER, of, startWith, Subject, switchMap, takeUntil, tap, throwError } from 'rxjs';
-import { Dettaglio, EnumAvanzamento, EnumStatiChiusura, GetSottoCommessePerReferenteResponse, UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
+import { catchError, combineLatest, filter, map, of, Subject, switchMap, takeUntil, tap, throwError } from 'rxjs';
+import { Dettaglio, DettaglioAvanzamento, EnumAvanzamento, EnumStatiChiusura, GetSottoCommesseAvanzamentoResponse, GetSottoCommessePerReferenteResponse, UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
 import { StatoAvanzamentoWrapService } from 'src/app/dashboard/features/stato-avanzamento/services/stato-avanzamento-wrap.service';
-import { GetAvanzamentoParam, SottocommessaAvanzamento, SottocommessaAvanzamentoDettaglio } from 'src/app/dashboard/features/stato-avanzamento/models/stato-avanzamento.models';
+import { GetAvanzamentoParam } from 'src/app/dashboard/features/stato-avanzamento/models/stato-avanzamento.models';
 import { ToastService } from 'src/app/services/toast.service';
 import { enforceMinMax } from 'src/app/utils/input';
-import { BUSINESS_MANAGER } from 'src/app/models/user';
+import { BUSINESS_MANAGER, ROLES } from 'src/app/models/user';
 import { jsonCopy } from 'src/app/utils/json';
 import { InputComponent } from 'src/app/shared/components/input/input.component';
 import { MonthpickerStruct } from 'src/app/shared/components/monthpicker/monthpicker.component';
@@ -15,7 +15,7 @@ import { structToIso } from 'src/app/utils/date';
 interface Tab {
   id: number;
   title: string;
-  avanzamento: SottocommessaAvanzamento[];
+  avanzamento: GetSottoCommesseAvanzamentoResponse[];
 }
 
 @Component({
@@ -25,14 +25,13 @@ interface Tab {
 })
 export class StatoAvanzamentoComponent {
 
+  EnumStatiChiusura = EnumStatiChiusura;
+  ROLES = ROLES;
+
   @ViewChild("clienteAutocomplete") clienteAutocomplete!: InputComponent;
   @ViewChild("sottocommessaAutocomplete") sottocommessaAutocomplete!: InputComponent;
   @ViewChild("pmAutocomplete") pmAutocomplete!: InputComponent;
   @ViewChild("bmAutocomplete") bmAutocomplete!: InputComponent;
-
-  enforceMinMax = enforceMinMax;
-  EnumStatiChiusura = EnumStatiChiusura;
-  BUSINESS_MANAGER = BUSINESS_MANAGER;
 
   destroy$ = new Subject<void>();
   searchClick$ = new Subject<void>();
@@ -327,16 +326,16 @@ export class StatoAvanzamentoComponent {
     this.meseCtrl.reset();
   }
 
-  updateResults(avanzamento: SottocommessaAvanzamento[]) {
+  updateResults(avanzamento: GetSottoCommesseAvanzamentoResponse[]) {
 
     const idPmAvanzamento = avanzamento
       .reduce(
         (a, b) => {
-          a[b.referente.idUtente!] = a[b.referente.idUtente!] || [];
-          a[b.referente.idUtente!].push(b);
+          a[b.referente!.idUtente!] = a[b.referente!.idUtente!] || [];
+          a[b.referente!.idUtente!].push(b);
           return a;
         },
-        {} as { [key: number]: SottocommessaAvanzamento[] }
+        {} as { [key: number]: GetSottoCommesseAvanzamentoResponse[] }
       );
 
     const idPmList = Object.keys(idPmAvanzamento) as unknown as number[];
@@ -357,7 +356,7 @@ export class StatoAvanzamentoComponent {
 
       this.addTab(
         idPm,
-        ref.cognome + ' ' + ref.nome,
+        ref!.cognome + ' ' + ref!.nome,
         idPmAvanzamento[idPm]
       );
     }
@@ -370,7 +369,7 @@ export class StatoAvanzamentoComponent {
   addTab(
     id: number,
     title: string,
-    avanzamento: SottocommessaAvanzamento[]
+    avanzamento: GetSottoCommesseAvanzamentoResponse[]
   ) {
 
     // Update existing
@@ -393,22 +392,22 @@ export class StatoAvanzamentoComponent {
     // Check given tab
     if (t)
       return t.avanzamento.some(a =>
-        a.dettaglio.some(d =>
-          d.dirty
+        a.dettaglioAvanzamento!.some(d =>
+          (d as any).dirty
         )
       );
 
     // Check all tabs
     return this.tabs.some(t =>
       t.avanzamento.some(a =>
-        a.dettaglio.some(d =>
-          d.dirty
+        a.dettaglioAvanzamento!.some(d =>
+          (d as any).dirty
         )
       )
     );
   }
 
-  salvaDettaglio(dettaglio: SottocommessaAvanzamentoDettaglio) {
+  salvaDettaglio(dettaglio: GetSottoCommesseAvanzamentoResponse) {
     this.statoAvanzamentoWrap
       .postAvanzamento$(dettaglio)
       .pipe(
@@ -427,7 +426,39 @@ export class StatoAvanzamentoComponent {
       .subscribe();
   }
 
-  trackByIdCommessa(index: number, item: SottocommessaAvanzamento) {
-    return item.commessa.codice;
+  updateCumulativePercentages(
+    avanzamento: GetSottoCommesseAvanzamentoResponse,
+    dettaglio: DettaglioAvanzamento,
+    percentElement: HTMLInputElement
+  ) {
+
+    const dettagli = avanzamento.dettaglioAvanzamento!;
+
+    // Calculate the sum of other avanzamenti
+    const sumOfTheRest = dettagli
+      .filter(d => d !== dettaglio)
+      .reduce((a, b: any) => a + b.avanzamentoTotale, 0);
+
+    // Enforce min-max on input
+    enforceMinMax(percentElement, 0, 100 - Math.ceil(sumOfTheRest));
+    dettaglio.avanzamentoTotale = parseInt(percentElement.value) || 0;
+
+    // Recalculate cumulato
+    for (let i = 0; i < dettagli.length; i++) {
+      const prev = dettagli[i - 1] as any;
+      const curr = dettagli[i] as any;
+      curr.cumulato = curr.avanzamentoTotale + (prev ? prev.cumulato : 0);
+    }
+
+    Object.getPrototypeOf(dettaglio)._dirty = true;
+  }
+
+  changeStatoValidazione(dettaglio: DettaglioAvanzamento, stato: EnumStatiChiusura) {
+    dettaglio.statoValidazione!.id = stato;
+    Object.getPrototypeOf(dettaglio)._dirty = true;
+  }
+
+  trackByIdCommessa(index: number, avanzamento: GetSottoCommesseAvanzamentoResponse) {
+    return avanzamento.commessa!.codice;
   }
 }
