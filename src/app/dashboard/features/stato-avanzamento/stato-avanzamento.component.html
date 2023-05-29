@@ -223,11 +223,11 @@
                                                         (keyup)="updateCumulativePercentages(avanzamento, dettaglio, percEl)"
                                                     >
                                                     <div class="no-text-break" style="text-align: right; width: 3rem">
-                                                        {{ dettaglio.avanzamentoTotale }} %
+                                                        {{ dettaglio.avanzamentoTotale | number : "1.0-2" }} %
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="text-end">{{ dettaglio.cumulato }} %</td>
+                                            <td class="text-end">{{ dettaglio.cumulato | number : "1.0-2" }} %</td>
                                             <td class="text-end">{{ dettaglio.costoCompetenza | currency:"EUR":"symbol" }}</td>
                                             <td class="text-end">{{ dettaglio.ricavoCompetenza | currency:"EUR":"symbol" }}</td>
                                             <td class="text-center">
