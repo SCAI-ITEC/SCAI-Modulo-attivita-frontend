@@ -161,6 +161,12 @@
             <h5 class="table-plus__title">Tabella commesse</h5>
 
             <button
+                *rbacAllow="[
+                    ROLES.RESPONSABILE_COMMERCIALE,
+                    ROLES.CONTROLLER,
+                    ROLES.SEGRETERIA,
+                    ROLES.AMMINISTRATORE
+                ]"
                 type="button"
                 class="table-plus__action btn btn-success shadow"
                 (click)="create()"
@@ -267,6 +273,12 @@
                         </button>
 
                         <button
+                            *rbacAllow="[
+                                ROLES.RESPONSABILE_COMMERCIALE,
+                                ROLES.CONTROLLER,
+                                ROLES.SEGRETERIA,
+                                ROLES.AMMINISTRATORE
+                            ]"
                             type="button"
                             class="btn btn-warning shadow"
                             (click)="update(item)"
@@ -275,6 +287,12 @@
                         </button>
 
                         <button
+                            *rbacAllow="[
+                                ROLES.RESPONSABILE_COMMERCIALE,
+                                ROLES.CONTROLLER,
+                                ROLES.SEGRETERIA,
+                                ROLES.AMMINISTRATORE
+                            ]"
                             type="button"
                             class="btn btn-danger shadow"
                             (click)="

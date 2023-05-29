@@ -53,6 +53,12 @@
             </div>
         
             <button
+                *rbacAllow="[
+                    ROLES.RESPONSABILE_COMMERCIALE,
+                    ROLES.CONTROLLER,
+                    ROLES.SEGRETERIA,
+                    ROLES.AMMINISTRATORE
+                ]"
                 type="button"
                 class="btn btn-warning btn-lg shadow"
                 (click)="update()"
@@ -151,7 +157,10 @@
         </ng-template>
     </li>
 
-    <li [ngbNavItem]="6" class="attivita-nav__item">
+    <li
+        [ngbNavItem]="6"
+        class="attivita-nav__item"
+    >
         <a ngbNavLink>
             <i class="bi bi-6-square-fill"></i>
             Ordini
@@ -161,7 +170,10 @@
         </ng-template>
     </li>
 
-    <li [ngbNavItem]="7" class="attivita-nav__item">
+    <li
+        [ngbNavItem]="7"
+        class="attivita-nav__item"
+    >
         <a ngbNavLink>
             <i class="bi bi-7-square-fill"></i>
             Fatture

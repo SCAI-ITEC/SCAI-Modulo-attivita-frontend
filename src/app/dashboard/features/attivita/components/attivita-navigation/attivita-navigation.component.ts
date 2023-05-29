@@ -9,13 +9,18 @@ import { CommessaService } from '../../services/commessa.service';
 import { OffertaService } from '../../services/offerta.service';
 import { SottocommessaService } from '../../services/sottocommessa.service';
 import { MiscDataService } from '../../services/miscData.service';
+import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 @Component({
   selector: 'app-attivita-navigation',
   templateUrl: './attivita-navigation.component.html',
-  styleUrls: ['./attivita-navigation.component.css']
+  styleUrls: ['./attivita-navigation.component.css'],
+  providers: [ AttivitaNavStateService ]
 })
 export class AttivitaNavigationComponent {
+
+	ROLES = ROLES;
 
   	@Input("idCommessa") idCommessa!: number;
 	@Output("commessaUpdate") commessaUpdateEmitter = new EventEmitter<CommessaDto>();
@@ -32,6 +37,7 @@ export class AttivitaNavigationComponent {
 	bm?: UtentiAnagrafica;
 
 	constructor(
+		private attivitaNavState: AttivitaNavStateService,
 		private miscDataService: MiscDataService,
 		private commessaService: CommessaService,
 		private offertaService: OffertaService,
@@ -47,6 +53,8 @@ export class AttivitaNavigationComponent {
 			this.sottocommessaService.checkExistingSottocommesseByIdCommessa$(this.idCommessa)
 		])
 		.subscribe(([commessa, offerta, hasSottocommesse]) => {
+
+			this.attivitaNavState.commessa = commessa;
 
 			this.commessa = commessa;
 

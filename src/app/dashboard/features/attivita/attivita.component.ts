@@ -12,6 +12,7 @@ import { EliminazioneDialog } from './dialogs/eliminazione.dialog';
 import { Commessa, CommessaSearchDto } from './models/commessa';
 import { CommessaService } from './services/commessa.service';
 import { MiscDataService } from './services/miscData.service';
+import { ROLES } from 'src/app/models/user';
 
 const today = new Date();
 const [ currYear, currMonth, currDay ] = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ];
@@ -27,6 +28,8 @@ interface Tab {
   styleUrls: ['./attivita.component.css']
 })
 export class AttivitaComponent {
+
+  ROLES = ROLES;
 
   @ViewChild("clienteDirettoAutocomplete") clienteDirettoAutocomplete!: InputComponent;
   @ViewChild("clienteFinaleAutocomplete") clienteFinaleAutocomplete!: InputComponent;

@@ -10,6 +10,13 @@
         <h5 class="table-plus__title">Tabella tasks</h5>
 
         <button
+            *rbacAllow="[
+                ROLES.RESPONSABILE_COMMERCIALE,
+                ROLES.CONTROLLER,
+                ROLES.SEGRETERIA,
+                ROLES.AMMINISTRATORE,
+                attivitaNavState.userBmRole
+            ]"
             type="button"
             class="table-plus__action btn btn-success shadow"
             (click)="create()"
@@ -33,13 +40,6 @@
             <img class="img-fluid" style="max-height: 150px;" src="assets/images/no-results.svg" alt="nessun risultato trovato">
 
             <div class="lead">Nessun task trovato.</div>
-
-            <button
-                class="btn btn-outline-success"
-                (click)="create()"
-            >
-                Crea task
-            </button>
         </div>
     </ng-template>
     
@@ -76,6 +76,13 @@
                 <div class="d-flex gap-2 justify-content-center">
 
                     <button
+                        *rbacAllow="[
+                            ROLES.RESPONSABILE_COMMERCIALE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA,
+                            ROLES.AMMINISTRATORE,
+                            attivitaNavState.userBmRole
+                        ]"
                         type="button"
                         class="btn btn-outline-primary shadow"
                         [disabled]="item._duplicating"
@@ -98,6 +105,14 @@
                     </button>
 
                     <button
+                        *rbacAllow="[
+                            ROLES.RESPONSABILE_COMMERCIALE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA,
+                            ROLES.AMMINISTRATORE,
+                            attivitaNavState.userPmRole,
+                            attivitaNavState.userBmRole
+                        ]"
                         type="button"
                         class="btn btn-warning shadow"
                         (click)="update(item)"
@@ -106,6 +121,13 @@
                     </button>
 
                     <button
+                        *rbacAllow="[
+                            ROLES.RESPONSABILE_COMMERCIALE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA,
+                            ROLES.AMMINISTRATORE,
+                            attivitaNavState.userBmRole
+                        ]"
                         type="button"
                         class="btn btn-danger shadow"
                         (click)="delete(item)"
