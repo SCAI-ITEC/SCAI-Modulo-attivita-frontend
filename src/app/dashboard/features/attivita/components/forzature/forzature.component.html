@@ -10,6 +10,13 @@
         <h5 class="table-plus__title">Tabella {{ categoria }}</h5>
 
         <button
+            *rbacAllow="[
+                ROLES.RESPONSABILE_COMMERCIALE,
+                ROLES.CONTROLLER,
+                ROLES.SEGRETERIA,
+                ROLES.AMMINISTRATORE,
+                attivitaNavState.userBmRole
+            ]"
             type="button"
             class="table-plus__action btn btn-success shadow"
             (click)="create()"
@@ -33,13 +40,6 @@
             <img class="img-fluid" style="max-height: 150px;" src="assets/images/no-results.png" alt="nessun risultato trovato">
 
             <div class="lead">Nessuna forzatura trovata.</div>
-
-            <button
-                class="btn btn-outline-success"
-                (click)="create()"
-            >
-                Crea {{ categoria }}
-            </button>
         </div>
     </ng-template>
     
@@ -83,6 +83,13 @@
                 <div class="d-flex gap-2 justify-content-center">
 
                     <button
+                        *rbacAllow="[
+                            ROLES.RESPONSABILE_COMMERCIALE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA,
+                            ROLES.AMMINISTRATORE,
+                            attivitaNavState.userBmRole
+                        ]"
                         type="button"
                         class="btn btn-warning shadow"
                         (click)="update(item)"
@@ -91,6 +98,13 @@
                     </button>
 
                     <button
+                        *rbacAllow="[
+                            ROLES.RESPONSABILE_COMMERCIALE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA,
+                            ROLES.AMMINISTRATORE,
+                            attivitaNavState.userBmRole
+                        ]"
                         type="button"
                         class="btn btn-danger shadow"
                         (click)="delete(item)"

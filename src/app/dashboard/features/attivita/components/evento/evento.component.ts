@@ -4,6 +4,8 @@ import { startWith, Subject } from 'rxjs';
 import { EventoCreazioneModifica } from '../../dialogs/evento-creazione-modifica/evento-creazione-modifica.component';
 import { EventoDto } from '../../models/evento';
 import { EventoService } from '../../services/evento.service';
+import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 
 @Component({
   selector: 'app-evento',
@@ -12,6 +14,8 @@ import { EventoService } from '../../services/evento.service';
 })
 export class EventoComponent {
 
+  ROLES = ROLES;
+
   @Input("idCommessa") idCommessa!: number;
 
   refresh$ = new Subject<void>();
@@ -19,6 +23,7 @@ export class EventoComponent {
   eventi: EventoDto[] = [];
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
     private eventoService: EventoService,
     private modalService: NgbModal
   ) { }

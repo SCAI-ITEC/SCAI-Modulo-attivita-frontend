@@ -31,7 +31,7 @@ export class LoginComponent {
   utenti: { idUtente: number, nome: string, cognome: string }[] = [];
   utentiFormatter = (user: any) => user.cognome + ' ' + user.nome;
 
-  roles = ROLES.map(role => ({ text: role, name: role }));
+  roles = Object.values(ROLES).map(role => ({ text: role, name: role }));
   rolesFormatter = (role: any) => role.name?.split('-').pop().trim();
 
   constructor(
@@ -116,6 +116,17 @@ export class LoginComponent {
       .subscribe(() => {
         this.router.navigateByUrl('/');
       });
+  }
+
+  isValidToken(token: string) {
+    try {
+      const sections = token.split(".");
+      JSON.parse(atob(sections[1]));
+      return sections.every(section => /^[\w-]+$/.test(section));
+    }
+    catch(e) {
+      return false;
+    }
   }
 
 }

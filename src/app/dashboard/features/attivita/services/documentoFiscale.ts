@@ -5,7 +5,6 @@ import { Fattura } from "../models/fattura";
 import { lastValueFrom } from "rxjs";
 import { downloadFile } from "src/app/utils/file";
 import { ToastService } from "src/app/services/toast.service";
-import { Ordine } from "../models/ordine";
 import { OrdiniService } from "src/app/api/modulo-attivita/services";
 
 @Injectable({

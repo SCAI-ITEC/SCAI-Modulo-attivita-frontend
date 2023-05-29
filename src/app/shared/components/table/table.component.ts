@@ -112,12 +112,12 @@ export class TableComponent {
 
     this.filteredItems = this.items.filter(item => {
 
-      const term = this.lastTerm$.getValue().toLowerCase();
+      const term = (this.lastTerm$.getValue() || "").toLowerCase();
 
       if (this.searchable && Array.isArray(this.searchable) && this.searchable.length)
         return this.searchable.some(path => {
-          const resolved = resolve(path, item) || '';
-          return (resolved + '').toLowerCase().includes(term)
+          const resolved = resolve(path, item) || "";
+          return (resolved + "").toLowerCase().includes(term);
         });
 
       // Global hacky search
@@ -161,7 +161,10 @@ export class TableComponent {
 
   paginate() {
 
-    this.sortedItems.forEach(item => item._selected = false);
+    this.sortedItems.forEach(item => {
+      const newPrototype = { _selected: false, ...Object.getPrototypeOf(item) };
+      Object.setPrototypeOf(item, newPrototype);
+    });
 
 		const sliceOfItems = this.sortedItems.slice(
       (this.page - 1) * this.pageSize,
