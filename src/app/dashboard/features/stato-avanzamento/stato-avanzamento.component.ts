@@ -140,8 +140,8 @@ export class StatoAvanzamentoComponent {
           this.statoAvanzamentoWrap
             .getAvanzamento$(searchParam)
             .pipe(
-              catchError(err => {
-                this.toastService.show(err.error, { classname: 'bg-danger text-light', delay: 10000 });
+              catchError(() => {
+                this.toastService.show("Non è stato possibile recuperare i dati. Contattare il supporto tecnico.", { classname: 'bg-danger text-light', delay: 10000 });
                 return of([]);
               })
             )
