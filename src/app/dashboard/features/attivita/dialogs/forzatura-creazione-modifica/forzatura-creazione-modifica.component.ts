@@ -12,7 +12,7 @@ import { SottocommessaService } from "../../services/sottocommessa.service";
 import { Dettaglio } from "src/app/api/modulo-attivita/models";
 import { MonthpickerStruct } from "src/app/shared/components/monthpicker/monthpicker.component";
 import { ForzaturaService } from "../../services/forzatura.service";
-import { MiscDataService } from "../../services/miscData.service";
+import { MiscDataService } from "../../services/miscellaneous-data.service";
 import { ForzaturaDto } from "../../models/forzatura";
 import { isoToStruct, structToIso } from "src/app/utils/date";
 

@@ -11,7 +11,7 @@ import { CommessaCreazioneModifica } from './dialogs/commessa-creazione-modifica
 import { EliminazioneDialog } from './dialogs/eliminazione.dialog';
 import { Commessa, CommessaSearchDto } from './models/commessa';
 import { CommessaService } from './services/commessa.service';
-import { MiscDataService } from './services/miscData.service';
+import { MiscDataService } from './services/miscellaneous-data.service';
 import { ROLES } from 'src/app/models/user';
 
 const today = new Date();

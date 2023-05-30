@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { RisorsaTaskDto, RisorsaTaskWrap, UpsertLegameParam } from '../models/risorsa';
-import { MiscDataService } from './miscData.service';
+import { MiscDataService } from './miscellaneous-data.service';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Injectable({

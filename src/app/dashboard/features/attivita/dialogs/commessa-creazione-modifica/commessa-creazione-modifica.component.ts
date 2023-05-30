@@ -8,7 +8,7 @@ import { jsonCopy } from "src/app/utils/json";
 import { CommessaDto, CreateCommessaParam, SimpleDto, UpdateCommessaParam } from "../../models/commessa";
 import { DIALOG_MODE } from "../../models/dialog";
 import { CommessaService } from "../../services/commessa.service";
-import { MiscDataService } from "../../services/miscData.service";
+import { MiscDataService } from "../../services/miscellaneous-data.service";
 import { SEGRETERIA } from "src/app/models/user";
 
 @Component({

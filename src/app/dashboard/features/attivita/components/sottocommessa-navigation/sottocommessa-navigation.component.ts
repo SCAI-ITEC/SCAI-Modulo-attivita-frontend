@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommessaDto } from '../../models/commessa';
 import { SottocommessaService } from '../../services/sottocommessa.service';
-import { MiscDataService } from '../../services/miscData.service';
+import { MiscDataService } from '../../services/miscellaneous-data.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-creazione-modifica/sottocommessa-creazione-modifica.component';
 import { UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';

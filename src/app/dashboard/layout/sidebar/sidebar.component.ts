@@ -3,7 +3,7 @@ import { RouterLinkActive } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { SidebarService } from 'src/app/services/sidebar.service';
-import { MiscDataService } from '../../features/attivita/services/miscData.service';
+import { MiscDataService } from '../../features/attivita/services/miscellaneous-data.service';
 
 interface SidebarSubitem {
   title: string;

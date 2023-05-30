@@ -7,7 +7,7 @@ import { DIALOG_MODE } from "../../models/dialog";
 import { TaskService } from "../../services/task.service";
 import { TaskDto } from "../../models/task";
 import { GetDiarieResponse, GetDiarieUtentiResponse, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
-import { MiscDataService } from "../../services/miscData.service";
+import { MiscDataService } from "../../services/miscellaneous-data.service";
 import { RisorsaTaskWrap, UpsertLegameParam } from "../../models/risorsa";
 import { RisorsaService } from "../../services/risorsa.service";
 import { dedupe, intersection } from "src/app/utils/array";
