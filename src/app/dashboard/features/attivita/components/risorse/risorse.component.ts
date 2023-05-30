@@ -34,7 +34,7 @@ export class RisorseComponent {
 
   constructor(
     public attivitaNavState: AttivitaNavStateService,
-    private authService: AuthService,
+    public authService: AuthService,
     private taskService: TaskService,
     private risorsaService: RisorsaService,
     private modalService: NgbModal,

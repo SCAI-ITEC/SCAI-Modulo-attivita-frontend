@@ -131,7 +131,10 @@
             <td data-label="Inizio">{{ item.inizioAllocazione | date:'yyyy-MM-dd' }}</td>
             <td data-label="Fine">{{ item.fineAllocazione | date:'yyyy-MM-dd' }}</td>
             <td>
-                <div class="d-flex gap-2 justify-content-center">
+                <div
+                    *ngLet="(item.idUtente === authService.user.idUtente) as selfAssignment"
+                    class="d-flex gap-2 justify-content-center"
+                >
 
                     <button
                         *rbacAllow="[
@@ -140,7 +143,8 @@
                             ROLES.SEGRETERIA,
                             ROLES.AMMINISTRATORE,
                             attivitaNavState.userPmRole,
-                            attivitaNavState.userBmRole
+                            attivitaNavState.userBmRole,
+                            (selfAssignment ? ROLES.UTENTE_BASE : '')
                         ]"
                         type="button"
                         class="btn btn-warning shadow"
@@ -155,7 +159,8 @@
                             ROLES.CONTROLLER,
                             ROLES.SEGRETERIA,
                             ROLES.AMMINISTRATORE,
-                            attivitaNavState.userBmRole
+                            attivitaNavState.userBmRole,
+                            (selfAssignment ? ROLES.UTENTE_BASE : '')
                         ]"
                         type="button"
                         class="btn btn-danger shadow"
