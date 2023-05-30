@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
-import { StatoAvanzamentoService, UtentiService } from 'src/app/api/modulo-attivita/services';
+import { StatoAvanzamentoService } from 'src/app/api/modulo-attivita/services';
 import { AuthService } from 'src/app/services/auth.service';
-import { GetClientiParam, GetSottocommesseParam, GetUtentiParam } from '../models/autocomplete.models';
 import { GetAvanzamentoParam } from '../models/stato-avanzamento.models';
 import { DettaglioAvanzamento, EnumStatiChiusura, GetSottoCommesseAvanzamentoResponse } from 'src/app/api/modulo-attivita/models';
 import { format } from 'date-fns';
@@ -15,30 +14,8 @@ export class StatoAvanzamentoWrapService {
 
   constructor(
     private authService: AuthService,
-    private statoAvanzamentoService: StatoAvanzamentoService,
-    private utentiService: UtentiService
+    private statoAvanzamentoService: StatoAvanzamentoService
   ) { }
-
-  getUtenti$(input?: GetUtentiParam) {
-    input = input || {}; // all users by default?
-    input.idAzienda = this.authService.user.idAzienda;
-    return this.utentiService
-      .getUtenti(input as any);
-  }
-
-  getSottocommesse$(input?: GetSottocommesseParam) {
-    input = input || {};
-    input.idAzienda = this.authService.user.idAzienda;
-    return this.statoAvanzamentoService
-      .getSottoCommesse(input as any);
-  }
-
-  getClienti$(input?: GetClientiParam) {
-    input = input || {};
-    input.idAzienda = this.authService.user.idAzienda;
-    return this.statoAvanzamentoService
-      .getClienti(input as any);
-  }
 
   private enrichAvanzamenti(avanzamenti: GetSottoCommesseAvanzamentoResponse[]) {
     return avanzamenti.map(avanzamento => {

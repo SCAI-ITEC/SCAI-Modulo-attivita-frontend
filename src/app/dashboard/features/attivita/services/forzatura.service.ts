@@ -1,9 +1,9 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "src/environments/environment";
-import { SimpleDto } from "../models/commessa";
 import { AuthService } from "src/app/services/auth.service";
 import { CategoriaForzaturaDto, ForzaturaDto } from "../models/forzatura";
+import { SimpleDto } from "../../commons/models/commessa";
 
 @Injectable({
     providedIn: 'root'

@@ -6,13 +6,12 @@ import { Dettaglio, UtentiAnagrafica } from 'src/app/api/modulo-attivita/models'
 import { ToastService } from 'src/app/services/toast.service';
 import { InputComponent } from 'src/app/shared/components/input/input.component';
 import { delayedScrollTo } from 'src/app/utils/dom';
-import { StatoAvanzamentoWrapService } from '../stato-avanzamento/services/stato-avanzamento-wrap.service';
 import { CommessaCreazioneModifica } from './dialogs/commessa-creazione-modifica/commessa-creazione-modifica.component';
 import { EliminazioneDialog } from './dialogs/eliminazione.dialog';
-import { Commessa, CommessaSearchDto } from './models/commessa';
-import { CommessaService } from './services/commessa.service';
-import { MiscDataService } from './services/miscData.service';
 import { ROLES } from 'src/app/models/user';
+import { MiscDataService } from '../commons/services/miscellaneous-data.service';
+import { CommessaSearchDto } from '../commons/models/commessa';
+import { CommessaService } from '../commons/services/commessa.service';
 
 const today = new Date();
 const [ currYear, currMonth, currDay ] = [ today.getFullYear(), today.getMonth() + 1, today.getDate() ];
@@ -111,7 +110,6 @@ export class AttivitaComponent {
 
   constructor(
     private commessaService: CommessaService,
-    private statoAvanzamentoWrap: StatoAvanzamentoWrapService,
     private miscDataService: MiscDataService,
     private modalService: NgbModal,
     private toaster: ToastService
@@ -181,14 +179,14 @@ export class AttivitaComponent {
 
     // Define of autocomplete handlers
     const onClienteSelect$ = () => combineLatest([
-      this.statoAvanzamentoWrap
+      this.miscDataService
         .getUtenti$({
           IsPm: true,
           IsBm: false,
           idCliente: this.idCliDir,
           idCommessa: this.idComm
         }),
-      this.statoAvanzamentoWrap
+      this.miscDataService
         .getUtenti$({
           IsPm: false,
           IsBm: true,
@@ -211,21 +209,21 @@ export class AttivitaComponent {
     );
 
     const onCommessaSelect$ = () => combineLatest([
-      this.statoAvanzamentoWrap
+      this.miscDataService
         .getUtenti$({
           IsPm: true,
           IsBm: false,
           idCliente: this.idCliDir,
           idCommessa: this.idComm
         }),
-      this.statoAvanzamentoWrap
+      this.miscDataService
         .getUtenti$({
           IsPm: false,
           IsBm: true,
           idCliente: this.idCliDir,
           idCommessa: this.idComm
         }),
-      this.statoAvanzamentoWrap
+      this.miscDataService
         .getClienti$({
           idReferente: this.idPm,
           idBusinessManager: this.idBm,
@@ -242,7 +240,7 @@ export class AttivitaComponent {
     );
 
     const onPmSelect$ = () => combineLatest([
-      this.statoAvanzamentoWrap
+      this.miscDataService
         .getClienti$({
           idReferente: this.idPm,
           idBusinessManager: this.idBm,
@@ -263,7 +261,7 @@ export class AttivitaComponent {
     );
 
     const onBmSelect$ = () => combineLatest([
-      this.statoAvanzamentoWrap
+      this.miscDataService
         .getClienti$({
           idReferente: this.idPm,
           idBusinessManager: this.idBm,
