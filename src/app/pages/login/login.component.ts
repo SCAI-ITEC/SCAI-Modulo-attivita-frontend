@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs';
+import { combineLatest, tap } from 'rxjs';
 import { ROLES } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -13,24 +13,26 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class LoginComponent {
 
-  tokenCtrl!: FormControl;
-  idAziendaCtrl!: FormControl;
+  loginForm = new FormGroup({
+    token: new FormControl(null, [ Validators.required ]),
+    idAzienda: new FormControl("15", [ Validators.required ])
+  });
 
-  loginForm!: FormGroup;
-
-  utenteCtrl!: FormControl;
-  idAzienda2Ctrl!: FormControl;
-  rolesCtrl!: FormControl;
+  impersonateForm = new FormGroup({
+    token: new FormControl(null, [ Validators.required ]),
+    idAzienda: new FormControl("15", [ Validators.required ]),
+    utente: new FormControl(null, [ Validators.required ]),
+    roles: new FormControl()
+  });
 
   aziende: { text: string, value: string }[] = [];
+
   idAziendaUtenti: { [key: string]: { idUtente: number, nome: string, cognome: string }[] } = {};
   utenti: { idUtente: number, nome: string, cognome: string }[] = [];
   utentiFormatter = (user: any) => user.cognome + ' ' + user.nome;
 
+  roles = Object.values(ROLES).map(role => ({ text: role, name: role }));
   rolesFormatter = (role: any) => role.name?.split('-').pop().trim();
-  roles = ROLES.map(role => ({ text: role, name: role }));
-
-  fakeLoginForm!: FormGroup;
 
   constructor(
     private authService: AuthService,
@@ -40,39 +42,41 @@ export class LoginComponent {
 
   ngOnInit() {
 
-    this.tokenCtrl = new FormControl("eyJhbGciOiJIUzUxMiJ9.eyJkYXRhIjoiZXlKNmFYQWlPaUpFUlVZaUxDSmhiR2NpT2lKa2FYSWlMQ0psYm1NaU9pSkJNVEk0UjBOTkluMC4uLXItSDJ1UkxSZnhNckdMVi40Y0hpVS1IV19lTVB0ZXlKS0JHYkFFNzRDczRzTy1Ub0tOODdUaHpyd24wcDRMSi04RGJGZ0ZBVUlJXzJxaGhrUG5TQ2NoUDRkUDdlQi13TjBxT3BWdVNTQTBJLW8yNFNLbHNYNmpFUTlST2p2LW83SXM1VVJZWGdVU0xrSUVRcV90Vl9oUjZkWjByN0Q1Z3VVcHIzTkJibFJlRWlNTFUuSHdaU2lXMjhCS3Etc0FDb29nOGxsQSIsImV4cCI6MTY3OTE0OTkyMiwiaWF0IjoxNjc5MDYzNTIyfQ.9ZDrsYclyahxJZiA_m1aolCkt5VXE9DFCTAca8DqO1QKpJzbRU-oR5o2NXNXH455PlzxvJSCWdvzp6LoAT1sTA");
-    this.idAziendaCtrl = new FormControl(15);
-
-    this.loginForm = new FormGroup({
-      token: this.tokenCtrl,
-      idAzienda: this.idAziendaCtrl
-    });
-
-    this.utenteCtrl = new FormControl();
-    this.idAzienda2Ctrl = new FormControl();
-    this.rolesCtrl = new FormControl();
-
-    this.idAzienda2Ctrl.valueChanges
+    this.impersonateForm.controls.idAzienda
+      .valueChanges
       .pipe(
-        tap((idAzienda: string) => {
-          this.utenteCtrl.setValue(null);
+        tap(idAzienda => {
+
+          if (idAzienda === null || idAzienda === undefined) return;
+
+          this.impersonateForm.controls.utente.setValue(null);
+
           if (this.idAziendaUtenti[idAzienda])
             this.utenti = this.idAziendaUtenti[idAzienda];
         })
       )
       .subscribe();
 
-    this.http.get('assets/json/users.json')
-      .subscribe((res: any) => {
-        this.idAziendaUtenti = res;
-        this.aziende = Object.keys(res).map(value => ({ text: value, value }))
-        this.idAzienda2Ctrl.setValue(15);
-      });
+    combineLatest([
+      this.http.get('assets/json/id-azienda-azienda.json'),
+      this.http.get('assets/json/users.json')
+    ])
+    .subscribe(([ idAziendaAzienda, idAziendaUtenti ]) => {
 
-    this.fakeLoginForm = new FormGroup({
-      utente: this.utenteCtrl,
-      idAzienda: this.idAzienda2Ctrl,
-      roles: this.rolesCtrl
+      // Set aziende
+      Object.entries(idAziendaAzienda)
+        .forEach(([ idAzienda, azienda ]) =>
+          this.aziende.push({
+            value: idAzienda,
+            text: azienda.descrizione
+          })
+        );
+
+      // Set utenti
+      this.idAziendaUtenti = idAziendaUtenti as any;
+
+      // Set idAzienda
+      this.impersonateForm.controls.idAzienda.setValue("15");
     });
   }
 
@@ -83,25 +87,46 @@ export class LoginComponent {
     if (!val.token || !val.idAzienda)
       return;
 
-    this.authService.login(val.token, +val.idAzienda)
+    this.authService
+      .login(
+        val.token,
+        parseInt(val.idAzienda)
+      )
       .subscribe(() => {
         this.router.navigateByUrl('/');
       });
   }
 
-  fakeLogin() {
+  impersonateLogin() {
 
-    const val = this.fakeLoginForm.value;
+    const val = this.impersonateForm.value;
 
-    if (!val.utente || !val.idAzienda)
+    if (!val.token || !val.utente || !val.idAzienda)
       return;
 
-    this.authService.fakeLogin(
-      val.utente,
-      +val.idAzienda,
-      val.roles ? val.roles.map((role: any) => role.name) : []
-    );
-    this.router.navigateByUrl('/');
+    const fakeRoles = (val.roles || []).map((role: any) => role.name);
+
+    this.authService
+      .login(
+        val.token,
+        parseInt(val.idAzienda),
+        val.utente,
+        fakeRoles
+      )
+      .subscribe(() => {
+        this.router.navigateByUrl('/');
+      });
+  }
+
+  isValidToken(token: string) {
+    try {
+      const sections = token.split(".");
+      JSON.parse(atob(sections[1]));
+      return sections.every(section => /^[\w-]+$/.test(section));
+    }
+    catch(e) {
+      return false;
+    }
   }
 
 }

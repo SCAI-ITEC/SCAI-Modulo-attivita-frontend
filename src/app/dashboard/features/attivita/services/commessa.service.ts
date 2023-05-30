@@ -1,17 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
-import {
-  Commessa,
-  CommessaDto,
-  CommessaSearchDto,
-  CreateCommessaParam,
-  GetAllCommesseParam,
-  OpportunitaDto,
-  UpdateCommessaParam
-} from '../models/commessa';
+import { CommessaDto, CommessaSearchDto, CreateCommessaParam, GetAllCommesseParam, OpportunitaDto, UpdateCommessaParam } from '../models/commessa';
 import { CommonsService } from 'src/app/api/modulo-attivita/services';
 
 @Injectable({

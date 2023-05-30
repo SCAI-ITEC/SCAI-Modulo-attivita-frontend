@@ -1,348 +1,361 @@
 <div class="container-xxxl py-5 px-3">
-    
-    <div class="card shadow">
-        <div class="card-body pb-4">
 
-            <h5 class="mb-4">Ricerca commesse</h5>
-
-            <div class="col-md-8 mx-auto">
-
-                <div class="flexgrid flexgrid--2">
-
-                    <app-input
-                        #clienteDirettoAutocomplete
-                        type="autocomplete"
-                        name="clienteDiretto"
-                        label="Cliente diretto"
-                        [options]="clientiDiretti"
-                        [limit]="25"
-                        [formatter]="clienteFormatter"
-                        [ngControl]="clienteDirettoCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-
-                    <app-input
-                        #clienteFinaleAutocomplete
-                        type="autocomplete"
-                        name="clienteFinale"
-                        label="Cliente finale"
-                        [options]="clientiFinali"
-                        [limit]="25"
-                        [formatter]="clienteFormatter"
-                        [ngControl]="clienteFinaleCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-                </div>
-
-                <div class="flexgrid flexgrid--3">
-
-                    <app-input
-                        #commessaAutocomplete
-                        type="autocomplete"
-                        name="commessa"
-                        label="Commessa"
-                        [options]="commesse"
-                        [limit]="25"
-                        [formatter]="commessaFormatter"
-                        [template]="cTmpl"
-                        [ngControl]="commessaCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-                    <ng-template #cTmpl let-r="result" let-t="term">
-                        <div class="my-1">
-                            <div class="small">{{ r?.codiceCommessa }}</div>
-                            <ngb-highlight [result]="r?.descrizione" [term]="t"></ngb-highlight>
-                        </div>
-                    </ng-template>
-
-                    <app-input
-                        #pmAutocomplete
-                        type="autocomplete"
-                        name="projectManager"
-                        label="Project manager"
-                        [options]="pmList"
-                        [formatter]="pmFormatter"
-                        [template]="pmTmpl"
-                        [ngControl]="pmCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-                    <ng-template #pmTmpl let-r="result" let-t="term">
-                        <div class="my-1">
-                            <div class="small">{{ r.idUtente }}</div>
-                            <ngb-highlight [result]="r.cognome + ' '  + r.nome" [term]="t"></ngb-highlight>
-                        </div>
-                    </ng-template>
-
-                    <app-input
-                        #bmAutocomplete
-                        type="autocomplete"
-                        name="businessManager"
-                        label="Business manager"
-                        [options]="bmList"
-                        [formatter]="pmFormatter"
-                        [template]="pmTmpl"
-                        [ngControl]="bmCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-                </div>
-
-                <div class="flexgrid flexgrid--4">
-
-                    <app-input
-                        type="select"
-                        name="tipoAttivita"
-                        label="Tipo attivita"
-                        [ngControl]="tipoAttivitaCtrl"
-                        [options]="tipiAttivita"
-                        [floatingLabel]="true"
-                    ></app-input>
-
-                    <app-input
-                        type="select"
-                        name="stato"
-                        label="Stato"
-                        [ngControl]="statoCtrl"
-                        [options]="stati"
-                        [floatingLabel]="true"
-                    ></app-input>
-
-                    <app-input
-                        type="date"
-                        name="dataInizio"
-                        label="Data inizio"
-                        [max]="dataFine"
-                        [ngControl]="dataInizioCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-
-                    <app-input
-                        type="date"
-                        name="dataFine"
-                        label="Data fine"
-                        [min]="dataInizio"
-                        [ngControl]="dataFineCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-                </div>
-
-                <div class="text-center mt-3 mb-5">
-                    <div class="btn-group shadow">
-
-                        <button
-                            class="btn btn-outline-primary"
-                            (click)="resetControls()"
-                        >
-                            <i class="bi bi-x-lg pe-2"></i>
-                            Reset
-                        </button>
-    
-                        <button
-                            class="btn btn-primary"
-                            (click)="searchClick$.next()"
-                        >
-                            Cerca
-                            <ng-container *ngIf="isLoading; else searchIcon">
-                                <span class="spinner-border spinner-border-sm"></span>
-                            </ng-container>
-                            <ng-template #searchIcon>
-                                <i class="bi bi-search ps-2"></i>
-                            </ng-template>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-center mb-5">
-                <h1 class="display-6">Gestione Commesse</h1>
-                <p class="lead">Questo è il componente radice da cui puoi cercare/creare/modificare le commesse.</p>
-            </div>
-
-            <div class="card app-callout app-callout--blue pt-3 shadow">
-
-                <div class="table-plus">
-
-                    <h5 class="table-plus__title">Tabella commesse</h5>
-
-                    <button
-                        type="button"
-                        class="table-plus__action btn btn-success shadow"
-                        (click)="create()"
-                    >
-                        <i class="bi bi-plus"></i>
-                        Crea commessa
-                    </button>
-                </div>
-
-                <ng-template #emptyTmpl>
-                    <div style="
-                        display: grid;
-                        gap: 0.75rem;
-                        justify-items: center;
-                        margin: 0 auto;
-                        max-width: 400px;
-                        padding: 3rem 1rem;
-                        text-align: center;
-                    ">
-
-                        <ng-container *ngIf="init; else abc">
-
-                            <img class="img-fluid" style="max-height: 150px;" src="assets/images/no-results.svg" alt="nessun risultato trovato">
-
-                            <div class="lead">Nessuna commessa trovata.</div>
-                        </ng-container>
-                        <ng-template #abc>
-                            <ng-container *ngIf="isLoading">
-                                <span class="spinner-border"></span>
-                            </ng-container>
-                        </ng-template>
-                    </div>
-                </ng-template>
-    
-                <app-table
-                    #dt
-                    id="tabella-commesse"
-                    [thead]="thead"
-                    [tbody]="tbody"
-                    [animated]="true"
-                    [items]="commesseResults"
-                    [searchable]="[
-                        'descrizioneCliente',
-                        'descrizione',
-                        'codiceCommessa',
-                        'nomeBusinessManager',
-                        'cognomeBusinessManager',
-                        'nomeProjectManager',
-                        'cognomeProjectManager'
-                    ]"
-                    [paginated]="true"
-                    [pageSize]="5"
-                    [emptyTemplate]="emptyTmpl"
-                >
-    
-                    <ng-template #thead>
-                        <th sortable="descrizioneCliente" (sort)="dt.sort($any($event))">Cliente</th>
-                        <th sortable="tipoAttivita.id" (sort)="dt.sort($any($event))">Tipo attività</th>
-                        <th sortable="valido" (sort)="dt.sort($any($event))">Stato</th>
-                        <th sortable="descrizione" (sort)="dt.sort($any($event))">Commessa</th>
-                        <th sortable="cognomeProjectManager" (sort)="dt.sort($any($event))">PM</th>
-                        <th sortable="cognomeBusinessManager" (sort)="dt.sort($any($event))">BM</th>
-                        <th sortable="data" (sort)="dt.sort($any($event))">Data</th>
-                        <th style="width: 10rem"></th>
-                    </ng-template>
-    
-                    <ng-template #tbody let-item let-term$="term$">
-                        <td data-label="Cliente">
-                            <ngb-highlight [result]="item.descrizioneCliente" [term]="$any(term$ | async)"/>
-                        </td>
-                        <td data-label="Tipo attività">{{ item.tipoAttivita.id === 1 ? 'Opportunità' : 'Commessa int.' }}</td>
-                        <td data-label="Stato">{{ item.valido ? 'Valida' : 'Annullata' }}</td>
-                        <td data-label="Commessa">
-                            <div class="small fw-bold">
-                                <ngb-highlight [result]="item.codiceCommessa"  [term]="$any(term$ | async)"/>
-                            </div>
-                            <ngb-highlight [result]="item.descrizione" [term]="$any(term$ | async)"/>
-                        </td>
-                        <td data-label="Project manager">
-                            <ngb-highlight
-                                [result]="(item.cognomeProjectManager || '') + ' ' + (item.nomeProjectManager || '')"
-                                [term]="$any(term$ | async)"
-                            />
-                        </td>
-                        <td data-label="Business manager">
-                            <ngb-highlight
-                                [result]="(item.cognomeBusinessManager || '') + ' ' + (item.nomeBusinessManager || '')"
-                                [term]="$any(term$ | async)"
-                            />
-                        </td>
-                        <td data-label="Data">{{ item.data | date:'yyyy-MM-dd' }}</td>
-                        <td>
-                            <div
-                                *ngIf="item.valido; else annullatoActions"
-                                class="d-flex gap-2 justify-content-center"
-                            >
-
-                                <button
-                                    type="button"
-                                    class="btn btn-primary shadow"
-                                    (click)="addTab(item.id, item.codiceCommessa)"
-                                >
-                                    <i class="bi bi-arrow-90deg-down"></i>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="btn btn-warning shadow"
-                                    (click)="update(item)"
-                                >
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="btn btn-danger shadow"
-                                    (click)="
-                                        item.tipoAttivita.id === 1
-                                            ? cancelOpportunita(item)
-                                            : deleteCommessaInterna(item)
-                                    "
-                                >
-                                    <i
-                                        class="bi"
-                                        [class.bi-x-circle]="item.tipoAttivita.id === 1"
-                                        [class.bi-trash3]="item.tipoAttivita.id === 2"
-                                    ></i>
-                                </button>
-                            </div>
-
-                            <ng-template #annullatoActions>
-                                <div class="d-flex gap-2 justify-content-center">
-                                    <button
-                                        type="button"
-                                        class="btn btn-outline-primary"
-                                        (click)="restore(item)"
-                                    >
-                                        <i class="bi bi-arrow-counterclockwise"></i>
-                                    </button>
-                                </div>
-                            </ng-template>
-                        </td>
-                    </ng-template>
-                </app-table>
-            </div>
-
-            <div *ngIf="commesseResults.length" class="mt-4">
-                <ul
-                    class="app-tabbable nav-tabs ms-1"
-                    ngbNav
-                    #nav="ngbNav"
-                    [destroyOnHide]="false"
-                    [(activeId)]="activeTabId"
-                >
-                    <li *ngFor="let tab of tabs" [ngbNavItem]="tab.id">
-                        <a ngbNavLink>
-                            {{ tab.codiceCommessa }}
-                            <span class="btn-close p-2 ms-3 fw-light" (click)="closeTab(tab.id, $event)"></span>
-                        </a>
-                        <ng-template ngbNavContent>
-
-                            <app-attivita-navigation
-                                [id]="'commessa-' + tab.id"
-                                [idCommessa]="tab.id"
-                                (commessaUpdate)="refresh$.next()"
-                            ></app-attivita-navigation>
-
-                        </ng-template>
-                    </li>
-                </ul>
-                
-                <div class="app-callout app-callout--blue p-3 pb-4 shadow">
-                    
-                    <div [ngbNavOutlet]="nav"></div>
+    <div class="col-md-8 mx-auto mb-5 card card-body shadow">
         
-                    <div class="p-3 pb-2 text-center" *ngIf="this.tabs.length === 0">
-                        <span class="d-inline-block animate__animated animate__bounceIn animate__delay-100ms">Clicca sul tasto <i class="bi bi-arrow-90deg-down"></i> in riga per scendere nel dettaglio</span>
-                    </div>
+        <h5>Filtri ricerca commesse</h5>
+
+        <div class="flexgrid flexgrid--2">
+
+            <app-input
+                #clienteDirettoAutocomplete
+                type="autocomplete"
+                name="clienteDiretto"
+                label="Cliente diretto"
+                [options]="clientiDiretti"
+                [limit]="25"
+                [formatter]="clienteFormatter"
+                [ngControl]="clienteDirettoCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+
+            <app-input
+                #clienteFinaleAutocomplete
+                type="autocomplete"
+                name="clienteFinale"
+                label="Cliente finale"
+                [options]="clientiFinali"
+                [limit]="25"
+                [formatter]="clienteFormatter"
+                [ngControl]="clienteFinaleCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+        </div>
+
+        <div class="flexgrid flexgrid--3">
+
+            <app-input
+                #commessaAutocomplete
+                type="autocomplete"
+                name="commessa"
+                label="Commessa"
+                [options]="commesse"
+                [limit]="25"
+                [formatter]="commessaFormatter"
+                [template]="cTmpl"
+                [ngControl]="commessaCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+            <ng-template #cTmpl let-r="result" let-t="term">
+                <div class="my-1">
+                    <div class="small">{{ r?.codiceCommessa }}</div>
+                    <ngb-highlight [result]="r?.descrizione" [term]="t"></ngb-highlight>
                 </div>
+            </ng-template>
+
+            <app-input
+                #pmAutocomplete
+                type="autocomplete"
+                name="projectManager"
+                label="Project manager"
+                [options]="pmList"
+                [formatter]="pmFormatter"
+                [template]="pmTmpl"
+                [ngControl]="pmCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+            <ng-template #pmTmpl let-r="result" let-t="term">
+                <div class="my-1">
+                    <div class="small">{{ r.idUtente }}</div>
+                    <ngb-highlight [result]="r.cognome + ' '  + r.nome" [term]="t"></ngb-highlight>
+                </div>
+            </ng-template>
+
+            <app-input
+                #bmAutocomplete
+                type="autocomplete"
+                name="businessManager"
+                label="Business manager"
+                [options]="bmList"
+                [formatter]="pmFormatter"
+                [template]="pmTmpl"
+                [ngControl]="bmCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+        </div>
+
+        <div class="flexgrid flexgrid--4">
+
+            <app-input
+                type="select"
+                name="tipoAttivita"
+                label="Tipo attivita"
+                [ngControl]="tipoAttivitaCtrl"
+                [options]="tipiAttivita"
+                [floatingLabel]="true"
+            ></app-input>
+
+            <app-input
+                type="select"
+                name="stato"
+                label="Stato"
+                [ngControl]="statoCtrl"
+                [options]="stati"
+                [floatingLabel]="true"
+            ></app-input>
+
+            <app-input
+                type="date"
+                name="dataInizio"
+                label="Data inizio"
+                [max]="dataFine"
+                [ngControl]="dataInizioCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+
+            <app-input
+                type="date"
+                name="dataFine"
+                label="Data fine"
+                [min]="dataInizio"
+                [ngControl]="dataFineCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+        </div>
+
+        <div class="text-center my-3">
+            <div class="btn-group shadow">
+
+                <button
+                    class="btn btn-outline-primary"
+                    (click)="resetControls()"
+                >
+                    <i class="bi bi-x-lg pe-2"></i>
+                    Reset
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    (click)="searchClick$.next()"
+                >
+                    Cerca
+                    <ng-container *ngIf="isLoading; else searchIcon">
+                        <span class="spinner-border spinner-border-sm"></span>
+                    </ng-container>
+                    <ng-template #searchIcon>
+                        <i class="bi bi-search ps-2"></i>
+                    </ng-template>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mb-5">
+        <h1 class="display-6">Gestione Commesse</h1>
+        <p class="lead">Questo è il componente radice da cui puoi cercare/creare/modificare le commesse.</p>
+    </div>
+
+    <div class="card app-callout app-callout--blue pt-3 shadow">
+
+        <div class="table-plus">
+
+            <h5 class="table-plus__title">Tabella commesse</h5>
+
+            <button
+                *rbacAllow="[
+                    ROLES.RESPONSABILE_COMMERCIALE,
+                    ROLES.CONTROLLER,
+                    ROLES.SEGRETERIA,
+                    ROLES.AMMINISTRATORE
+                ]"
+                type="button"
+                class="btn btn-success shadow"
+                (click)="create()"
+            >
+                <i class="bi bi-plus"></i>
+                Crea commessa
+            </button>
+        </div>
+
+        <ng-template #emptyTmpl>
+            <div style="
+                display: grid;
+                gap: 0.75rem;
+                justify-items: center;
+                margin: 0 auto;
+                max-width: 400px;
+                padding: 3rem 1rem;
+                text-align: center;
+            ">
+
+                <ng-container *ngIf="init; else abc">
+
+                    <img class="img-fluid" style="max-height: 150px;" src="assets/images/no-results.svg" alt="nessun risultato trovato">
+
+                    <div class="lead">Nessuna commessa trovata.</div>
+                </ng-container>
+                <ng-template #abc>
+                    <ng-container *ngIf="isLoading">
+                        <span class="spinner-border"></span>
+                    </ng-container>
+                </ng-template>
+            </div>
+        </ng-template>
+
+        <app-table
+            #dt
+            id="tabella-commesse"
+            [thead]="thead"
+            [tbody]="tbody"
+            [animated]="true"
+            [items]="commesseResults"
+            [searchable]="[
+                'descrizioneCliente',
+                'descrizione',
+                'codiceCommessa',
+                'nomeBusinessManager',
+                'cognomeBusinessManager',
+                'nomeProjectManager',
+                'cognomeProjectManager'
+            ]"
+            [paginated]="true"
+            [pageSize]="5"
+            [emptyTemplate]="emptyTmpl"
+        >
+
+            <ng-template #thead>
+                <th sortable="descrizioneCliente" (sort)="dt.sort($any($event))">Cliente</th>
+                <th sortable="tipoAttivita.id" (sort)="dt.sort($any($event))">Tipo attività</th>
+                <th sortable="valido" (sort)="dt.sort($any($event))">Stato</th>
+                <th sortable="descrizione" (sort)="dt.sort($any($event))">Commessa</th>
+                <th sortable="cognomeProjectManager" (sort)="dt.sort($any($event))">PM</th>
+                <th sortable="cognomeBusinessManager" (sort)="dt.sort($any($event))">BM</th>
+                <th sortable="data" (sort)="dt.sort($any($event))">Data</th>
+                <th style="width: 10rem"></th>
+            </ng-template>
+
+            <ng-template #tbody let-item let-term$="term$">
+                <td data-label="Cliente">
+                    <ngb-highlight [result]="item.descrizioneCliente" [term]="$any(term$ | async)"/>
+                </td>
+                <td data-label="Tipo attività">{{ item.tipoAttivita.id === 1 ? 'Opportunità' : 'Commessa int.' }}</td>
+                <td data-label="Stato">{{ item.valido ? 'Valida' : 'Annullata' }}</td>
+                <td data-label="Commessa">
+                    <div class="small fw-bold">
+                        <ngb-highlight [result]="item.codiceCommessa"  [term]="$any(term$ | async)"/>
+                    </div>
+                    <ngb-highlight [result]="item.descrizione" [term]="$any(term$ | async)"/>
+                </td>
+                <td data-label="Project manager">
+                    <ngb-highlight
+                        [result]="(item.cognomeProjectManager || '') + ' ' + (item.nomeProjectManager || '')"
+                        [term]="$any(term$ | async)"
+                    />
+                </td>
+                <td data-label="Business manager">
+                    <ngb-highlight
+                        [result]="(item.cognomeBusinessManager || '') + ' ' + (item.nomeBusinessManager || '')"
+                        [term]="$any(term$ | async)"
+                    />
+                </td>
+                <td data-label="Data">{{ item.data | date:'yyyy-MM-dd' }}</td>
+                <td>
+                    <div
+                        *ngIf="item.valido; else annullatoActions"
+                        class="d-flex gap-2 justify-content-center"
+                    >
+
+                        <button
+                            type="button"
+                            class="btn btn-primary shadow"
+                            (click)="addTab(item.id, item.codiceCommessa)"
+                        >
+                            <i class="bi bi-arrow-90deg-down"></i>
+                        </button>
+
+                        <button
+                            *rbacAllow="[
+                                ROLES.RESPONSABILE_COMMERCIALE,
+                                ROLES.CONTROLLER,
+                                ROLES.SEGRETERIA,
+                                ROLES.AMMINISTRATORE
+                            ]"
+                            type="button"
+                            class="btn btn-warning shadow"
+                            (click)="update(item)"
+                        >
+                            <i class="bi bi-pencil"></i>
+                        </button>
+
+                        <button
+                            *rbacAllow="[
+                                ROLES.RESPONSABILE_COMMERCIALE,
+                                ROLES.CONTROLLER,
+                                ROLES.SEGRETERIA,
+                                ROLES.AMMINISTRATORE
+                            ]"
+                            type="button"
+                            class="btn btn-danger shadow"
+                            (click)="
+                                item.tipoAttivita.id === 1
+                                    ? cancelOpportunita(item)
+                                    : deleteCommessaInterna(item)
+                            "
+                        >
+                            <i
+                                class="bi"
+                                [class.bi-x-circle]="item.tipoAttivita.id === 1"
+                                [class.bi-trash3]="item.tipoAttivita.id === 2"
+                            ></i>
+                        </button>
+                    </div>
+
+                    <ng-template #annullatoActions>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary"
+                                (click)="restore(item)"
+                            >
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        </div>
+                    </ng-template>
+                </td>
+            </ng-template>
+        </app-table>
+    </div>
+
+    <div *ngIf="commesseResults.length" class="mt-4">
+        <ul
+            class="app-tabbable nav-tabs"
+            ngbNav
+            #nav="ngbNav"
+            [destroyOnHide]="false"
+            [(activeId)]="activeTabId"
+        >
+            <li *ngFor="let tab of tabs" [ngbNavItem]="tab.id">
+                <a ngbNavLink>
+                    {{ tab.codiceCommessa }}
+                    <span class="btn-close p-2 ms-3 fw-light" (click)="closeTab(tab.id, $event)"></span>
+                </a>
+                <ng-template ngbNavContent>
+
+                    <app-attivita-navigation
+                        [id]="'commessa-' + tab.id"
+                        [idCommessa]="tab.id"
+                        (commessaUpdate)="refresh$.next()"
+                    ></app-attivita-navigation>
+
+                </ng-template>
+            </li>
+        </ul>
+        
+        <div class="app-callout app-callout--blue card card-body pb-4 shadow">
+            
+            <div [ngbNavOutlet]="nav"></div>
+
+            <div class="p-3 pb-2 text-center" *ngIf="this.tabs.length === 0">
+                <span class="d-inline-block animate__animated animate__bounceIn animate__delay-100ms">Clicca sul tasto <i class="bi bi-arrow-90deg-down"></i> in riga per scendere nel dettaglio</span>
             </div>
         </div>
     </div>

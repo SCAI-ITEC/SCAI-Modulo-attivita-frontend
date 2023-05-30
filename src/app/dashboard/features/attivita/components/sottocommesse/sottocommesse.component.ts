@@ -7,6 +7,9 @@ import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-creazione-modifica/sottocommessa-creazione-modifica.component';
 import { CommessaDto } from '../../models/commessa';
 import { SottocommessaService } from '../../services/sottocommessa.service';
+import { ROLES } from 'src/app/models/user';
+import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 interface Tab {
   id: number;
@@ -20,6 +23,8 @@ interface Tab {
 })
 export class SottocommesseComponent {
 
+  ROLES = ROLES;
+
   @Input("idCommessa") idCommessa!: number;
 
   refresh$ = new Subject<void>();
@@ -32,12 +37,15 @@ export class SottocommesseComponent {
   sottocommesse: CommessaDto[] = [];
 
   constructor(
+    public attivitaNavState: AttivitaNavStateService,
+    public authService: AuthService,
     private sottocommessaService: SottocommessaService,
     private toaster: ToastService,
     private modalService: NgbModal
   ) {}
 
   ngOnInit() {
+
     this.refresh$
       .pipe(
         startWith(null),

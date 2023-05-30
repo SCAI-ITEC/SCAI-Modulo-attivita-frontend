@@ -29,6 +29,13 @@
             </div>
     
             <button
+                *rbacAllow="[
+                    ROLES.RESPONSABILE_COMMERCIALE,
+                    ROLES.CONTROLLER,
+                    ROLES.SEGRETERIA,
+                    ROLES.AMMINISTRATORE,
+                    attivitaNavState.userBmRole
+                ]"
                 type="button"
                 class="btn btn-warning btn-lg shadow"
                 (click)="updateTask()"
@@ -50,14 +57,31 @@
 
         <h5 class="table-plus__title">Tabella risorse task</h5>
 
-        <button
-            type="button"
-            class="table-plus__action btn btn-success shadow"
-            (click)="create()"
-        >
-            <i class="bi bi-plus"></i>
-            Crea legame
-        </button>
+        <div class="d-flex flex-wrap gap-3 justify-content-center">
+
+            <button
+                *rbacAllow="[
+                    ROLES.RESPONSABILE_COMMERCIALE,
+                    ROLES.CONTROLLER,
+                    ROLES.SEGRETERIA,
+                    ROLES.AMMINISTRATORE,
+                    attivitaNavState.userBmRole
+                ]"
+                class="btn btn-success shadow"
+                (click)="create()"
+            >
+                <i class="bi bi-plus"></i>
+                Crea legame
+            </button>
+
+            <button
+                class="btn btn-outline-success"
+                (click)="autoassign()"
+            >
+                Assegnami
+                <i class="bi bi-person-fill-add"></i>
+            </button>
+        </div>
     </div>
 
     <ng-template #emptyTmpl>
@@ -74,13 +98,6 @@
             <img class="img-fluid" style="max-height: 150px;" src="assets/images/no-results.svg" alt="nessun risultato trovato">
 
             <div class="lead">Nessun legame trovato.</div>
-
-            <button
-                class="btn btn-outline-success"
-                (click)="create()"
-            >
-                Crea legame
-            </button>
         </div>
     </ng-template>
     
@@ -114,9 +131,22 @@
             <td data-label="Inizio">{{ item.inizioAllocazione | date:'yyyy-MM-dd' }}</td>
             <td data-label="Fine">{{ item.fineAllocazione | date:'yyyy-MM-dd' }}</td>
             <td>
-                <div class="d-flex gap-2 justify-content-center">
+                <div
+                    *ngLet="(item.idUtente === authService.user.idUtente) as selfAssignment"
+                    class="d-flex gap-2 justify-content-center"
+                >
 
                     <button
+                        *rbacAllow="[
+                            ROLES.RESPONSABILE_COMMERCIALE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA,
+                            ROLES.AMMINISTRATORE,
+                            attivitaNavState.userPmRole,
+                            attivitaNavState.userBmRole,
+                            (selfAssignment ? ROLES.UTENTE_BASE : ''),
+                            (selfAssignment ? ROLES.HR_MANAGER : '')
+                        ]"
                         type="button"
                         class="btn btn-warning shadow"
                         (click)="update(item)"
@@ -125,6 +155,15 @@
                     </button>
 
                     <button
+                        *rbacAllow="[
+                            ROLES.RESPONSABILE_COMMERCIALE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA,
+                            ROLES.AMMINISTRATORE,
+                            attivitaNavState.userBmRole,
+                            (selfAssignment ? ROLES.UTENTE_BASE : ''),
+                            (selfAssignment ? ROLES.HR_MANAGER : '')
+                        ]"
                         type="button"
                         class="btn btn-danger shadow"
                         (click)="delete(item)"
