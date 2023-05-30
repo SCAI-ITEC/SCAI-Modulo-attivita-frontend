@@ -5,11 +5,11 @@ import { ToastService } from 'src/app/services/toast.service';
 import { delayedScrollTo } from 'src/app/utils/dom';
 import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-creazione-modifica/sottocommessa-creazione-modifica.component';
-import { CommessaDto } from '../../models/commessa';
 import { SottocommessaService } from '../../services/sottocommessa.service';
 import { ROLES } from 'src/app/models/user';
 import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { CommessaDto } from '../../../commons/models/commessa';
 
 interface Tab {
   id: number;

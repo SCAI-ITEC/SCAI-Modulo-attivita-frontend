@@ -5,11 +5,11 @@ import { startWith } from "rxjs";
 import { Dettaglio, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
 import { ToastService } from "src/app/services/toast.service";
 import { jsonCopy } from "src/app/utils/json";
-import { CommessaDto, CreateCommessaParam, SimpleDto, UpdateCommessaParam } from "../../models/commessa";
 import { DIALOG_MODE } from "../../models/dialog";
-import { CommessaService } from "../../services/commessa.service";
-import { MiscDataService } from "../../services/miscData.service";
 import { SEGRETERIA } from "src/app/models/user";
+import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
+import { CommessaDto, CreateCommessaParam, UpdateCommessaParam } from "../../../commons/models/commessa";
+import { CommessaService } from "../../../commons/services/commessa.service";
 
 @Component({
 	selector: 'app-commessa-creazione-modifica-dialog',
