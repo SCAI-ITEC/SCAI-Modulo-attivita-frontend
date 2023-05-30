@@ -5,11 +5,11 @@ import { Subject, combineLatest, lastValueFrom, takeUntil, tap } from "rxjs";
 import { ToastService } from "src/app/services/toast.service";
 import { jsonCopy } from "src/app/utils/json";
 import { euroMask, euroMask2numStr, numStr2euroMask } from "src/app/utils/mask";
-import { Commessa, CommessaDto, CommessaSearchDto, CreateSottocommessaParam, SimpleDto } from "../../models/commessa";
 import { DIALOG_MODE } from "../../models/dialog";
 import { TipoFatturazione } from "../../models/fatturazione";
-import { CommessaService } from "../../services/commessa.service";
 import { SottocommessaService } from "../../services/sottocommessa.service";
+import { CommessaDto, CommessaSearchDto, CreateSottocommessaParam, SimpleDto } from "../../../commons/models/commessa";
+import { CommessaService } from "../../../commons/services/commessa.service";
 
 @Component({
 	selector: 'app-sottocommessa-creazione-modifica-dialog',

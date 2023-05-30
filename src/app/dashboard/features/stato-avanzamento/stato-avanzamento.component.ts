@@ -11,6 +11,7 @@ import { jsonCopy } from 'src/app/utils/json';
 import { InputComponent } from 'src/app/shared/components/input/input.component';
 import { MonthpickerStruct } from 'src/app/shared/components/monthpicker/monthpicker.component';
 import { structToIso } from 'src/app/utils/date';
+import { MiscDataService } from '../commons/services/miscellaneous-data.service';
 
 interface Tab {
   id: number;
@@ -100,6 +101,7 @@ export class StatoAvanzamentoComponent {
   }
 
   constructor(
+    private miscData: MiscDataService,
     private statoAvanzamentoWrap: StatoAvanzamentoWrapService,
     private toastService: ToastService
   ) { }
@@ -160,26 +162,16 @@ export class StatoAvanzamentoComponent {
 
   initializeAutocompleteValues() {
 
-    this.statoAvanzamentoWrap
-      .getClienti$()
+    this.miscData.getClienti$()
       .subscribe(clienti => this.clienti = clienti);
 
-    this.statoAvanzamentoWrap
-      .getSottocommesse$()
+    this.miscData.getSottocommesse$()
       .subscribe(sottocommesse => this.sottocommesse = sottocommesse);
 
-    this.statoAvanzamentoWrap
-      .getUtenti$({
-        IsPm: true,
-        IsBm: false
-      })
+    this.miscData.getUtenti$({ IsPm: true, IsBm: false })
       .subscribe(pmList => this.pmList = pmList);
 
-    this.statoAvanzamentoWrap
-      .getUtenti$({
-        IsPm: false,
-        IsBm: true
-      })
+    this.miscData.getUtenti$({ IsPm: false, IsBm: true })
       .subscribe(bmList => this.bmList = bmList);
   }
 
@@ -189,13 +181,13 @@ export class StatoAvanzamentoComponent {
       .pipe(
         switchMap(() =>
           combineLatest([
-            this.statoAvanzamentoWrap
+            this.miscData
               .getClienti$({
                 idBusinessManager: this.idBm,
                 idReferente: this.idPm,
                 idSottoCommessa: this.idSottocommessa
               }),
-            this.statoAvanzamentoWrap
+            this.miscData
               .getSottocommesse$({
                 idBusinessManager: this.idBm,
                 idReferente: this.idPm,
@@ -214,13 +206,13 @@ export class StatoAvanzamentoComponent {
       .pipe(
         switchMap(() =>
           combineLatest([
-            this.statoAvanzamentoWrap
+            this.miscData
               .getClienti$({
                 idBusinessManager: this.idBm,
                 idReferente: this.idPm,
                 idSottoCommessa: this.idSottocommessa
               }),
-            this.statoAvanzamentoWrap
+            this.miscData
               .getSottocommesse$({
                 idBusinessManager: this.idBm,
                 idReferente: this.idPm,
@@ -239,21 +231,21 @@ export class StatoAvanzamentoComponent {
       .pipe(
         switchMap(() =>
           combineLatest([
-            this.statoAvanzamentoWrap
+            this.miscData
               .getUtenti$({
                 IsPm: true,
                 IsBm: false,
                 idSottoCommessa: this.idSottocommessa,
                 idCliente: this.idCliente
               }),
-            this.statoAvanzamentoWrap
+            this.miscData
               .getUtenti$({
                 IsPm: false,
                 IsBm: true,
                 idSottoCommessa: this.idSottocommessa,
                 idCliente: this.idCliente
               }),
-            this.statoAvanzamentoWrap
+            this.miscData
               .getClienti$({
                 idBusinessManager: this.idBm,
                 idReferente: this.idPm,
@@ -273,21 +265,21 @@ export class StatoAvanzamentoComponent {
       .pipe(
         switchMap(() =>
           combineLatest([
-            this.statoAvanzamentoWrap
+            this.miscData
               .getUtenti$({
                 IsPm: true,
                 IsBm: false,
                 idSottoCommessa: this.idSottocommessa,
                 idCliente: this.idCliente
               }),
-            this.statoAvanzamentoWrap
+            this.miscData
               .getUtenti$({
                 IsPm: false,
                 IsBm: true,
                 idSottoCommessa: this.idSottocommessa,
                 idCliente: this.idCliente
               }),
-            this.statoAvanzamentoWrap
+            this.miscData
               .getSottocommesse$({
                 idReferente: this.idPm,
                 idCliente: this.idCliente

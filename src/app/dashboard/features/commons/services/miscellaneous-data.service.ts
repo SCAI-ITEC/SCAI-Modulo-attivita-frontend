@@ -2,17 +2,25 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, filter, switchMap, tap } from 'rxjs';
 import { Dettaglio, UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
 import { lookmap, replaceProps, singlifyLookmap } from 'src/app/utils/object';
-import { StatoAvanzamentoWrapService } from '../../stato-avanzamento/services/stato-avanzamento-wrap.service';
 import { CommessaService } from './commessa.service';
 import { CommessaSearchDto } from '../models/commessa';
 import { replaceItems } from 'src/app/utils/array';
 import { HttpClient } from '@angular/common/http';
+import { StatoAvanzamentoService, UtentiService } from 'src/app/api/modulo-attivita/services';
+import { GetClientiParam, GetSottocommesseParam, GetUtentiParam } from '../models/autocomplete';
+import { AuthService } from 'src/app/services/auth.service';
 
 interface RefreshState {
     utenti: boolean;
     commesse: boolean;
     clienti: boolean;
 };
+
+export interface AziendaInfo {
+    acronimo: string;
+    descrizione: string;
+    idAzienda: number;
+}
 
 @Injectable({
     providedIn: 'root'
@@ -37,24 +45,30 @@ export class MiscDataService {
     clienti: Dettaglio[] = [];
     idClienteCliente: { [key: number]: Dettaglio } = {};
 
-    idAziendaAzienda: Record<string, any> = {};
-
+    aziende: AziendaInfo[] = [];
+    idAziendaAzienda: Record<string, AziendaInfo | undefined> = {};
+    
     constructor(
         private http: HttpClient,
-        private statoAvanzamentoWrap: StatoAvanzamentoWrapService,
+        private authService: AuthService,
+        private statoAvanzamentoService: StatoAvanzamentoService,
+        private utentiService: UtentiService,
         private commesseService: CommessaService
     ) {
 
         console.log("MiscDataService instance", this);
 
         this.http.get('assets/json/id-azienda-azienda.json')
-            .subscribe(res => this.idAziendaAzienda = res);
+            .subscribe(rs => {
+                this.aziende = Object.values(rs);
+                this.idAziendaAzienda = rs as any;
+            });
 
         this.refresh$
             .pipe(
                 filter(rs => rs.utenti),
                 switchMap(() =>
-                    statoAvanzamentoWrap.getUtenti$()
+                    this.getUtenti$()
                 ),
                 tap(utenti => {
                     replaceItems(this.utenti, utenti);
@@ -70,7 +84,7 @@ export class MiscDataService {
             .pipe(
                 filter(rs => rs.utenti),
                 switchMap(() =>
-                    statoAvanzamentoWrap.getUtenti$({ IsPm: true, IsBm: false })
+                    this.getUtenti$({ IsPm: true, IsBm: false })
                 ),
                 tap(pmList => {
                     replaceItems(this.pmList, pmList);
@@ -86,7 +100,7 @@ export class MiscDataService {
             .pipe(
                 filter(rs => rs.utenti),
                 switchMap(() =>
-                    statoAvanzamentoWrap.getUtenti$({ IsPm: false, IsBm: true })
+                    this.getUtenti$({ IsPm: false, IsBm: true })
                 ),
                 tap(bmList => {
                     replaceItems(this.bmList, bmList);
@@ -118,7 +132,7 @@ export class MiscDataService {
             .pipe(
                 filter(rs => rs.clienti),
                 switchMap(() =>
-                    statoAvanzamentoWrap.getClienti$({ totali: true })
+                    this.getClienti$({ totali: true })
                 ),
                 tap(clienti => {
                     replaceItems(this.clienti, clienti);
@@ -131,9 +145,29 @@ export class MiscDataService {
             .subscribe();
     }
 
+    getUtenti$(input?: GetUtentiParam) {
+        input = input || {}; // all users by default?
+        input.idAzienda = this.authService.user.idAzienda;
+        return this.utentiService
+            .getUtenti(input as any);
+    }
+
+    getSottocommesse$(input?: GetSottocommesseParam) {
+        input = input || {};
+        input.idAzienda = this.authService.user.idAzienda;
+        return this.statoAvanzamentoService
+            .getSottoCommesse(input as any);
+    }
+
+    getClienti$(input?: GetClientiParam) {
+        input = input || {};
+        input.idAzienda = this.authService.user.idAzienda;
+        return this.statoAvanzamentoService
+            .getClienti(input as any);
+    }
+
     refresh(state: RefreshState) {
         this.refresh$.next(state);
     }
 
 }
-
