@@ -18,8 +18,8 @@ export interface UpsertLegameParam {
 	id?: number;
 	allocazione?: number;
 	idAzienda?: number;
-	inizioAllocazione: string;
-	fineAllocazione: string;
+	inizioAllocazione?: string;
+	fineAllocazione?: string;
 	idTask: number;
 	idUtente: number;
 }
