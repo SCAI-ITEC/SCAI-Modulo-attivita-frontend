@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Fattura } from '../../models/fattura';
-import { DocumentoFiscaleService } from '../../services/documentoFiscale';
+import { DocumentoFiscaleService } from '../../services/documento-fiscale';
 import { ToastService } from 'src/app/services/toast.service';
 import { Subject, catchError, of, startWith } from 'rxjs';
 

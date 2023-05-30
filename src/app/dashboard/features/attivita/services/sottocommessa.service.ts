@@ -2,11 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { CommessaDto, CreateSottocommessaParam } from '../models/commessa';
 import { TipoFatturazione } from '../models/fatturazione';
 import { TaskService } from './task.service';
 import { RisorsaService } from './risorsa.service';
 import { TaskDto } from '../models/task';
+import { CommessaDto, CreateSottocommessaParam } from '../../commons/models/commessa';
 
 @Injectable({
     providedIn: 'root'

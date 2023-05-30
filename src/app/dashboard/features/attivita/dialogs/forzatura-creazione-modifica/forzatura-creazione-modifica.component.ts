@@ -5,16 +5,16 @@ import { combineLatest, lastValueFrom, startWith, tap } from "rxjs";
 import { ToastService } from "src/app/services/toast.service";
 import { jsonCopy } from "src/app/utils/json";
 import { euroMask, euroMask2numStr, numStr2euroMask } from "src/app/utils/mask";
-import { CommessaDto } from "../../models/commessa";
 import { DIALOG_MODE } from "../../models/dialog";
-import { CommessaService } from "../../services/commessa.service";
 import { SottocommessaService } from "../../services/sottocommessa.service";
 import { Dettaglio } from "src/app/api/modulo-attivita/models";
 import { MonthpickerStruct } from "src/app/shared/components/monthpicker/monthpicker.component";
 import { ForzaturaService } from "../../services/forzatura.service";
-import { MiscDataService } from "../../services/miscData.service";
 import { ForzaturaDto } from "../../models/forzatura";
 import { isoToStruct, structToIso } from "src/app/utils/date";
+import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
+import { CommessaDto } from "../../../commons/models/commessa";
+import { CommessaService } from "../../../commons/services/commessa.service";
 
 @Component({
 	selector: 'app-forzatura-creazione-modifica-dialog',
