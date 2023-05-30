@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { RisorsaTaskWrap } from '../../models/risorsa';
+import { RisorsaTaskWrap, UpsertLegameParam } from '../../models/risorsa';
 import { TaskDto } from '../../models/task';
 import { RisorsaService } from '../../services/risorsa.service';
 import { TaskService } from '../../services/task.service';
@@ -7,10 +7,11 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RisorsaCreazioneModifica } from '../../dialogs/risorsa-creazione-modifica/risorsa-creazione-modifica.component';
 import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { ToastService } from 'src/app/services/toast.service';
-import { Subject, startWith, switchMap } from 'rxjs';
+import { NEVER, Subject, catchError, lastValueFrom, startWith, switchMap, tap } from 'rxjs';
 import { TaskCreazioneModifica } from '../../dialogs/task-creazione-modifica/task-creazione-modifica.component';
 import { ROLES } from 'src/app/models/user';
 import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-risorse',
@@ -33,6 +34,7 @@ export class RisorseComponent {
 
   constructor(
     public attivitaNavState: AttivitaNavStateService,
+    public authService: AuthService,
     private taskService: TaskService,
     private risorsaService: RisorsaService,
     private modalService: NgbModal,
@@ -45,15 +47,15 @@ export class RisorseComponent {
       .getTaskById$(this.idTask)
       .subscribe(task => this.task = task);
 
-      this.refresh$
-        .pipe(
-          startWith(null),
-          switchMap(() =>
-            this.risorsaService
-              .getLegamiByIdTask$(this.idTask)
-          )
+    this.refresh$
+      .pipe(
+        startWith(null),
+        switchMap(() =>
+          this.risorsaService
+            .getLegamiByIdTask$(this.idTask)
         )
-        .subscribe(legami => this.risorseTask = legami);
+      )
+      .subscribe(legami => this.risorseTask = legami);
   }
 
   async updateTask() {
@@ -155,6 +157,31 @@ export class RisorseComponent {
       );
   }
 
+  async autoassign() {
+    
+    const { idUtente } = this.authService.user;
 
+    const legameTaskRisorsa: UpsertLegameParam = {
+      idUtente: idUtente!,
+      idTask: this.idTask
+    };
+
+    await lastValueFrom(
+      this.risorsaService
+        .createLegame$(legameTaskRisorsa)
+        .pipe(
+          catchError(() => {
+            const txt = "Non è stato possibile creare il Legame per la tua utenza. Contattare il supporto tecnico.";
+            this.toaster.show(txt, { classname: 'bg-danger text-white' });
+            return NEVER;
+          }),
+          tap(() => {
+            const txt = "Legame creato con successo!";
+            this.toaster.show(txt, { classname: 'bg-success text-white' });
+            this.refresh$.next();
+          })
+        )
+    );
+  }
 
 }

@@ -57,21 +57,31 @@
 
         <h5 class="table-plus__title">Tabella risorse task</h5>
 
-        <button
-            *rbacAllow="[
-                ROLES.RESPONSABILE_COMMERCIALE,
-                ROLES.CONTROLLER,
-                ROLES.SEGRETERIA,
-                ROLES.AMMINISTRATORE,
-                attivitaNavState.userBmRole
-            ]"
-            type="button"
-            class="table-plus__action btn btn-success shadow"
-            (click)="create()"
-        >
-            <i class="bi bi-plus"></i>
-            Crea legame
-        </button>
+        <div class="d-flex flex-wrap gap-3 justify-content-center">
+
+            <button
+                *rbacAllow="[
+                    ROLES.RESPONSABILE_COMMERCIALE,
+                    ROLES.CONTROLLER,
+                    ROLES.SEGRETERIA,
+                    ROLES.AMMINISTRATORE,
+                    attivitaNavState.userBmRole
+                ]"
+                class="btn btn-success shadow"
+                (click)="create()"
+            >
+                <i class="bi bi-plus"></i>
+                Crea legame
+            </button>
+
+            <button
+                class="btn btn-outline-success"
+                (click)="autoassign()"
+            >
+                Assegnami
+                <i class="bi bi-person-fill-add"></i>
+            </button>
+        </div>
     </div>
 
     <ng-template #emptyTmpl>
@@ -121,7 +131,10 @@
             <td data-label="Inizio">{{ item.inizioAllocazione | date:'yyyy-MM-dd' }}</td>
             <td data-label="Fine">{{ item.fineAllocazione | date:'yyyy-MM-dd' }}</td>
             <td>
-                <div class="d-flex gap-2 justify-content-center">
+                <div
+                    *ngLet="(item.idUtente === authService.user.idUtente) as selfAssignment"
+                    class="d-flex gap-2 justify-content-center"
+                >
 
                     <button
                         *rbacAllow="[
@@ -130,7 +143,9 @@
                             ROLES.SEGRETERIA,
                             ROLES.AMMINISTRATORE,
                             attivitaNavState.userPmRole,
-                            attivitaNavState.userBmRole
+                            attivitaNavState.userBmRole,
+                            (selfAssignment ? ROLES.UTENTE_BASE : ''),
+                            (selfAssignment ? ROLES.HR_MANAGER : '')
                         ]"
                         type="button"
                         class="btn btn-warning shadow"
@@ -145,7 +160,9 @@
                             ROLES.CONTROLLER,
                             ROLES.SEGRETERIA,
                             ROLES.AMMINISTRATORE,
-                            attivitaNavState.userBmRole
+                            attivitaNavState.userBmRole,
+                            (selfAssignment ? ROLES.UTENTE_BASE : ''),
+                            (selfAssignment ? ROLES.HR_MANAGER : '')
                         ]"
                         type="button"
                         class="btn btn-danger shadow"
