@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommessaDto } from '../../models/commessa';
 import { SottocommessaService } from '../../services/sottocommessa.service';
-import { MiscDataService } from '../../services/miscData.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-creazione-modifica/sottocommessa-creazione-modifica.component';
 import { UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
 import { ROLES } from 'src/app/models/user';
 import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
+import { MiscDataService } from '../../../commons/services/miscellaneous-data.service';
 
 @Component({
   selector: 'app-sottocommessa-navigation',

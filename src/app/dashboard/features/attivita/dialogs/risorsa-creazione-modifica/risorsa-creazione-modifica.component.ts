@@ -1,18 +1,18 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { Subject, catchError, combineLatest, lastValueFrom, map, of, switchMap, tap } from 'rxjs';
+import { Subject, catchError, combineLatest, lastValueFrom, map, of } from 'rxjs';
 import { ToastService } from "src/app/services/toast.service";
 import { DIALOG_MODE } from "../../models/dialog";
 import { TaskService } from "../../services/task.service";
 import { TaskDto } from "../../models/task";
 import { GetDiarieResponse, GetDiarieUtentiResponse, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
-import { MiscDataService } from "../../services/miscData.service";
 import { RisorsaTaskWrap, UpsertLegameParam } from "../../models/risorsa";
 import { RisorsaService } from "../../services/risorsa.service";
 import { dedupe, intersection } from "src/app/utils/array";
 import { DatiOperativiService, TipiTrasfertaService } from "src/app/api/modulo-attivita/services";
 import { AuthService } from "src/app/services/auth.service";
+import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
 
 @Component({
 	selector: 'app-risorsa-creazione-modifica-dialog',
