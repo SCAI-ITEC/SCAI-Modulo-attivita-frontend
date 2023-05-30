@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { CommessaDto } from "../models/commessa";
 import { BehaviorSubject, Observable, filter } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { ROLES } from "src/app/models/user";
+import { CommessaDto } from "../../commons/models/commessa";
 
 @Injectable()
 export class AttivitaNavStateService {
