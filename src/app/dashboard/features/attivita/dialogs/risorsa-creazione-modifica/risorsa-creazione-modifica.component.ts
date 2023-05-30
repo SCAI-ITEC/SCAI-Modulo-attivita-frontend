@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { Subject, catchError, combineLatest, lastValueFrom, map, of } from 'rxjs';
+import { Subject, catchError, combineLatest, lastValueFrom, map, of, switchMap } from 'rxjs';
 import { ToastService } from "src/app/services/toast.service";
 import { DIALOG_MODE } from "../../models/dialog";
 import { TaskService } from "../../services/task.service";
@@ -272,19 +272,17 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
                     fineAllocazione: this.dataFineCtrl.value!
                 };
 
-                const request = [
-                    this.risorsaService
-                        .createLegame$(legameTaskRisorsa)
-                        .pipe(
-                            catchError(() => {
+                let request = this.risorsaService
+                    .createLegame$(legameTaskRisorsa)
+                    .pipe(
+                        catchError(() => {
 
-                                const txt = `Non è stato possibile creare il Legame per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
-                                this.toaster.show(txt, { classname: 'bg-danger text-white' });
+                            const txt = `Non è stato possibile creare il Legame per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
+                            this.toaster.show(txt, { classname: 'bg-danger text-white' });
 
-                                return of(-1);
-                            })
-                        )
-                ];
+                            return of(-1);
+                        })
+                    );
 
                 // If diaria has a value, then add postDiarieUtenti to the current request
                 if (this.diariaCtrl.value) {
@@ -297,26 +295,28 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
                         body: { attivo: true }
                     };
         
-                    request.push(
-                        this.datiOperativiService
-                            .postDiarieUtenti(diariaUtente)
-                            .pipe(
-                                catchError(() => {
+                    request = request.pipe(
+                        switchMap(() =>
+                            this.datiOperativiService
+                                .postDiarieUtenti(diariaUtente)
+                                .pipe(
+                                    catchError(() => {
 
-                                    const txt = `Non è stato possibile assegnare la diaria per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
-                                    this.toaster.show(txt, { classname: 'bg-danger text-white' });
+                                        const txt = `Non è stato possibile assegnare la diaria per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
+                                        this.toaster.show(txt, { classname: 'bg-danger text-white' });
 
-                                    return of(-1);
-                                })
-                            )
+                                        return of(-1);
+                                    })
+                                )
+                        )
                     );
                 }
 
-                return combineLatest(request);
+                return request;
             });
 
         combineLatest(requests)
-            .subscribe(responses => {
+            .subscribe(() => {
 
                 const txt = "Operazione terminata!";
                 this.toaster.show(txt, { classname: 'bg-success text-white' });
@@ -346,9 +346,8 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
             fineAllocazione: this.dataFineCtrl.value!
         };
 
-        const request = [
-            this.risorsaService.updateLegame$(this.idLegame, legameTaskRisorsa)
-        ];
+        let request = this.risorsaService
+            .updateLegame$(this.idLegame, legameTaskRisorsa);
 
         // If diariaUtente is set but diariaCtrl is not (the user explicitly removed diaria), then "delete" diariaUtente
         if (this.diariaUtente && !this.diariaCtrl.value) {
@@ -361,8 +360,11 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
                 body: { attivo: false }
             };
 
-            request.push(
-                this.datiOperativiService.postDiarieUtenti(diariaUtente)
+            request = request.pipe(
+                switchMap(() =>
+                    this.datiOperativiService
+                        .postDiarieUtenti(diariaUtente)
+                )
             );
         }
 
@@ -377,25 +379,27 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
                 body: { attivo: true }
             };
 
-            request.push(
-                this.datiOperativiService.postDiarieUtenti(diariaUtente)
+            request = request.pipe(
+                switchMap(() =>
+                    this.datiOperativiService
+                        .postDiarieUtenti(diariaUtente)
+                )
             );
         }
 
-        combineLatest(request)
-            .subscribe(
-                () => {
-                    const txt = "Legame modificato con successo!";
-                    this.toaster.show(txt, { classname: 'bg-success text-white' });
-                    this.activeModal.close({
-                        dialogMode: this.dialogMode,
-                        item: legameTaskRisorsa
-                    });
-                },
-                () => {
-                    const txt = "Non è stato possibile modificare il Legame. Contattare il supporto tecnico.";
-                    this.toaster.show(txt, { classname: 'bg-danger text-white' });
-                }
-            );
+        request.subscribe(
+            () => {
+                const txt = "Legame modificato con successo!";
+                this.toaster.show(txt, { classname: 'bg-success text-white' });
+                this.activeModal.close({
+                    dialogMode: this.dialogMode,
+                    item: legameTaskRisorsa
+                });
+            },
+            () => {
+                const txt = "Non è stato possibile modificare il Legame. Contattare il supporto tecnico.";
+                this.toaster.show(txt, { classname: 'bg-danger text-white' });
+            }
+        );
     }
 }
