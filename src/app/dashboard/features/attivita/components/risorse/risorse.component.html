@@ -57,21 +57,31 @@
 
         <h5 class="table-plus__title">Tabella risorse task</h5>
 
-        <button
-            *rbacAllow="[
-                ROLES.RESPONSABILE_COMMERCIALE,
-                ROLES.CONTROLLER,
-                ROLES.SEGRETERIA,
-                ROLES.AMMINISTRATORE,
-                attivitaNavState.userBmRole
-            ]"
-            type="button"
-            class="table-plus__action btn btn-success shadow"
-            (click)="create()"
-        >
-            <i class="bi bi-plus"></i>
-            Crea legame
-        </button>
+        <div class="d-flex flex-wrap gap-3 justify-content-center">
+
+            <button
+                *rbacAllow="[
+                    ROLES.RESPONSABILE_COMMERCIALE,
+                    ROLES.CONTROLLER,
+                    ROLES.SEGRETERIA,
+                    ROLES.AMMINISTRATORE,
+                    attivitaNavState.userBmRole
+                ]"
+                class="btn btn-success shadow"
+                (click)="create()"
+            >
+                <i class="bi bi-plus"></i>
+                Crea legame
+            </button>
+
+            <button
+                class="btn btn-outline-success"
+                (click)="autoassign()"
+            >
+                Assegnami
+                <i class="bi bi-person-fill-add"></i>
+            </button>
+        </div>
     </div>
 
     <ng-template #emptyTmpl>
