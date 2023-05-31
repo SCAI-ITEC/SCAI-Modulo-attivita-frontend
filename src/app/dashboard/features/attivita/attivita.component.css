@@ -8,3 +8,11 @@
 .app-tabbable.nav-tabs .nav-link.active .btn-close {
     filter: invert(1);
 }
+
+
+@media (min-width: 600px) {
+    .attivita-results {
+        padding-top: 6rem !important;
+        margin-top: -6rem;
+    }
+}
