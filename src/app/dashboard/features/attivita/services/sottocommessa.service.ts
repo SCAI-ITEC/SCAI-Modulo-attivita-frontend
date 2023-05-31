@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { lastValueFrom, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { TipoFatturazione } from '../models/fatturazione';
 import { TaskService } from './task.service';
 import { RisorsaService } from './risorsa.service';
 import { TaskDto } from '../models/task';
@@ -47,11 +46,6 @@ export class SottocommessaService {
             terzaParteFinale: clienteFinale,
             idBusinessManager: idBm
         });
-    }
-
-    getTipiFatturazione$() {
-        const url = `${environment.scaiRoot}/scaiportal-common-services/commonservices/tipofatturazione/list`;
-        return this.http.get<TipoFatturazione[]>(url);
     }
 
     createSottocommessa$(input: CreateSottocommessaParam) {

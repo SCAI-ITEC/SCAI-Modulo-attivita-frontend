@@ -1,6 +1,6 @@
 <div class="container-xxxl py-5 px-3">
 
-    <div class="col-md-8 mx-auto mb-5 card card-body shadow">
+    <div class="col-md-8 mx-auto mb-4 card card-body shadow-sm">
 
         <h5>Filtri ricerca</h5>
 
@@ -153,15 +153,15 @@
                 >
 
                     <ng-template #thead>
-                        <th sortable="dettaglio.length" (sort)="dt.sort($any($event))"></th>
-                        <th class="col-4" sortable="commessa.codice" (sort)="dt.sort($any($event))">Commessa</th>
-                        <th class="col-4" sortable="sottoCommessa.codice" (sort)="dt.sort($any($event))">Sottocomm.</th>
-                        <th class="col-4" sortable="cliente.descrizione" (sort)="dt.sort($any($event))">Cliente</th>
-                        <th class="text-end" sortable="sottoCommessa.costoCompetenza" (sort)="dt.sort($any($event))">Costo competenza</th>
-                        <th class="text-end" sortable="sottoCommessa.importo" (sort)="dt.sort($any($event))">Importo</th>
-                        <th sortable="dataInizio" (sort)="dt.sort($any($event))">Inizio</th>
-                        <th sortable="dataFine" (sort)="dt.sort($any($event))">Fine</th>
-                        <th class="text-end" sortable="percentualeRimanente" (sort)="dt.sort($any($event))">Totale %</th>
+                        <th sortable="dettaglio.length" (sort)="dt.sort($event)"></th>
+                        <th class="col-4" sortable="commessa.codice" (sort)="dt.sort($event)">Commessa</th>
+                        <th class="col-4" sortable="sottoCommessa.codice" (sort)="dt.sort($event)">Sottocomm.</th>
+                        <th class="col-4" sortable="cliente.descrizione" (sort)="dt.sort($event)">Cliente</th>
+                        <th class="text-end" sortable="sottoCommessa.costoCompetenza" (sort)="dt.sort($event)">Costo competenza</th>
+                        <th class="text-end" sortable="sottoCommessa.importo" (sort)="dt.sort($event)">Importo</th>
+                        <th sortable="dataInizio" (sort)="dt.sort($event)">Inizio</th>
+                        <th sortable="dataFine" (sort)="dt.sort($event)">Fine</th>
+                        <th class="text-end" sortable="percentualeRimanente" (sort)="dt.sort($event)">Totale %</th>
                     </ng-template>
 
                     <ng-template #tbody let-avanzamento>
