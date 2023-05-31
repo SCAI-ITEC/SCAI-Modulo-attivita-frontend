@@ -56,9 +56,10 @@
     >
     
         <ng-template #thead>
-            <th sortable="codiceCommessa" (sort)="dt.sort($any($event))">Codice</th>
-            <th sortable="descrizione" (sort)="dt.sort($any($event))">Descrizione</th>
-            <th sortable="tipoFatturazione.id" (sort)="dt.sort($any($event))">Tipo fatturazione</th>
+            <th sortable="codiceCommessa" (sort)="dt.sort($event)">Codice</th>
+            <th sortable="descrizione" (sort)="dt.sort($event)">Descrizione</th>
+            <th sortable="giorniPrevisti" (sort)="dt.sort($event)">Giorni previsti</th>
+            <th sortable="tipoFatturazione.id" (sort)="dt.sort($event)">Tipo fatturazione</th>
             <th style="width: 10rem"></th>
         </ng-template>
     
@@ -68,6 +69,9 @@
             </td>
             <td data-label="Descrizione">
                 <ngb-highlight [result]="item.descrizione" [term]="$any(term$ | async)"/>
+            </td>
+            <td data-label="Giorni previsti">
+                {{ item.giorniPrevisti ? item.giorniPrevisti : "ND" }}
             </td>
             <td data-label="Tipo fatturazione">
                 <ngb-highlight [result]="item.tipoFatturazione.text" [term]="$any(term$ | async)"/>

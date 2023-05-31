@@ -56,13 +56,13 @@
     >
     
         <ng-template #thead>
-            <th sortable="note" (sort)="dt.sort($any($event))">Descrizione</th>
-            <th sortable="commessa.text" (sort)="dt.sort($any($event))">Sottocommessa</th>
-            <th sortable="inizioPeriodo" (sort)="dt.sort($any($event))">Inizio competenza</th>
-            <th sortable="finePeriodo" (sort)="dt.sort($any($event))">Fine competenza</th>
+            <th sortable="note" (sort)="dt.sort($event)">Descrizione</th>
+            <th sortable="commessa.text" (sort)="dt.sort($event)">Sottocommessa</th>
+            <th sortable="inizioPeriodo" (sort)="dt.sort($event)">Inizio competenza</th>
+            <th sortable="finePeriodo" (sort)="dt.sort($event)">Fine competenza</th>
 
-            <th *ngIf="categoria === 'costo'" sortable="costoTotale" (sort)="dt.sort($any($event))">Costo</th>
-            <th *ngIf="categoria === 'ricavo'" sortable="ricavoTotale" (sort)="dt.sort($any($event))">Ricavo</th>
+            <th *ngIf="categoria === 'costo'" sortable="costoTotale" (sort)="dt.sort($event)">Costo</th>
+            <th *ngIf="categoria === 'ricavo'" sortable="ricavoTotale" (sort)="dt.sort($event)">Ricavo</th>
 
             <th style="width: 10rem"></th>
         </ng-template>

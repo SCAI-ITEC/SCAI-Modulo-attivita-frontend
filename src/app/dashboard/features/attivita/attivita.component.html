@@ -1,6 +1,6 @@
 <div class="container-xxxl py-5 px-3">
 
-    <div class="col-md-8 mx-auto mb-5 card card-body shadow">
+    <div class="col-md-8 mx-auto mb-5 card card-body shadow-sm">
         
         <h5>Filtri ricerca commesse</h5>
 
@@ -223,13 +223,13 @@
         >
 
             <ng-template #thead>
-                <th sortable="descrizioneCliente" (sort)="dt.sort($any($event))">Cliente</th>
-                <th sortable="tipoAttivita.id" (sort)="dt.sort($any($event))">Tipo attività</th>
-                <th sortable="valido" (sort)="dt.sort($any($event))">Stato</th>
-                <th sortable="descrizione" (sort)="dt.sort($any($event))">Commessa</th>
-                <th sortable="cognomeProjectManager" (sort)="dt.sort($any($event))">PM</th>
-                <th sortable="cognomeBusinessManager" (sort)="dt.sort($any($event))">BM</th>
-                <th sortable="data" (sort)="dt.sort($any($event))">Data</th>
+                <th sortable="descrizioneCliente" (sort)="dt.sort($event)">Cliente</th>
+                <th sortable="tipoAttivita.id" (sort)="dt.sort($event)">Tipo attività</th>
+                <th sortable="valido" (sort)="dt.sort($event)">Stato</th>
+                <th sortable="descrizione" (sort)="dt.sort($event)">Commessa</th>
+                <th sortable="cognomeProjectManager" (sort)="dt.sort($event)">PM</th>
+                <th sortable="cognomeBusinessManager" (sort)="dt.sort($event)">BM</th>
+                <th sortable="data" (sort)="dt.sort($event)">Data</th>
                 <th style="width: 10rem"></th>
             </ng-template>
 

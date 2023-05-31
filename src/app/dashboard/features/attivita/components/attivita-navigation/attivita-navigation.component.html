@@ -5,7 +5,7 @@
 
         <div class="ag-parent-resume">
 
-            <div class="flexgrid flexgrid--4">
+            <div class="flexgrid flexgrid--3">
         
                 <div>
                     <div class="small text-muted">Cliente diretto</div>
@@ -20,35 +20,40 @@
                         {{ clienteFinale?.descrizione }}
                     </div>
                 </div>
+
+                <div>
+                    <div class="small text-muted">Codice commessa</div>
+                    <div>{{ commessa?.codiceCommessa }}</div>
+                </div>
+
+                <div>
+                    <div class="small text-muted">Descrizione</div>
+                    <div>{{ commessa?.descrizione }}</div>
+                </div>
+
+                <div>
+                    <div class="small text-muted">Project manager</div>
+                    <div>{{ pm?.cognome ? pm?.cognome + ' ' + pm?.nome : "ND" }}</div>
+                </div>
+        
+                <div>
+                    <div class="small text-muted">Business manager</div>
+                    <div>{{ bm?.cognome ? bm?.cognome + ' ' + bm?.nome : "ND" }}</div>
+                </div>
+
+                <div>
+                    <div class="small text-muted">Giorni previsti</div>
+                    <div>{{ commessa?.giorniPrevisti ? commessa?.giorniPrevisti : "ND" }}</div>
+                </div>
         
                 <div>
                     <div class="small text-muted">Tipo attivita</div>
                     <div>{{ commessa?.tipoAttivita?.id === 1 ? 'Opportunità' : 'Commessa interna' }}</div>
                 </div>
-        
+
                 <div>
                     <div class="small text-muted">Data inserimento</div>
                     <div>{{ commessa?.dataInserimento | date:'yyyy-MM-dd' }}</div>
-                </div>
-        
-                <div>
-                    <div class="small text-muted">Codice commessa</div>
-                    <div>{{ commessa?.codiceCommessa }}</div>
-                </div>
-        
-                <div>
-                    <div class="small text-muted">Descrizione</div>
-                    <div>{{ commessa?.descrizione }}</div>
-                </div>
-        
-                <div>
-                    <div class="small text-muted">Project manager</div>
-                    <div>{{ pm?.cognome + ' ' + pm?.nome }}</div>
-                </div>
-        
-                <div>
-                    <div class="small text-muted">Business manager</div>
-                    <div>{{ bm?.cognome + ' ' + bm?.nome }}</div>
                 </div>
             </div>
         

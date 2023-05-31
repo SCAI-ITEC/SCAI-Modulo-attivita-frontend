@@ -5,11 +5,36 @@
     
         <div class="ag-parent-resume">
         
-            <div class="flexgrid flexgrid--3">
-    
+            <div class="flexgrid flexgrid--4">
+
                 <div>
-                    <div class="small text-muted">Tipo attivita</div>
+                    <div class="small text-muted">Codice sottocommessa</div>
+                    <div>{{ sottocommessa?.codiceCommessa }}</div>
+                </div>
+
+                <div>
+                    <div class="small text-muted">Descrizione</div>
+                    <div>{{ sottocommessa?.descrizione }}</div>
+                </div>
+
+                <div>
+                    <div class="small text-muted">Project manager</div>
+                    <div>{{ pm?.cognome + ' ' + pm?.nome }}</div>
+                </div>
+
+                <div>
+                    <div class="small text-muted">Giorni previsti</div>
+                    <div>{{ sottocommessa?.giorniPrevisti ? sottocommessa?.giorniPrevisti : "ND" }}</div>
+                </div>
+
+                <div>
+                    <div class="small text-muted">Tipo fatturazione</div>
                     <div>{{ sottocommessa?.tipoFatturazione?.text }}</div>
+                </div>
+
+                <div>
+                    <div class="small text-muted">Data creazione</div>
+                    <div>{{ sottocommessa?.dataInserimento | date:'yyyy-MM-dd' }}</div>
                 </div>
         
                 <div>
@@ -20,21 +45,6 @@
                 <div>
                     <div class="small text-muted">Data fine</div>
                     <div>{{ sottocommessa?.dataFine | date:'yyyy-MM-dd' }}</div>
-                </div>
-        
-                <div>
-                    <div class="small text-muted">Codice sottocommessa</div>
-                    <div>{{ sottocommessa?.codiceCommessa }}</div>
-                </div>
-        
-                <div>
-                    <div class="small text-muted">Descrizione</div>
-                    <div>{{ sottocommessa?.descrizione }}</div>
-                </div>
-        
-                <div>
-                    <div class="small text-muted">Project manager</div>
-                    <div>{{ pm?.cognome + ' ' + pm?.nome }}</div>
                 </div>
             </div>
         
