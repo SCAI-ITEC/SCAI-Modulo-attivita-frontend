@@ -21,7 +21,7 @@ export class AbilitazioneDiariaAziendaComponent {
     private trasfertaService: TipiTrasfertaService,
     private modalService: NgbModal,
     private toaster: ToastService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.refresh$
@@ -37,6 +37,7 @@ export class AbilitazioneDiariaAziendaComponent {
   }
 
   async create() {
+
     const modalRef = this.modalService
       .open(
         AbilitazioneDiariaCreazioneComponent,
@@ -50,7 +51,8 @@ export class AbilitazioneDiariaAziendaComponent {
     this.refresh$.next();
   }
 
-  async delete(assegnazioneDiaria: GetDiarieResponse){
+  async delete(assegnazioneDiaria: GetDiarieResponse) {
+
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
@@ -66,7 +68,7 @@ export class AbilitazioneDiariaAziendaComponent {
     await modalRef.result;
 
     this.trasfertaService
-      .deleteDiarie({ id: assegnazioneDiaria.id!  })
+      .deleteDiarie({ id: assegnazioneDiaria.id! })
       .subscribe(
         () => {
           const txt = "Assegnazione diaria eliminata con successo!";
@@ -79,10 +81,9 @@ export class AbilitazioneDiariaAziendaComponent {
       );
   }
 
-  async update(assegnazioneDiaria: GetDiarieResponse){
-    
+  async update(assegnazioneDiaria: GetDiarieResponse) {
     this.trasfertaService
-      .deleteDiarie({ id: assegnazioneDiaria.id!  })
+      .deleteDiarie({ id: assegnazioneDiaria.id! })
       .subscribe(
         () => {
           const txt = "Abilitazione diaria ripristinata con successo!";

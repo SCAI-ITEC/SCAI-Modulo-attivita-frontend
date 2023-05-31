@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject, startWith, switchMap } from 'rxjs';
+import { Subject, map, startWith, switchMap } from 'rxjs';
 import { GetTipiTrasfertaResponse } from 'src/app/api/modulo-attivita/models';
 import { TipiTrasfertaService } from 'src/app/api/modulo-attivita/services';
 import { ToastService } from 'src/app/services/toast.service';
 import { EliminazioneDialog } from '../../attivita/dialogs/eliminazione.dialog';
-import { TrasfertaCreazioneModificaComponent } from '../dialogs/trasferta-creazione-modifica/trasferta-creazione-modifica/trasferta-creazione-modifica.component';
-import { DIALOG_MODE } from '../../attivita/models/dialog';
+import { TipoTrasfertaCreazioneModificaComponent } from '../dialogs/tipo-trasferta-creazione-modifica/tipo-trasferta-creazione-modifica.component';
 
 @Component({
   selector: 'app-creazione-tipo-trasferta',
@@ -23,7 +22,7 @@ export class CreazioneTipoTrasfertaComponent {
     private trasfertaService: TipiTrasfertaService,
     private modalService: NgbModal,
     private toaster: ToastService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.refresh$
@@ -32,15 +31,26 @@ export class CreazioneTipoTrasfertaComponent {
         switchMap(() =>
           this.trasfertaService
             .getTipiTrasferta()
+            .pipe(
+              map(response =>
+                response.map(tipoTrasferta =>
+                  ({
+                    ...tipoTrasferta,
+                    inizioValidita: tipoTrasferta.inizioValidita || "",
+                    fineValidita: tipoTrasferta.fineValidita || "",
+                  }))
+                )
+            )
         )
       )
       .subscribe(tipiTrasferte => this.tipiTrasferte = tipiTrasferte);
   }
 
   async create() {
+
     const modalRef = this.modalService
       .open(
-        TrasfertaCreazioneModificaComponent,
+        TipoTrasfertaCreazioneModificaComponent,
         {
           size: 'lg',
           centered: true,
@@ -56,7 +66,7 @@ export class CreazioneTipoTrasfertaComponent {
 
     const modalRef = this.modalService
       .open(
-        TrasfertaCreazioneModificaComponent,
+        TipoTrasfertaCreazioneModificaComponent,
         {
           size: 'lg',
           centered: true,
@@ -69,7 +79,8 @@ export class CreazioneTipoTrasfertaComponent {
     this.refresh$.next();
   }
 
-  async delete(tipoTrasferta: GetTipiTrasfertaResponse){
+  async delete(tipoTrasferta: GetTipiTrasfertaResponse) {
+
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
@@ -88,7 +99,7 @@ export class CreazioneTipoTrasfertaComponent {
       .deleteTipiTrasferta({ id: tipoTrasferta.id! })
       .subscribe(
         () => {
-          const txt = "Task eliminato con successo!";
+          const txt = "Tipo trasferta eliminato con successo!";
           this.toaster.show(txt, { classname: 'bg-success text-white' });
           this.refresh$.next();
         },

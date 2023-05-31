@@ -47,32 +47,39 @@
         [paginated]="true"
         [pageSize]="5"
         [emptyTemplate]="emptyTmpl"
-        [searchable]="['codiceFoglioStipendi', 'codiceEstesoFoglioStipendi', 'descrizione']"
+        [searchable]="[ 'codiceFoglioStipendi', 'codiceEstesoFoglioStipendi', 'descrizione' ]"
     >
     
         <ng-template #thead>
-            <th sortable="codiceFoglioStipendi" (sort)="dt.sort($any($event))">Codice foglio stipendi</th>
-            <th sortable="codiceEstesoFoglioStipendi" (sort)="dt.sort($any($event))">Codice esteso foglio stipendi</th>
-            <th sortable="descrizione" (sort)="dt.sort($any($event))">Descrizione</th>
-            <th sortable="inizioValidita" (sort)="dt.sort($any($event))">Inizio validità</th>
-            <th sortable="fineValidita" (sort)="dt.sort($any($event))">Fine validità</th>
+            <th sortable="codiceFoglioStipendi" (sort)="dt.sort($event)">Codice foglio stipendi</th>
+            <th sortable="codiceEstesoFoglioStipendi" (sort)="dt.sort($event)">Codice esteso foglio stipendi</th>
+            <th sortable="descrizione" (sort)="dt.sort($event)">Descrizione</th>
+            <th sortable="inizioValidita" (sort)="dt.sort($event)">Inizio validità</th>
+            <th sortable="fineValidita" (sort)="dt.sort($event)">Fine validità</th>
             <th style="width: 10rem"></th>
         </ng-template>
     
         <ng-template #tbody let-item let-term$="term$">
+
             <td data-label="Codice foglio stipendi">
                 <ngb-highlight [result]="item.codiceFoglioStipendi" [term]="$any(term$ | async)"/>
             </td>
+
             <td data-label="Codice esteso foglio stipendi">
                 <ngb-highlight [result]="item.codiceEstesoFoglioStipendi" [term]="$any(term$ | async)"/>
             </td>
+
             <td data-label="Descrizione">
                 <ngb-highlight [result]="item.descrizione" [term]="$any(term$ | async)"/>
             </td>
+
             <td data-label="Inizio">{{ item.inizioValidita | date:'yyyy-MM-dd' }}</td>
+
             <td data-label="Fine">{{ item.fineValidita | date:'yyyy-MM-dd' }}</td>
+
             <td>
                 <div class="d-flex gap-2 justify-content-center">
+
                     <button
                         type="button"
                         class="btn btn-warning shadow"
@@ -92,6 +99,4 @@
             </td>
         </ng-template>
     </app-table>
-    
 </div>
-
