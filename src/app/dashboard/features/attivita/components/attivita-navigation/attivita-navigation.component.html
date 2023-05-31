@@ -40,15 +40,15 @@
                     <div class="small text-muted">Business manager</div>
                     <div>{{ bm?.cognome ? bm?.cognome + ' ' + bm?.nome : "ND" }}</div>
                 </div>
+                
+                <div>
+                    <div class="small text-muted">Tipo attivita</div>
+                    <div>{{ commessa?.tipoAttivita?.id === 1 ? 'Opportunità' : 'Commessa interna' }}</div>
+                </div>
 
                 <div>
                     <div class="small text-muted">Giorni previsti</div>
                     <div>{{ commessa?.giorniPrevisti ? commessa?.giorniPrevisti : "ND" }}</div>
-                </div>
-        
-                <div>
-                    <div class="small text-muted">Tipo attivita</div>
-                    <div>{{ commessa?.tipoAttivita?.id === 1 ? 'Opportunità' : 'Commessa interna' }}</div>
                 </div>
 
                 <div>

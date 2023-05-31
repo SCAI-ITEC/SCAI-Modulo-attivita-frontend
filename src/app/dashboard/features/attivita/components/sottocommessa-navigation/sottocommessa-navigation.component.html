@@ -23,20 +23,15 @@
                 </div>
 
                 <div>
-                    <div class="small text-muted">Giorni previsti</div>
-                    <div>{{ sottocommessa?.giorniPrevisti ? sottocommessa?.giorniPrevisti : "ND" }}</div>
-                </div>
-
-                <div>
                     <div class="small text-muted">Tipo fatturazione</div>
                     <div>{{ sottocommessa?.tipoFatturazione?.text }}</div>
                 </div>
 
                 <div>
-                    <div class="small text-muted">Data creazione</div>
-                    <div>{{ sottocommessa?.dataInserimento | date:'yyyy-MM-dd' }}</div>
+                    <div class="small text-muted">Giorni previsti</div>
+                    <div>{{ sottocommessa?.giorniPrevisti ? sottocommessa?.giorniPrevisti : "ND" }}</div>
                 </div>
-        
+
                 <div>
                     <div class="small text-muted">Data inizio</div>
                     <div>{{ sottocommessa?.dataInizio | date:'yyyy-MM-dd' }}</div>
@@ -46,6 +41,8 @@
                     <div class="small text-muted">Data fine</div>
                     <div>{{ sottocommessa?.dataFine | date:'yyyy-MM-dd' }}</div>
                 </div>
+
+                <div><!-- just a filler --></div>
             </div>
         
             <button
