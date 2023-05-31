@@ -87,7 +87,6 @@ export class TrasfertaCreazioneModificaComponent {
   }
 
   create() {
-
     if (this.form.invalid) return;
 
     this.trasfertaService

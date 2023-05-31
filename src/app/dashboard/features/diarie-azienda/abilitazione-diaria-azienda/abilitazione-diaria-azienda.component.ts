@@ -29,7 +29,7 @@ export class AbilitazioneDiariaAziendaComponent {
         startWith(null),
         switchMap(() =>
           this.trasfertaService
-            .getDiarie({ Valido: true })
+            .getDiarie()
             
         )
       )
@@ -42,8 +42,7 @@ export class AbilitazioneDiariaAziendaComponent {
         AbilitazioneDiariaCreazioneComponent,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
 
@@ -71,6 +70,22 @@ export class AbilitazioneDiariaAziendaComponent {
       .subscribe(
         () => {
           const txt = "Assegnazione diaria eliminata con successo!";
+          this.toaster.show(txt, { classname: 'bg-success text-white' });
+          this.refresh$.next();
+        },
+        (ex) => {
+          this.toaster.show(ex.error, { classname: 'bg-danger text-white' });
+        }
+      );
+  }
+
+  async update(assegnazioneDiaria: GetDiarieResponse){
+    
+    this.trasfertaService
+      .deleteDiarie({ id: assegnazioneDiaria.id!  })
+      .subscribe(
+        () => {
+          const txt = "Abilitazione diaria ripristinata con successo!";
           this.toaster.show(txt, { classname: 'bg-success text-white' });
           this.refresh$.next();
         },
