@@ -56,13 +56,13 @@
     >
     
         <ng-template #thead>
-            <th sortable="tipoOrdine" (sort)="dt.sort($any($event))">Tipo</th>
-            <th sortable="company" (sort)="dt.sort($any($event))">Company</th>
-            <th sortable="protocolloOrdine" (sort)="dt.sort($any($event))">Protoc.</th>
-            <th sortable="riferimentoOrdine" (sort)="dt.sort($any($event))">Rif. ordine</th>
-            <th sortable="dataOrdine" (sort)="dt.sort($any($event))">Data ordine</th>
-            <th sortable="codiceCommessa" (sort)="dt.sort($any($event))">Codice commessa</th>
-            <th sortable="totaleImponibile" (sort)="dt.sort($any($event))">Totale imponibile</th>
+            <th sortable="tipoOrdine" (sort)="dt.sort($event)">Tipo</th>
+            <th sortable="company" (sort)="dt.sort($event)">Company</th>
+            <th sortable="protocolloOrdine" (sort)="dt.sort($event)">Protoc.</th>
+            <th sortable="riferimentoOrdine" (sort)="dt.sort($event)">Rif. ordine</th>
+            <th sortable="dataOrdine" (sort)="dt.sort($event)">Data ordine</th>
+            <th sortable="codiceCommessa" (sort)="dt.sort($event)">Codice commessa</th>
+            <th sortable="totaleImponibile" (sort)="dt.sort($event)">Totale imponibile</th>
         </ng-template>
     
         <ng-template #tbody let-item let-term$="term$">

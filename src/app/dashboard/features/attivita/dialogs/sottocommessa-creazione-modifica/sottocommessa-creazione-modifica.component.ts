@@ -1,15 +1,16 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { Subject, combineLatest, lastValueFrom, takeUntil, tap } from "rxjs";
+import { Subject, combineLatest, lastValueFrom, map, takeUntil, tap } from "rxjs";
 import { ToastService } from "src/app/services/toast.service";
 import { jsonCopy } from "src/app/utils/json";
 import { euroMask, euroMask2numStr, numStr2euroMask } from "src/app/utils/mask";
 import { DIALOG_MODE } from "../../models/dialog";
-import { TipoFatturazione } from "../../models/fatturazione";
 import { SottocommessaService } from "../../services/sottocommessa.service";
 import { CommessaDto, CommessaSearchDto, CreateSottocommessaParam, SimpleDto } from "../../../commons/models/commessa";
 import { CommessaService } from "../../../commons/services/commessa.service";
+import { CommonsService } from "src/app/api/modulo-attivita/services";
+import { GetTipoFatturazioneResponse } from "src/app/api/modulo-attivita/models";
 
 @Component({
 	selector: 'app-sottocommessa-creazione-modifica-dialog',
@@ -34,13 +35,13 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
     iniziativaCtrl = new FormControl();
     iniziative: { text: string, value: string }[] = [];
 
-    tipoFatturazioneCtrl = new FormControl<TipoFatturazione | null>(null, [Validators.required]);
+    tipoFatturazioneCtrl = new FormControl<GetTipoFatturazioneResponse | null>(null, [Validators.required]);
     get tipoFatturazione(): SimpleDto {
         const { id, descrizione: text } = this.tipoFatturazioneCtrl.value!;
-        return { id, text };
+        return { id: id!, text: text! }; // God... Why is all nullable? Blame the BE!!!
     }
-    tipoFatturazioneFormatter = (tf: TipoFatturazione) => tf.descrizione;
-    tipiFatturazione: TipoFatturazione[] = [];
+    tipoFatturazioneFormatter = (tf: GetTipoFatturazioneResponse) => tf.descrizione;
+    tipiFatturazione: GetTipoFatturazioneResponse[] = [];
 
     commessaRendicontazioneCtrl = new FormControl<CommessaSearchDto | null>(null);
     get idCommessaRendicontazione() {
@@ -88,7 +89,8 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
         public activeModal: NgbActiveModal,
         private toaster: ToastService,
         private commessaService: CommessaService,
-        private sottocommessaService: SottocommessaService
+        private sottocommessaService: SottocommessaService,
+        private commons: CommonsService
     ) { }
 
     ngOnInit() {
@@ -194,7 +196,10 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
 
         try {
             this.tipiFatturazione = await lastValueFrom(
-                this.sottocommessaService.getTipiFatturazione$()
+                this.commons.getTipoFatturazione()
+                    .pipe(
+                        map(tipiFatturazione => tipiFatturazione.filter(tipoFatturazione => !tipoFatturazione.disabled))
+                    )
             );
         }
         catch(e) {

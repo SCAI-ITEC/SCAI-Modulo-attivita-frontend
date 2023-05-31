@@ -5,7 +5,7 @@
 
         <div class="ag-parent-resume">
 
-            <div class="flexgrid flexgrid--2">
+            <div class="flexgrid flexgrid--3">
     
                 <div>
                     <div class="small text-muted">Codice task</div>
@@ -15,6 +15,11 @@
                 <div>
                     <div class="small text-muted">Descrizione</div>
                     <div>{{ task?.descrizione }}</div>
+                </div>
+
+                <div>
+                    <div class="small text-muted">Giorni previsti</div>
+                    <div>{{ task?.giorniPrevisti ? task?.giorniPrevisti : "ND" }}</div>
                 </div>
     
                 <div>
@@ -26,6 +31,8 @@
                     <div class="small text-muted">Data fine</div>
                     <div>{{ task?.dataFine | date:'yyyy-MM-dd' }}</div>
                 </div>
+
+                <div><!-- just a filler --></div>
             </div>
     
             <button
@@ -114,10 +121,10 @@
     >
     
         <ng-template #thead>
-            <th sortable="utente.cognome" (sort)="dt.sort($any($event))">Cognome</th>
-            <th sortable="utente.nome" (sort)="dt.sort($any($event))">Nome</th>
-            <th sortable="inizioAllocazione" (sort)="dt.sort($any($event))">Data inizio</th>
-            <th sortable="fineAllocazione" (sort)="dt.sort($any($event))">Data fine</th>
+            <th sortable="utente.cognome" (sort)="dt.sort($event)">Cognome</th>
+            <th sortable="utente.nome" (sort)="dt.sort($event)">Nome</th>
+            <th sortable="inizioAllocazione" (sort)="dt.sort($event)">Data inizio</th>
+            <th sortable="fineAllocazione" (sort)="dt.sort($event)">Data fine</th>
             <th style="width: 10rem"></th>
         </ng-template>
     
