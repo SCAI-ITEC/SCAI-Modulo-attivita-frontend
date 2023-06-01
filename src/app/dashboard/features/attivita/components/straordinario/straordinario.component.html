@@ -56,14 +56,14 @@
     >
     
         <ng-template #thead>
-            <th sortable="descrizione" (sort)="dt.sort($any($event))">Descrizione</th>
-            <th sortable="autorizzazioneCliente" (sort)="dt.sort($any($event))">Autorizzazione</th>
-            <th sortable="straordinarioOrdinarioCliente" (sort)="dt.sort($any($event))">Str. ordinario</th>
-            <th sortable="straordinarioSabatoCliente" (sort)="dt.sort($any($event))">Str. sabato</th>
-            <th sortable="straordinarioFestivoCliente" (sort)="dt.sort($any($event))">Str. festivo</th>
-            <th sortable="straordinarioNotturnoCliente" (sort)="dt.sort($any($event))">Str. notturno</th>
-            <th sortable="inizio" (sort)="dt.sort($any($event))">Inizio</th>
-            <th sortable="fine" (sort)="dt.sort($any($event))">Fine</th>
+            <th sortable="descrizione" (sort)="dt.sort($event)">Descrizione</th>
+            <th sortable="autorizzazioneCliente" (sort)="dt.sort($event)">Autorizzazione</th>
+            <th sortable="straordinarioOrdinarioCliente" (sort)="dt.sort($event)">Str. ordinario</th>
+            <th sortable="straordinarioSabatoCliente" (sort)="dt.sort($event)">Str. sabato</th>
+            <th sortable="straordinarioFestivoCliente" (sort)="dt.sort($event)">Str. festivo</th>
+            <th sortable="straordinarioNotturnoCliente" (sort)="dt.sort($event)">Str. notturno</th>
+            <th sortable="inizio" (sort)="dt.sort($event)">Inizio</th>
+            <th sortable="fine" (sort)="dt.sort($event)">Fine</th>
             <th style="width: 10rem"></th>
         </ng-template>
     

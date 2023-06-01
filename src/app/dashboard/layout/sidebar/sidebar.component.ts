@@ -34,7 +34,7 @@ export class DashboardSidebarComponent {
     {
       isActive: false,
       title: 'Attività',
-      icon: 'bi bi-activity',
+      icon: 'bi bi-list-task',
       path: '/attivita',
     },
     {
@@ -55,7 +55,7 @@ export class DashboardSidebarComponent {
     {
       isActive: false,
       title: 'Stato Avanzamento',
-      icon: 'fa fa-tasks',
+      icon: 'bi bi-bar-chart-line-fill',
       path: '/stato-avanzamento',
     }
   ];
