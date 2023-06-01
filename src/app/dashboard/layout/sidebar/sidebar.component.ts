@@ -41,7 +41,16 @@ export class DashboardSidebarComponent {
       isActive: false,
       title: 'Diarie',
       icon: 'bi bi-briefcase',
-      path: '/diarie-azienda',
+      children: [
+        {
+          path: "/diarie-azienda/creazione-tipo-trasferta",
+          title: "Creazione tipo trasferta",
+        },
+        {
+          path: "/diarie-azienda/abilitazione-diaria-azienda",
+          title: "Abilitazione diaria azienda",
+        }
+      ]
     },
     {
       isActive: false,

@@ -10,7 +10,8 @@ import { AbilitazioneDiariaCreazioneComponent } from './dialogs/abilitazione-dia
 import { TipoTrasfertaCreazioneModificaComponent } from './dialogs/tipo-trasferta-creazione-modifica/tipo-trasferta-creazione-modifica.component';
 
 const routes: Routes = [
-  { path: '', component: DiarieAziendaComponent }
+  { path: 'creazione-tipo-trasferta', component: CreazioneTipoTrasfertaComponent },
+  { path: 'abilitazione-diaria-azienda', component: AbilitazioneDiariaAziendaComponent }
 ];
 
 @NgModule({
@@ -19,7 +20,7 @@ const routes: Routes = [
     CreazioneTipoTrasfertaComponent,
     TipoTrasfertaCreazioneModificaComponent,
     AbilitazioneDiariaAziendaComponent,
-    AbilitazioneDiariaCreazioneComponent
+    AbilitazioneDiariaCreazioneComponent,
   ],
   imports: [
     CommonModule,
