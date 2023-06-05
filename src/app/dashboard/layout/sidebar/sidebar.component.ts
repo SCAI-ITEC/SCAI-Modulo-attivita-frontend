@@ -39,6 +39,21 @@ export class DashboardSidebarComponent {
     },
     {
       isActive: false,
+      title: 'Diarie',
+      icon: 'bi bi-briefcase',
+      children: [
+        {
+          path: "/diarie-azienda/creazione-tipo-trasferta",
+          title: "Creazione tipo trasferta",
+        },
+        {
+          path: "/diarie-azienda/abilitazione-diaria-azienda",
+          title: "Abilitazione diaria azienda",
+        }
+      ]
+    },
+    {
+      isActive: false,
       title: 'Stato Avanzamento',
       icon: 'bi bi-bar-chart-line-fill',
       path: '/stato-avanzamento',
