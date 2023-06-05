@@ -8,6 +8,7 @@ export interface DettaglioAvanzamento {
   dataAggiornamento?: null | string;
   dataInserimento?: string;
   descrizione?: null | string;
+  forzatureCosto?: number;
   idAzienda?: null | number;
   idCommessa?: number;
   idProjectManager?: number;
@@ -18,5 +19,6 @@ export interface DettaglioAvanzamento {
   ricavoCompetenza?: null | number;
   sottoCommessa?: Commessa;
   statoValidazione?: StatoValidazione;
+  tariffa?: number;
   valido?: number;
 }
