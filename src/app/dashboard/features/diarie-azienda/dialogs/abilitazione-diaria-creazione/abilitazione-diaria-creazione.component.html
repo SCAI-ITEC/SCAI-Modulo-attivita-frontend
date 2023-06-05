@@ -1,0 +1,57 @@
+
+<div class="modal-header">
+
+    <h4 class="modal-title" id="modal-title">
+        Assegna diaria
+    </h4>
+
+    <button
+        type="button"
+        class="btn-close" 
+        (click)="activeModal.dismiss('Cross click')"
+    ></button>
+</div>
+
+<div class="modal-body">
+    <form novalidate>
+        <div class="flexgrid flexgrid--2">
+            <app-input                
+                type="autocomplete"
+                name="tipoTrasferta"
+                label="Tipo trasferta *"
+                [options]="tipiTrasferte"
+                [limit]="25"
+                [formatter]="tipoTrasfertaFormatter"
+                [ngControl]="tipoTrasfertaCtrl"
+                [floatingLabel]="true"
+            ></app-input>
+
+            <app-input
+             name="diaria"
+             label="Diaria *"
+             [ngControl]="diariaCtrl"
+             [floatingLabel]="true"
+            ></app-input>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+
+    <button
+        type="button"
+        class="btn btn-outline-secondary ms-auto"
+        (click)="activeModal.dismiss('Cancel')"
+    >
+        Cancella
+    </button>
+
+    <button
+        type="button"
+        class="btn btn-primary"
+        [disabled]="form.invalid"
+        (click)="create()"
+    >
+        Salva
+    </button>
+</div>
