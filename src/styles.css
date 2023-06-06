@@ -148,6 +148,17 @@ app-table th {
   white-space: nowrap;
 }
 
+@media (min-width: 600px) {
+
+  app-table .table > tbody > tr > td:first-child {
+    padding-left: 1.5rem !important;
+  }
+
+  app-table .table > tbody > tr > td:last-child {
+    padding-right: 1.5rem !important;
+  }
+}
+
 th[sortable] {
   cursor: pointer;
   user-select: none;
