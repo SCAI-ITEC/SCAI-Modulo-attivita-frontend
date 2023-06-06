@@ -207,13 +207,6 @@ th[sortable].desc::before {
   }
 }
 
-@media (min-width: 600px) {
-  .app-crud {
-    padding-top: 6rem !important;
-    margin-top: -6rem;
-  }
-}
-
 /* Round button */
 .app-round-btn {
   box-shadow: 0 4px 8px 0 #0005;

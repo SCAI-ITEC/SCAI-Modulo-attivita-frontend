@@ -15,5 +15,5 @@ export interface GetSottoCommesseAvanzamentoResponse {
   dettaglioAvanzamento?: null | Array<DettaglioAvanzamento>;
   referente?: UtentiAnagrafica;
   sottoCommessa?: SottoCommessa;
-  stato?: null | number;
+  stato?: number;
 }

@@ -6,6 +6,7 @@ import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { CommonsService } from './services/commons.service';
 import { DatiOperativiService } from './services/dati-operativi.service';
+import { LegamiTaskUtenteService } from './services/legami-task-utente.service';
 import { OrdiniService } from './services/ordini.service';
 import { SegreteriaService } from './services/segreteria.service';
 import { StatoAvanzamentoService } from './services/stato-avanzamento.service';
@@ -22,6 +23,7 @@ import { UtentiService } from './services/utenti.service';
   providers: [
     CommonsService,
     DatiOperativiService,
+    LegamiTaskUtenteService,
     OrdiniService,
     SegreteriaService,
     StatoAvanzamentoService,

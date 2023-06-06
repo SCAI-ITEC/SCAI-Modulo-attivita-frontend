@@ -12,6 +12,7 @@ import { map, filter } from 'rxjs/operators';
 import { AvanzamentiMensili } from '../models/avanzamenti-mensili';
 import { Dettaglio } from '../models/dettaglio';
 import { EnumAvanzamento } from '../models/enum-avanzamento';
+import { EnumStatiChiusura } from '../models/enum-stati-chiusura';
 import { GetSottoCommesseAvanzamentoResponse } from '../models/get-sotto-commesse-avanzamento-response';
 import { GetSottoCommessePerReferenteResponse } from '../models/get-sotto-commesse-per-referente-response';
 import { GetSottoCommesseResponse } from '../models/get-sotto-commesse-response';
@@ -119,7 +120,7 @@ export class StatoAvanzamentoService extends BaseService {
     idAzienda: number;
     dataInizio?: string;
     dataFine?: string;
-    stato?: number;
+    stato?: EnumStatiChiusura;
     avanzamento?: EnumAvanzamento;
     mese?: string;
     idReferente?: number;
@@ -169,7 +170,7 @@ export class StatoAvanzamentoService extends BaseService {
     idAzienda: number;
     dataInizio?: string;
     dataFine?: string;
-    stato?: number;
+    stato?: EnumStatiChiusura;
     avanzamento?: EnumAvanzamento;
     mese?: string;
     idReferente?: number;
