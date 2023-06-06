@@ -8,7 +8,7 @@ import { TaskService } from "../../services/task.service";
 import { TaskDto } from "../../models/task";
 import { GetDiarieResponse, Legame, Utente, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
 import { dedupe, intersection } from "src/app/utils/array";
-import { DatiOperativiService, LegamiTaskUtenteService, TipiTrasfertaService } from "src/app/api/modulo-attivita/services";
+import { LegamiTaskUtenteService, TipiTrasfertaService } from "src/app/api/modulo-attivita/services";
 import { AuthService } from "src/app/services/auth.service";
 import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
 
@@ -70,7 +70,6 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
         private legamiTaskUtenteService: LegamiTaskUtenteService,
         private taskService: TaskService,
         private tipiTrasfertaService: TipiTrasfertaService,
-        private datiOperativiService: DatiOperativiService,
         private authService: AuthService,
         private miscData: MiscDataService
     ) { }
