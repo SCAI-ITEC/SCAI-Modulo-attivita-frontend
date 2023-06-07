@@ -27,10 +27,11 @@
             ></app-input>
 
             <app-input
-             name="diaria"
-             label="Diaria *"
-             [ngControl]="diariaCtrl"
-             [floatingLabel]="true"
+                name="diaria"
+                label="Diaria *"
+                [mask]="euroMask"
+                [ngControl]="diariaCtrl"
+                [floatingLabel]="true"
             ></app-input>
         </div>
     </form>
