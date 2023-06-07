@@ -4,11 +4,14 @@ import { map, Observable } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { SidebarService } from 'src/app/services/sidebar.service';
 import { MiscDataService } from '../../features/commons/services/miscellaneous-data.service';
+import { intersection } from 'src/app/utils/array';
+import { ROLES } from 'src/app/models/user';
 
 interface SidebarSubitem {
   title: string;
   path: string;
   icon?: string;
+  roles?: string[];
 }
 
 interface SidebarItem {
@@ -17,6 +20,7 @@ interface SidebarItem {
   path?: string;
   icon?: string;
   children?: SidebarSubitem[];
+  roles?: string[];
 }
 
 @Component({
@@ -29,6 +33,8 @@ export class DashboardSidebarComponent {
   // Get all view children with #rla applied
   @ViewChildren('rla')
   rlaList!: QueryList<RouterLinkActive>;
+  
+  intersection = intersection;
 
   sidebarItems: SidebarItem[] = [
     {
@@ -41,10 +47,11 @@ export class DashboardSidebarComponent {
       isActive: false,
       title: 'Diarie',
       icon: 'bi bi-briefcase',
+      roles: [ ROLES.SEGRETERIA, ROLES.HR_MANAGER, ROLES.AMMINISTRATORE, ROLES.CONTROLLER ],
       children: [
         {
           path: "/diarie-azienda/creazione-tipo-trasferta",
-          title: "Creazione tipo trasferta",
+          title: "Creazione tipo trasferta"
         },
         {
           path: "/diarie-azienda/abilitazione-diaria-azienda",
@@ -67,8 +74,7 @@ export class DashboardSidebarComponent {
     public authService: AuthService,
     public miscData: MiscDataService
   ) {
-
-    this.username$ = this.authService.user$.pipe(map(user => user.cognome + ' ' + user.nome))
+    this.username$ = this.authService.user$.pipe(map(user => user.cognome + ' ' + user.nome));
   }
 
   ngAfterViewInit(): void {
