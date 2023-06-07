@@ -6,6 +6,7 @@ import { ToastService } from 'src/app/services/toast.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { GetTipiTrasfertaResponse } from 'src/app/api/modulo-attivita/models';
+import { euroMask, euroMask2numStr } from 'src/app/utils/mask';
 
 @Component({
   selector: 'app-abilitazione-diaria-creazione',
@@ -27,6 +28,8 @@ export class AbilitazioneDiariaCreazioneComponent {
     diaria: this.diariaCtrl
   });
 
+  euroMask = euroMask;
+  
   constructor(
     public activeModal: NgbActiveModal,
     private authService: AuthService,
@@ -52,7 +55,7 @@ export class AbilitazioneDiariaCreazioneComponent {
     if (this.form.invalid) return;
 
     var associazioneDiaria = {
-      diaria: this.diariaCtrl.value!,
+      diaria: Number(euroMask2numStr(this.diariaCtrl.value+"")),
       idAzienda: this.authService.user.idAzienda,
       idTipoTrasferta: this.tipoTrasfertaCtrl.value?.id
     }
