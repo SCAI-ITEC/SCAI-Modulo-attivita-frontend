@@ -6,6 +6,7 @@ import { TipiTrasfertaService } from 'src/app/api/modulo-attivita/services';
 import { ToastService } from 'src/app/services/toast.service';
 import { EliminazioneDialog } from '../../attivita/dialogs/eliminazione.dialog';
 import { AbilitazioneDiariaCreazioneComponent } from '../dialogs/abilitazione-diaria-creazione/abilitazione-diaria-creazione.component';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-abilitazione-diaria-azienda',
@@ -19,6 +20,7 @@ export class AbilitazioneDiariaAziendaComponent {
 
   constructor(
     private trasfertaService: TipiTrasfertaService,
+    private authService: AuthService,
     private modalService: NgbModal,
     private toaster: ToastService
   ) { }
@@ -29,7 +31,7 @@ export class AbilitazioneDiariaAziendaComponent {
         startWith(null),
         switchMap(() =>
           this.trasfertaService
-            .getDiarie()
+            .getDiarie({ IdAzienda: this.authService.user.idAzienda! })
             
         )
       )
