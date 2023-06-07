@@ -42,12 +42,12 @@ export class DashboardSidebarComponent {
       title: 'Attività',
       icon: 'bi bi-list-task',
       path: '/attivita',
-      roles: [ ROLES.SEGRETERIA ]
     },
     {
       isActive: false,
       title: 'Diarie',
       icon: 'bi bi-briefcase',
+      roles: [ ROLES.SEGRETERIA, ROLES.HR_MANAGER, ROLES.AMMINISTRATORE, ROLES.CONTROLLER ],
       children: [
         {
           path: "/diarie-azienda/creazione-tipo-trasferta",
@@ -56,7 +56,6 @@ export class DashboardSidebarComponent {
         {
           path: "/diarie-azienda/abilitazione-diaria-azienda",
           title: "Abilitazione diaria azienda",
-          roles: [ ROLES.SEGRETERIA ]
         }
       ]
     },
