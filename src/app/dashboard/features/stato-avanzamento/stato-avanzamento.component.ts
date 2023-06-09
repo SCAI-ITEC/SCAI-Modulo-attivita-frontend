@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { catchError, combineLatest, filter, map, of, Subject, switchMap, takeUntil, tap, throwError } from 'rxjs';
 import { Dettaglio, DettaglioAvanzamento, EnumAvanzamento, EnumStatiChiusura, GetSottoCommesseAvanzamentoResponse, GetSottoCommessePerReferenteResponse, UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
 import { StatoAvanzamentoWrapService } from 'src/app/dashboard/features/stato-avanzamento/services/stato-avanzamento-wrap.service';
-import { GetAvanzamentoParam } from 'src/app/dashboard/features/stato-avanzamento/models/stato-avanzamento.models';
+import { GetAvanzamentoParam } from 'src/app/dashboard/features/stato-avanzamento/models/stato-avanzamento';
 import { ToastService } from 'src/app/services/toast.service';
 import { enforceMinMax } from 'src/app/utils/input';
 import { ROLES } from 'src/app/models/user';
@@ -12,6 +12,8 @@ import { InputComponent } from 'src/app/shared/components/input/input.component'
 import { MonthpickerStruct } from 'src/app/shared/components/monthpicker/monthpicker.component';
 import { structToIso } from 'src/app/utils/date';
 import { MiscDataService } from '../commons/services/miscellaneous-data.service';
+import { AuthService } from 'src/app/services/auth.service';
+import { intersection } from 'src/app/utils/array';
 
 interface Tab {
   id: number;
@@ -28,6 +30,7 @@ export class StatoAvanzamentoComponent {
 
   EnumStatiChiusura = EnumStatiChiusura;
   ROLES = ROLES;
+  intersection = intersection;
 
   @ViewChild("clienteAutocomplete") clienteAutocomplete!: InputComponent;
   @ViewChild("sottocommessaAutocomplete") sottocommessaAutocomplete!: InputComponent;
@@ -101,6 +104,7 @@ export class StatoAvanzamentoComponent {
   }
 
   constructor(
+    public authService: AuthService,
     private miscData: MiscDataService,
     private statoAvanzamentoWrap: StatoAvanzamentoWrapService,
     private toastService: ToastService
