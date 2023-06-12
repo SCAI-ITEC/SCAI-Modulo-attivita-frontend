@@ -1,16 +1,14 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { Subject, catchError, combineLatest, lastValueFrom, map, of, switchMap } from 'rxjs';
+import { Subject, catchError, combineLatest, lastValueFrom, map, of } from 'rxjs';
 import { ToastService } from "src/app/services/toast.service";
 import { DIALOG_MODE } from "../../models/dialog";
 import { TaskService } from "../../services/task.service";
 import { TaskDto } from "../../models/task";
-import { GetDiarieResponse, GetDiarieUtentiResponse, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
-import { RisorsaTaskWrap, UpsertLegameParam } from "../../models/risorsa";
-import { RisorsaService } from "../../services/risorsa.service";
+import { GetDiarieResponse, Legame, Utente, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
 import { dedupe, intersection } from "src/app/utils/array";
-import { DatiOperativiService, TipiTrasfertaService } from "src/app/api/modulo-attivita/services";
+import { LegamiTaskUtenteService, TipiTrasfertaService } from "src/app/api/modulo-attivita/services";
 import { AuthService } from "src/app/services/auth.service";
 import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
 
@@ -27,15 +25,14 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
     @Input("idLegame") idLegame!: number;
 
     task?: TaskDto;
-    legame?: RisorsaTaskWrap;
-    diariaUtente?: GetDiarieUtentiResponse;
+    legame?: Legame;
 
     DIALOG_MODE = DIALOG_MODE;
     dialogMode!: DIALOG_MODE;
     isLoading = false;
 
     utentiCtrl = new FormControl<UtentiAnagrafica[] | null>(null, [Validators.required]);
-    utenti: UtentiAnagrafica[] = [];
+    utenti: Utente[] = [];
     utenteFormatter = (u: UtentiAnagrafica) => u.cognome + ' ' + u.nome;
 
     dataInizioCtrl = new FormControl<string | null>(null, [Validators.required]);
@@ -70,10 +67,9 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
 	constructor(
         public activeModal: NgbActiveModal,
         private toaster: ToastService,
-        private risorsaService: RisorsaService,
+        private legamiTaskUtenteService: LegamiTaskUtenteService,
         private taskService: TaskService,
         private tipiTrasfertaService: TipiTrasfertaService,
-        private datiOperativiService: DatiOperativiService,
         private authService: AuthService,
         private miscData: MiscDataService
     ) { }
@@ -88,31 +84,15 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
 
         this.utenti = this.miscData.utenti;
 
-        const taskAndLegame$ = combineLatest([
-            this.taskService.getTaskById$(this.idTask),
-            this.risorsaService.getLegameById$(this.idLegame)
-        ]);
-
         if (this.dialogMode === DIALOG_MODE.Update) {
-
-            // Get and assign task and legame
-            [ this.task, this.legame ]  = await lastValueFrom(taskAndLegame$);
-    
-            // Get diarieUtenti
-            const diarieUtenti = await lastValueFrom(
-                this.datiOperativiService
-                    .getDiarieUtenti({
-                        idAzienda: this.authService.user.idAzienda!,
-                        idAttivita: this.idTask,
-                        idUtente: this.legame!.idUtente
-                    })
+            [ this.task, this.legame ]  = await lastValueFrom(
+                combineLatest([
+                    this.taskService.getTaskById$(this.idTask),
+                    this.legamiTaskUtenteService.getLegame({ idLegame: this.idLegame })
+                ])
             );
-    
-            this.diariaUtente = diarieUtenti[0]; // It's always a single element array BLAME THE BACKEEEEEND!!!
         }
         else {
-
-            // Get task
             this.task = await lastValueFrom(
                 this.taskService.getTaskById$(this.idTask)
             );
@@ -136,27 +116,16 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
     }
 
     initCtrlValues() {
-
-        // esempio legame {
-        //     "allocazione": null,
-        //     "fineAllocazione": null,
-        //     "id": 43927,
-        //     "idAzienda": 9
-        //     "idTask": 4541,
-        //     "idUtente": 217,
-        //     "inizioAllocazione": null,
-        // }
             
         if (!this.legame) return;
 
-        const diaria = this.diarie
-            .find(d => d.tipoTrasferta?.id === this.diariaUtente?.trasferta?.idTipoTrasferta);
+        const diaria = this.diarie.find(d => d.tipoTrasferta?.id === this.legame!.diaria?.id);
         this.diariaCtrl.setValue(diaria!);
 
         this.form.patchValue({
-            utente: [this.legame.utente],
-            dataInizio: this.legame.inizioAllocazione && this.legame.inizioAllocazione.slice(0, 10),
-            dataFine: this.legame.fineAllocazione && this.legame.fineAllocazione.slice(0, 10)
+            utente: [ this.legame.utente! ],
+            dataInizio: this.legame.inizio && this.legame.inizio.slice(0, 10),
+            dataFine: this.legame.fine && this.legame.fine.slice(0, 10)
         });
     }
 
@@ -225,29 +194,26 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
 
     async create() {
 
-        // esempio di payload {
-        //     "allocazione": 100,
-        //     "fineAllocazione": "2015-06-29T22:00:00.000Z",
-        //     "id": null,
-        //     "idAzienda": 9
-        //     "idTask": 4541,
-        //     "idUtente": 5352,
-        //     "inizioAllocazione": "2013-12-31T23:00:00.000Z",
-        // }
-
         if (this.form.invalid || (!this.utentiCtrl.value || this.utentiCtrl.value.length === 0)) return;
 
         const utentiSelezione = dedupe<UtentiAnagrafica>(this.utentiCtrl.value, "idUtente");
 
         const idUtentiLegami = await lastValueFrom(
-            this.risorsaService
-                .getLegamiByIdTask$(this.idTask)
+            this.legamiTaskUtenteService
+                .getLegami({ idTask: this.idTask })
                 .pipe(
-                    map(ls => ls.map(l => l.idUtente))
+                    map(legami =>
+                        legami.map(legame =>
+                            legame.utente!.idUtente
+                        )
+                    )
                 )
         );
 
-        const idUtentiToExclude = intersection(utentiSelezione.map(u => u.idUtente), idUtentiLegami);
+        const idUtentiToExclude = intersection(
+            utentiSelezione.map(u => u.idUtente),
+            idUtentiLegami
+        );
 
         // Filter out any existing user, throw an error toast
         const utentiToSave = utentiSelezione
@@ -262,144 +228,65 @@ export class RisorsaCreazioneModifica implements OnInit, OnDestroy {
                 return true;
             });
 
-        const requests = utentiToSave
-            .map(utente => {
-
-                const legameTaskRisorsa: UpsertLegameParam = {
-                    idTask: this.idTask,
-                    idUtente: utente.idUtente!,
-                    inizioAllocazione: this.dataInizioCtrl.value!,
-                    fineAllocazione: this.dataFineCtrl.value!
-                };
-
-                let request = this.risorsaService
-                    .createLegame$(legameTaskRisorsa)
+        // Send all requests in parallel
+        combineLatest(
+            utentiToSave.map(utente =>
+                this.legamiTaskUtenteService
+                    .postLegame({
+                        body: {
+                            idTask: this.idTask,
+                            idUtente: utente.idUtente,
+                            idDiaria: this.diariaCtrl.value?.id,
+                            inizio: this.dataInizioCtrl.value,
+                            fine: this.dataFineCtrl.value
+                        }
+                    })
                     .pipe(
                         catchError(() => {
-
                             const txt = `Non è stato possibile creare il Legame per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
                             this.toaster.show(txt, { classname: 'bg-danger text-white' });
-
                             return of(-1);
                         })
-                    );
-
-                // If diaria has a value, then add postDiarieUtenti to the current request
-                if (this.diariaCtrl.value) {
-
-                    const diariaUtente = {
-                        idAzienda: this.authService.user.idAzienda!,
-                        idAttivita: this.idTask,
-                        idUtente: utente.idUtente!,
-                        idDiaria: this.diariaCtrl.value?.tipoTrasferta?.id!,
-                        body: { attivo: true }
-                    };
-        
-                    request = request.pipe(
-                        switchMap(() =>
-                            this.datiOperativiService
-                                .postDiarieUtenti(diariaUtente)
-                                .pipe(
-                                    catchError(() => {
-
-                                        const txt = `Non è stato possibile assegnare la diaria per ${utente.cognome} ${utente.nome}. Contattare il supporto tecnico.`;
-                                        this.toaster.show(txt, { classname: 'bg-danger text-white' });
-
-                                        return of(-1);
-                                    })
-                                )
-                        )
-                    );
-                }
-
-                return request;
-            });
-
-        combineLatest(requests)
-            .subscribe(() => {
-
-                const txt = "Operazione terminata!";
-                this.toaster.show(txt, { classname: 'bg-success text-white' });
-
-                this.activeModal.close({ dialogMode: this.dialogMode });
-            });
+                    )
+            )
+        )
+        .subscribe(() => {
+            const txt = "Operazione terminata!";
+            this.toaster.show(txt, { classname: 'bg-success text-white' });
+            this.activeModal.close({ dialogMode: this.dialogMode });
+        });
     }
 
     update() {
 
-        // {
-        //     "allocazione": 1,
-        //     "fineAllocazione": "2015-06-29T22:00:00.000Z",
-        //     "id": 43923,
-        //     "idAzienda": 9
-        //     "idTask": 4541,
-        //     "idUtente": 208,
-        //     "inizioAllocazione": "2015-05-31T22:00:00.000Z",
-        // }
-
         if (!this.legame || this.form.invalid) return;
 
-        const legameTaskRisorsa: UpsertLegameParam = {
-            idTask: this.idTask,
-            idUtente: this.legame.idUtente,
-            inizioAllocazione: this.dataInizioCtrl.value!,
-            fineAllocazione: this.dataFineCtrl.value!
-        };
+        const { id } = this.legame;
 
-        let request = this.risorsaService
-            .updateLegame$(this.idLegame, legameTaskRisorsa);
-
-        // If diariaUtente is set but diariaCtrl is not (the user explicitly removed diaria), then "delete" diariaUtente
-        if (this.diariaUtente && !this.diariaCtrl.value) {
-
-            const diariaUtente = {
-                idAzienda: this.authService.user.idAzienda!,
-                idAttivita: this.idTask,
-                idUtente: this.legame.idUtente,
-                idDiaria: this.diariaUtente.trasferta?.idTipoTrasferta!,
-                body: { attivo: false }
-            };
-
-            request = request.pipe(
-                switchMap(() =>
-                    this.datiOperativiService
-                        .postDiarieUtenti(diariaUtente)
-                )
+        this.legamiTaskUtenteService
+            .postLegame({
+                body: {
+                    id,
+                    idDiaria: this.diariaCtrl.value
+                        ? this.diariaCtrl.value.id
+                        : null,
+                    inizio: this.dataInizioCtrl.value,
+                    fine: this.dataFineCtrl.value
+                }
+            })
+            .subscribe(
+                () => {
+                    const txt = "Legame modificato con successo!";
+                    this.toaster.show(txt, { classname: 'bg-success text-white' });
+                    this.activeModal.close({
+                        dialogMode: this.dialogMode,
+                        idLegame: id
+                    });
+                },
+                () => {
+                    const txt = "Non è stato possibile modificare il Legame. Contattare il supporto tecnico.";
+                    this.toaster.show(txt, { classname: 'bg-danger text-white' });
+                }
             );
-        }
-
-        // If diariaCtrl is set, then create/update diariaUtente
-        if (this.diariaCtrl.value) {
-
-            const diariaUtente = {
-                idAzienda: this.authService.user.idAzienda!,
-                idAttivita: this.idTask,
-                idUtente: this.legame.idUtente,
-                idDiaria: this.diariaCtrl.value?.tipoTrasferta?.id!,
-                body: { attivo: true }
-            };
-
-            request = request.pipe(
-                switchMap(() =>
-                    this.datiOperativiService
-                        .postDiarieUtenti(diariaUtente)
-                )
-            );
-        }
-
-        request.subscribe(
-            () => {
-                const txt = "Legame modificato con successo!";
-                this.toaster.show(txt, { classname: 'bg-success text-white' });
-                this.activeModal.close({
-                    dialogMode: this.dialogMode,
-                    item: legameTaskRisorsa
-                });
-            },
-            () => {
-                const txt = "Non è stato possibile modificare il Legame. Contattare il supporto tecnico.";
-                this.toaster.show(txt, { classname: 'bg-danger text-white' });
-            }
-        );
     }
 }
