@@ -233,7 +233,13 @@
                                             <td class="text-center">
                                                 <fieldset
                                                     class="d-flex flex-wrap justify-content-center gap-2"
-                                                    [disabled]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
+                                                    [disabled]="
+                                                        !intersection(
+                                                            [ ROLES.BUSINESS_MANAGER, ROLES.AMMINISTRATORE ],
+                                                            authService.user.roles
+                                                        ).length
+                                                      && dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato
+                                                    "
                                                 >
 
                                                     <div class="form-check">
@@ -264,12 +270,18 @@
                                                         </label>
                                                     </div>
 
-                                                    <div class="form-check" *rbacAllow="[ ROLES.BUSINESS_MANAGER, ROLES.AMMINISTRATORE ]">
+                                                    <div class="form-check">
                                                         <input
                                                             class="form-check-input"
                                                             type="radio"
                                                             [name]="'stato-' + dettaglio._id"
                                                             [id]="'stato-' + dettaglio._id + '-vistato'"
+                                                            [disabled]="
+                                                                !intersection(
+                                                                    [ ROLES.BUSINESS_MANAGER, ROLES.AMMINISTRATORE ],
+                                                                    authService.user.roles
+                                                                ).length
+                                                            "
                                                             [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
                                                             (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Vistato)"
                                                         >
@@ -283,7 +295,13 @@
                                         <button
                                             class="btn btn-outline-primary"
                                             [class.pulse]="dettaglio._dirty"
-                                            [disabled]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
+                                            [disabled]="
+                                                !intersection(
+                                                    [ ROLES.BUSINESS_MANAGER, ROLES.AMMINISTRATORE ],
+                                                    authService.user.roles
+                                                ).length
+                                              && dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato 
+                                            "
                                             (click)="salvaDettaglio(dettaglio)"
                                         >
                                             <i class="bi bi-save pe-2"></i>
