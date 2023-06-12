@@ -1,17 +1,17 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { RisorsaTaskWrap, UpsertLegameParam } from '../../models/risorsa';
 import { TaskDto } from '../../models/task';
-import { RisorsaService } from '../../services/risorsa.service';
 import { TaskService } from '../../services/task.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RisorsaCreazioneModifica } from '../../dialogs/risorsa-creazione-modifica/risorsa-creazione-modifica.component';
 import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { ToastService } from 'src/app/services/toast.service';
-import { NEVER, Subject, catchError, lastValueFrom, startWith, switchMap, tap } from 'rxjs';
+import { NEVER, Subject, catchError, lastValueFrom, map, startWith, switchMap, tap } from 'rxjs';
 import { TaskCreazioneModifica } from '../../dialogs/task-creazione-modifica/task-creazione-modifica.component';
 import { ROLES } from 'src/app/models/user';
 import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { LegamiTaskUtenteService } from 'src/app/api/modulo-attivita/services';
+import { Legame } from 'src/app/api/modulo-attivita/models';
 
 @Component({
   selector: 'app-risorse',
@@ -30,13 +30,13 @@ export class RisorseComponent {
 
   refresh$ = new Subject<void>();
 
-  risorseTask: RisorsaTaskWrap[] = [];
+  risorseTask: Legame[] = [];
 
   constructor(
     public attivitaNavState: AttivitaNavStateService,
     public authService: AuthService,
     private taskService: TaskService,
-    private risorsaService: RisorsaService,
+    private legamiTaskUtenteService: LegamiTaskUtenteService,
     private modalService: NgbModal,
     private toaster: ToastService
   ) {}
@@ -51,8 +51,11 @@ export class RisorseComponent {
       .pipe(
         startWith(null),
         switchMap(() =>
-          this.risorsaService
-            .getLegamiByIdTask$(this.idTask)
+          this.legamiTaskUtenteService
+            .getLegami({ idTask: this.idTask })
+            .pipe(
+              map(legami => legami.reverse()) // Most recent on top
+            )
         )
       )
       .subscribe(legami => this.risorseTask = legami);
@@ -65,8 +68,7 @@ export class RisorseComponent {
         TaskCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
 		  );
 		modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -90,8 +92,7 @@ export class RisorseComponent {
         RisorsaCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -102,15 +103,14 @@ export class RisorseComponent {
     this.refresh$.next();
   }
 
-  async update(legame: RisorsaTaskWrap) {
+  async update(legame: Legame) {
 
     const modalRef = this.modalService
       .open(
         RisorsaCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -122,27 +122,26 @@ export class RisorseComponent {
     this.refresh$.next();
   }
 
-  async delete(legame: RisorsaTaskWrap) {
+  async delete(legame: Legame) {
 
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     
-    const utenteCognomeNome = legame.utente.cognome + " " + legame.utente.nome;
+    const utenteCognomeNome = legame.utente!.cognome + " " + legame.utente!.nome;
 
     modalRef.componentInstance.name = this.task?.codiceTask + " - " + utenteCognomeNome;
     modalRef.componentInstance.message = "Stai eliminando definitivamente un legame task-risorsa."
 
     await modalRef.result;
 
-    this.risorsaService
-      .deleteLegame$(legame.id, legame.idUtente)
+    this.legamiTaskUtenteService
+      .deleteLegame({ idLegame: legame.id! })
       .subscribe(
         () => {
 
@@ -161,14 +160,15 @@ export class RisorseComponent {
     
     const { idUtente } = this.authService.user;
 
-    const legameTaskRisorsa: UpsertLegameParam = {
-      idUtente: idUtente!,
-      idTask: this.idTask
-    };
-
     await lastValueFrom(
-      this.risorsaService
-        .createLegame$(legameTaskRisorsa)
+      this.legamiTaskUtenteService
+        .postLegame({
+          body: {
+            idUtente,
+            idTask: this.idTask,
+            idAzienda: this.authService.user.idAzienda
+          }
+        })
         .pipe(
           catchError(() => {
             const txt = "Non è stato possibile creare il Legame per la tua utenza. Contattare il supporto tecnico.";

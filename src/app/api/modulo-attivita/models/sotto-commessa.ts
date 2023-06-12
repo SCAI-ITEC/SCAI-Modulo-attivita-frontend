@@ -6,5 +6,6 @@ export interface SottoCommessa {
   descrizione?: null | string;
   forzatureCosto?: number;
   id?: number;
+  importo?: number;
   tariffa?: number;
 }

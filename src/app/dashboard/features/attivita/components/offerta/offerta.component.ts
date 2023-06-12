@@ -6,6 +6,7 @@ import { Offerta } from '../../models/offerta';
 import { OffertaService } from '../../services/offerta.service';
 import { ROLES } from 'src/app/models/user';
 import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
+import { SelectOption } from 'src/app/shared/components/input/input.component';
 
 @Component({
   selector: 'app-offerta',
@@ -22,7 +23,7 @@ export class OffertaComponent {
   offerta?: Offerta;
 
   tipologiaCtrl = new FormControl<number>(1);
-  tipologie: { text: string, value: number }[] = [];
+  tipologie: SelectOption[] = [];
 
   dataOffertaCtrl = new FormControl<string | null>(null, [Validators.required]);
   dataAccettazioneCtrl = new FormControl<string | null>(null);

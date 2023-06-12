@@ -114,7 +114,7 @@
         [tbody]="tbody"
         [animated]="true"
         [items]="risorseTask"
-        [searchable]="['utente.cognome', 'utente.nome']"
+        [searchable]="['utente.cognome', 'utente.nome', 'diaria.descrizione']"
         [paginated]="true"
         [pageSize]="5"
         [emptyTemplate]="emptyTmpl"
@@ -123,8 +123,9 @@
         <ng-template #thead>
             <th sortable="utente.cognome" (sort)="dt.sort($event)">Cognome</th>
             <th sortable="utente.nome" (sort)="dt.sort($event)">Nome</th>
-            <th sortable="inizioAllocazione" (sort)="dt.sort($event)">Data inizio</th>
-            <th sortable="fineAllocazione" (sort)="dt.sort($event)">Data fine</th>
+            <th sortable="inizio" (sort)="dt.sort($event)">Data inizio</th>
+            <th sortable="fine" (sort)="dt.sort($event)">Data fine</th>
+            <th sortable="diaria" (sort)="dt.sort($event)">Diaria</th>
             <th style="width: 10rem"></th>
         </ng-template>
     
@@ -135,8 +136,9 @@
             <td data-label="Nome">
                 <ngb-highlight [result]="item.utente?.nome" [term]="$any(term$ | async)"/>
             </td>
-            <td data-label="Inizio">{{ item.inizioAllocazione | date:'yyyy-MM-dd' }}</td>
-            <td data-label="Fine">{{ item.fineAllocazione | date:'yyyy-MM-dd' }}</td>
+            <td data-label="Inizio">{{ item.inizio | date:'yyyy-MM-dd' }}</td>
+            <td data-label="Fine">{{ item.fine | date:'yyyy-MM-dd' }}</td>
+            <td data-label="Diaria">{{ item.diaria?.descrizione }}</td>
             <td>
                 <div
                     *ngLet="(item.idUtente === authService.user.idUtente) as selfAssignment"
