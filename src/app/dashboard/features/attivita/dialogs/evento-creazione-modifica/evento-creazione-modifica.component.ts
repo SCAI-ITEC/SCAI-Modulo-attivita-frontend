@@ -5,6 +5,7 @@ import { ToastService } from "src/app/services/toast.service";
 import { DIALOG_MODE } from "../../models/dialog";
 import { EventoDto } from "../../models/evento";
 import { EventoService } from "../../services/evento.service";
+import { SelectOption } from "src/app/shared/components/input/input.component";
 
 @Component({
 	selector: 'app-evento-creazione-modifica-dialog',
@@ -20,7 +21,7 @@ export class EventoCreazioneModifica {
     dialogMode!: DIALOG_MODE;
 
     tipoEventoCtrl = new FormControl(1);
-    tipiEvento: { text: string, value: number }[] = [];
+    tipiEvento: SelectOption[] = [];
 
     dataCtrl = new FormControl<string | null>(null, [Validators.required]);
     descrizioneCtrl = new FormControl<string | null>(null, [Validators.required]);

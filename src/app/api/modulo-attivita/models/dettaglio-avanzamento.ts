@@ -5,6 +5,7 @@ import { StatoValidazione } from './stato-validazione';
 export interface DettaglioAvanzamento {
   avanzamentoTotale?: number;
   costoCompetenza?: number;
+  cumulato?: number;
   dataAggiornamento?: null | string;
   dataInserimento?: string;
   descrizione?: null | string;
