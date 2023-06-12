@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { StatoAvanzamentoService } from 'src/app/api/modulo-attivita/services';
 import { AuthService } from 'src/app/services/auth.service';
-import { GetAvanzamentoParam } from '../models/stato-avanzamento.models';
+import { GetAvanzamentoParam } from '../models/stato-avanzamento';
 import { DettaglioAvanzamento, EnumStatiChiusura, GetSottoCommesseAvanzamentoResponse } from 'src/app/api/modulo-attivita/models';
 import { format } from 'date-fns';
 import { guid } from 'src/app/utils/uuid';
