@@ -57,8 +57,7 @@ export class ReperibilitaComponent {
         ReperibilitaCreazioneComponent,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
@@ -74,8 +73,7 @@ export class ReperibilitaComponent {
         ReperibilitaCreazioneComponent,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
@@ -92,8 +90,7 @@ export class ReperibilitaComponent {
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.name = reperibilita.descrizione;

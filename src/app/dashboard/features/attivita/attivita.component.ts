@@ -366,8 +366,7 @@ export class AttivitaComponent {
         CommessaCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
 
@@ -383,8 +382,7 @@ export class AttivitaComponent {
         CommessaCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = commessa.id;
@@ -400,8 +398,7 @@ export class AttivitaComponent {
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.name = commessa.codiceCommessa;
@@ -434,8 +431,7 @@ export class AttivitaComponent {
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.name = commessa.codiceCommessa;

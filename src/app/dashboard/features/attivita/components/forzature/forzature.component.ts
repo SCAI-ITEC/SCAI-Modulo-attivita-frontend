@@ -49,8 +49,7 @@ export class ForzatureComponent {
         ForzaturaCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -67,8 +66,7 @@ export class ForzatureComponent {
         ForzaturaCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -86,8 +84,7 @@ export class ForzatureComponent {
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.name = "forzatura";

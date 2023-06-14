@@ -45,8 +45,7 @@ export class EventoComponent {
         EventoCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -62,8 +61,7 @@ export class EventoComponent {
         EventoCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;

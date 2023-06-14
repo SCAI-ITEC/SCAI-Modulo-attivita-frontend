@@ -57,8 +57,7 @@ export class StraordinarioComponent {
         StraordinariCreazioneComponent,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
@@ -74,8 +73,7 @@ export class StraordinarioComponent {
         StraordinariCreazioneComponent,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
@@ -92,8 +90,7 @@ export class StraordinarioComponent {
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.name = straordinario.descrizione;

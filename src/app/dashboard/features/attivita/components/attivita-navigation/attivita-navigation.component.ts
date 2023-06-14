@@ -84,8 +84,7 @@ export class AttivitaNavigationComponent {
 			CommessaCreazioneModifica,
 			{
 			  size: 'lg',
-			  centered: true,
-			  scrollable: true
+			  centered: true
 			}
 		  );
 		modalRef.componentInstance.idCommessa = this.idCommessa;

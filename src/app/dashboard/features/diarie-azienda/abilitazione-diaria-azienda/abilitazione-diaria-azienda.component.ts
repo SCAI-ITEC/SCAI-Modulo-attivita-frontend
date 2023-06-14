@@ -58,8 +58,7 @@ export class AbilitazioneDiariaAziendaComponent {
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.name = assegnazioneDiaria.azienda?.descrizione + " - " + assegnazioneDiaria.tipoTrasferta?.descrizione;

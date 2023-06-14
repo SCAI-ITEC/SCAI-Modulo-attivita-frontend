@@ -53,8 +53,7 @@ export class CreazioneTipoTrasfertaComponent {
         TipoTrasfertaCreazioneModificaComponent,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
 
@@ -69,8 +68,7 @@ export class CreazioneTipoTrasfertaComponent {
         TipoTrasfertaCreazioneModificaComponent,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.tipoTrasferta = tipoTrasferta;
@@ -86,8 +84,7 @@ export class CreazioneTipoTrasfertaComponent {
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.name = tipoTrasferta.descrizione;

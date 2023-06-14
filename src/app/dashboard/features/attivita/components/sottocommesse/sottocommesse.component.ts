@@ -102,8 +102,7 @@ export class SottocommesseComponent {
         SottocommessaCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -120,8 +119,7 @@ export class SottocommesseComponent {
         SottocommessaCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -138,8 +136,7 @@ export class SottocommesseComponent {
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.name = sottocommessa.codiceCommessa;

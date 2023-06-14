@@ -100,8 +100,7 @@ export class TasksComponent {
         TaskCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -119,8 +118,7 @@ export class TasksComponent {
         TaskCreazioneModifica,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.idCommessa = this.idCommessa;
@@ -138,8 +136,7 @@ export class TasksComponent {
         EliminazioneDialog,
         {
           size: 'md',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
     modalRef.componentInstance.name = task.codiceTask;
