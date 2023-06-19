@@ -167,15 +167,6 @@ export class StatoAvanzamentoComponent {
             )
         ),
         tap(avanzamento => {
-
-          // Add some hidden state to each dettaglioAvanzamento
-          avanzamento.forEach(a =>
-            a.dettaglioAvanzamento!.forEach((d: any) => {
-              d._id = guid();
-              d._dirty = false;
-            })
-          );
-
           this.updateResults(avanzamento);
           this.loading = false;
         })
@@ -441,11 +432,14 @@ export class StatoAvanzamentoComponent {
           return throwError(err);
         }),
         tap(() =>
+          this.toastService.show("Dettaglio avanzamento salvato con successo!", { classname: 'bg-success text-light'  })
+        ),
+        switchMap(() =>
           this.statoAvanzamentoWrap
-            .getAvanzamento$(this.lastSearchFilter) // Call the backend with the last filter
-            .subscribe(avanzamento =>
-              this.updateResults(avanzamento)
-            )
+            .getAvanzamento$(this.lastSearchFilter)
+        ),
+        tap(avanzamento =>
+          this.updateResults(avanzamento)
         )
       )
       .subscribe();

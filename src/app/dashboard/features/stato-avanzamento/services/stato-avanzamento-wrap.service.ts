@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs';
 import { StatoAvanzamentoService } from 'src/app/api/modulo-attivita/services';
 import { AuthService } from 'src/app/services/auth.service';
 import { GetAvanzamentoParam } from '../models/stato-avanzamento';
-import { DettaglioAvanzamento, EnumStatiChiusura, GetSottoCommesseAvanzamentoResponse } from 'src/app/api/modulo-attivita/models';
-import { format } from 'date-fns';
+import { DettaglioAvanzamento } from 'src/app/api/modulo-attivita/models';
+import { tap } from 'rxjs';
 import { guid } from 'src/app/utils/uuid';
 
 @Injectable({
@@ -18,10 +17,29 @@ export class StatoAvanzamentoWrapService {
   ) { }
 
   getAvanzamento$(input: GetAvanzamentoParam) {
+
     input = input || {};
     input.idAzienda = this.authService.user.idAzienda;
+
     return this.statoAvanzamentoService
-      .getSottoCommesseAvanzamento(input as any);
+      .getSottoCommesseAvanzamento(input as any)
+      .pipe(
+        tap(avanzamenti =>
+          // Enrich dettaglioAvanzamento with presentational fields
+          avanzamenti.forEach(avanzamento =>
+            avanzamento.dettaglioAvanzamento?.forEach(dettaglio =>
+              Object.setPrototypeOf(
+                dettaglio,
+                {
+                  ...Object.getPrototypeOf(dettaglio),
+                  _id: guid(),
+                  _dirty: false
+                }
+              )  
+            )  
+          )
+        )
+      );
   }
 
   postAvanzamento$(dettaglio: DettaglioAvanzamento) {
