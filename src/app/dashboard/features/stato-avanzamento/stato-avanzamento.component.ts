@@ -14,6 +14,7 @@ import { structToIso } from 'src/app/utils/date';
 import { MiscDataService } from '../commons/services/miscellaneous-data.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { intersection } from 'src/app/utils/array';
+import { guid } from 'src/app/utils/uuid';
 
 interface Tab {
   id: number;
@@ -31,6 +32,7 @@ export class StatoAvanzamentoComponent {
   EnumStatiChiusura = EnumStatiChiusura;
   ROLES = ROLES;
   intersection = intersection;
+  guid = guid;
 
   @ViewChild("clienteAutocomplete") clienteAutocomplete!: InputComponent;
   @ViewChild("sottocommessaAutocomplete") sottocommessaAutocomplete!: InputComponent;
@@ -42,7 +44,7 @@ export class StatoAvanzamentoComponent {
   loading = false;
 
   activeTabId!: number;
-  tabs: Tab[] = [];
+  tabs: Tab[] | null = null;
 
   lastSearchFilter!: GetAvanzamentoParam;
 
@@ -119,10 +121,22 @@ export class StatoAvanzamentoComponent {
     this.searchClick$
       .pipe(
         takeUntil(this.destroy$),
-        map(() =>
-          ({
-            idReferente: this.idPm,
-            idBusinessManager: this.idBm,
+        map(() => {
+
+          const isAdmin = this.authService.user.roles.includes(ROLES.AMMINISTRATORE);
+          const isBm = this.authService.user.roles.includes(ROLES.BUSINESS_MANAGER);
+
+          return {
+            idReferente:
+              (isAdmin || isBm)
+                ? this.idPm
+                : this.authService.user.idUtente,
+            idBusinessManager:
+              isAdmin
+                ? this.idBm
+                : isBm
+                  ? this.authService.user.idUtente
+                  : undefined,
             idSottoCommessa: this.idSottocommessa,
             idCliente: this.idCliente,
             stato: this.statoCtrl.value || undefined,
@@ -130,8 +144,8 @@ export class StatoAvanzamentoComponent {
             dataInizio: this.dataInizio,
             dataFine: this.dataFine,
             mese: this.mese ? structToIso(this.mese) : undefined
-          })
-        ),
+          }
+        }),
         tap(searchParam =>
           this.lastSearchFilter = jsonCopy(searchParam)
         ),
@@ -153,6 +167,15 @@ export class StatoAvanzamentoComponent {
             )
         ),
         tap(avanzamento => {
+
+          // Add some hidden state to each dettaglioAvanzamento
+          avanzamento.forEach(a =>
+            a.dettaglioAvanzamento!.forEach((d: any) => {
+              d._id = guid();
+              d._dirty = false;
+            })
+          );
+
           this.updateResults(avanzamento);
           this.loading = false;
         })
@@ -336,6 +359,8 @@ export class StatoAvanzamentoComponent {
 
     const idPmList = Object.keys(idPmAvanzamento) as unknown as number[];
 
+    if (!this.tabs) this.tabs = [];
+
     // Clean tabs that are not present in the current view
     for (let i = this.tabs.length - 1; i > -1; i--) {
 
@@ -368,6 +393,8 @@ export class StatoAvanzamentoComponent {
     avanzamento: GetSottoCommesseAvanzamentoResponse[]
   ) {
 
+    if (!this.tabs) return;
+
     // Update existing
     const tabIndex = this.tabs.findIndex(t => t.id === id);
     if (tabIndex > - 1) {
@@ -392,6 +419,8 @@ export class StatoAvanzamentoComponent {
           (d as any)._dirty
         )
       );
+
+    if (!this.tabs) return;
 
     // Check all tabs
     return this.tabs.some(t =>
@@ -446,12 +475,12 @@ export class StatoAvanzamentoComponent {
       curr.cumulato = curr.avanzamentoTotale + (prev ? prev.cumulato : 0);
     }
 
-    Object.getPrototypeOf(dettaglio)._dirty = true;
+    (dettaglio as any)._dirty = true;
   }
 
   changeStatoValidazione(dettaglio: DettaglioAvanzamento, stato: EnumStatiChiusura) {
     dettaglio.statoValidazione!.id = stato;
-    Object.getPrototypeOf(dettaglio)._dirty = true;
+    (dettaglio as any)._dirty = true;
   }
 
   trackByIdCommessa(index: number, avanzamento: GetSottoCommesseAvanzamentoResponse) {
