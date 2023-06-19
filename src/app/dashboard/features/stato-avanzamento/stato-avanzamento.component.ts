@@ -431,16 +431,14 @@ export class StatoAvanzamentoComponent {
           this.toastService.show(err.error, { classname: 'bg-danger text-light', delay: 10000 });
           return throwError(err);
         }),
-        tap(() =>
-          this.toastService.show("Dettaglio avanzamento salvato con successo!", { classname: 'bg-success text-light'  })
-        ),
         switchMap(() =>
           this.statoAvanzamentoWrap
             .getAvanzamento$(this.lastSearchFilter)
         ),
-        tap(avanzamento =>
+        tap(avanzamento => {
+          this.toastService.show("Dettaglio avanzamento salvato con successo!", { classname: 'bg-success text-light'  })
           this.updateResults(avanzamento)
-        )
+        })
       )
       .subscribe();
   }
