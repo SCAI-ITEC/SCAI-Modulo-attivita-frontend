@@ -68,6 +68,7 @@
             </ng-template>
 
             <app-input
+                *rbacAllow="[ ROLES.AMMINISTRATORE, ROLES.BUSINESS_MANAGER ]"
                 #pmAutocomplete
                 type="autocomplete"
                 name="projectManager"
@@ -86,6 +87,7 @@
             </ng-template>
 
             <app-input
+                *rbacAllow="[ ROLES.AMMINISTRATORE ]"
                 #bmAutocomplete
                 type="autocomplete"
                 name="businessManager"
@@ -111,6 +113,12 @@
 
                 <button
                     class="btn btn-primary"
+                    [disabled]="
+                        !intersection(
+                            [ ROLES.AMMINISTRATORE, ROLES.BUSINESS_MANAGER, ROLES.PROJECT_MANAGER ],
+                            authService.user.roles
+                        ).length
+                    "
                     (click)="searchClick$.next()"
                 >
                     Cerca
@@ -185,111 +193,111 @@
                         <td class="text-end">{{ avanzamento.stato }}</td>
                     </ng-template>
 
-                            <ng-template #rowExpand let-avanzamento>
-                                <div class="bg-white py-5 px-4">
-                                    <app-table
-                                        #dt2
-                                        class="shadow"
-                                        [thead]="thead2"
-                                        [tbody]="tbody2"
-                                        [items]="avanzamento.dettaglioAvanzamento"
-                                        maxHeight="65vh"
-                                        [stickyHead]="true"
-                                    >
+                    <ng-template #rowExpand let-avanzamento>
+                        <div class="bg-white py-5 px-4">
+                            <app-table
+                                #dt2
+                                class="shadow"
+                                [thead]="thead2"
+                                [tbody]="tbody2"
+                                [items]="avanzamento.dettaglioAvanzamento"
+                                maxHeight="65vh"
+                                [stickyHead]="true"
+                            >
 
-                                        <ng-template #thead2>
-                                            <th sortable="meseValidazione" (sort)="dt2.sort($any($event))">Mese</th>
-                                            <th class="text-end" sortable="avanzamentoTotale" (sort)="dt2.sort($any($event))">Mese %</th>
-                                            <th class="text-end" sortable="avanzamentoSommatorio" (sort)="dt2.sort($any($event))">Totale %</th>
-                                            <th class="text-end" sortable="costoCompetenza" (sort)="dt2.sort($any($event))">Costo Competenza</th>
-                                            <th class="text-end" sortable="ricavoCompetenza" (sort)="dt2.sort($any($event))">Ricavo Competenza</th>
-                                            <th class="text-center" sortable="statoValidazione.id" (sort)="dt2.sort($any($event))">Stato</th>
-                                            <th class="text-center"></th>
-                                        </ng-template>
+                                <ng-template #thead2>
+                                    <th sortable="meseValidazione" (sort)="dt2.sort($any($event))">Mese</th>
+                                    <th class="text-end" sortable="avanzamentoTotale" (sort)="dt2.sort($any($event))">Mese %</th>
+                                    <th class="text-end" sortable="avanzamentoSommatorio" (sort)="dt2.sort($any($event))">Totale %</th>
+                                    <th class="text-end" sortable="costoCompetenza" (sort)="dt2.sort($any($event))">Costo Competenza</th>
+                                    <th class="text-end" sortable="ricavoCompetenza" (sort)="dt2.sort($any($event))">Ricavo Competenza</th>
+                                    <th class="text-center" sortable="statoValidazione.id" (sort)="dt2.sort($any($event))">Stato</th>
+                                    <th class="text-center"></th>
+                                </ng-template>
 
-                                        <ng-template #tbody2 let-dettaglio let-index="index">
-                                            <td>{{ dettaglio.meseValidazione }}</td>
-                                            <td>
-                                                <div class="d-flex align-items-center justify-content-end gap-2">
-                                                    <input
-                                                        #percEl
-                                                        style="max-width: 5rem"
-                                                        type="number"
-                                                        class="form-control"
-                                                        step="1"
-                                                        [value]="dettaglio.avanzamentoTotale"
-                                                        [disabled]="dettaglio.statoValidazione.id !== EnumStatiChiusura.Aperto"
-                                                        (input)="updateCumulativePercentages(avanzamento, dettaglio, percEl)"
-                                                        (keyup)="updateCumulativePercentages(avanzamento, dettaglio, percEl)"
-                                                    >
-                                                    <div class="no-text-break" style="text-align: right; width: 3rem">
-                                                        {{ dettaglio.avanzamentoTotale | number : "1.0-2" }} %
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="text-end">{{ dettaglio.cumulato | number : "1.0-2" }} %</td>
-                                            <td class="text-end">{{ dettaglio.costoCompetenza | currency:"EUR":"symbol" }}</td>
-                                            <td class="text-end">{{ dettaglio.ricavoCompetenza | currency:"EUR":"symbol" }}</td>
-                                            <td class="text-center">
-                                                <fieldset
-                                                    class="d-flex flex-wrap justify-content-center gap-2"
+                                <ng-template #tbody2 let-dettaglio let-index="index">
+                                    <td>{{ dettaglio.meseValidazione }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center justify-content-end gap-2">
+                                            <input
+                                                #percEl
+                                                style="max-width: 5rem"
+                                                type="number"
+                                                class="form-control"
+                                                step="1"
+                                                [value]="dettaglio.avanzamentoTotale"
+                                                [disabled]="dettaglio.statoValidazione.id !== EnumStatiChiusura.Aperto"
+                                                (input)="updateCumulativePercentages(avanzamento, dettaglio, percEl)"
+                                                (keyup)="updateCumulativePercentages(avanzamento, dettaglio, percEl)"
+                                            >
+                                            <div class="no-text-break" style="text-align: right; width: 3rem">
+                                                {{ dettaglio.avanzamentoTotale | number : "1.0-2" }} %
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">{{ dettaglio.cumulato | number : "1.0-2" }} %</td>
+                                    <td class="text-end">{{ dettaglio.costoCompetenza | currency:"EUR":"symbol" }}</td>
+                                    <td class="text-end">{{ dettaglio.ricavoCompetenza | currency:"EUR":"symbol" }}</td>
+                                    <td class="text-center">
+                                        <fieldset
+                                            class="d-flex flex-wrap justify-content-center gap-2"
+                                            [disabled]="
+                                                !intersection(
+                                                    [ ROLES.AMMINISTRATORE, ROLES.BUSINESS_MANAGER ],
+                                                    authService.user.roles
+                                                ).length
+                                             && dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato
+                                            "
+                                        >
+
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    [name]="'stato-' + dettaglio._id"
+                                                    [id]="'stato-' + dettaglio._id + '-aperto'"
+                                                    [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Aperto"
+                                                    (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Aperto)"
+                                                >
+                                                <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-aperto'">
+                                                    {{ EnumStatiChiusura.Aperto }}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    [name]="'stato-' + dettaglio._id"
+                                                    [id]="'stato-' + dettaglio._id + '-chiuso'"
+                                                    [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Chiuso"
+                                                    (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Chiuso)"
+                                                >
+                                                <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-chiuso'">
+                                                    {{ EnumStatiChiusura.Chiuso }}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input
+                                                    class="form-check-input"
+                                                    type="radio"
+                                                    [name]="'stato-' + dettaglio._id"
+                                                    [id]="'stato-' + dettaglio._id + '-vistato'"
                                                     [disabled]="
                                                         !intersection(
-                                                            [ ROLES.BUSINESS_MANAGER, ROLES.AMMINISTRATORE ],
+                                                            [ ROLES.AMMINISTRATORE, ROLES.BUSINESS_MANAGER ],
                                                             authService.user.roles
                                                         ).length
-                                                      && dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato
                                                     "
+                                                    [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
+                                                    (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Vistato)"
                                                 >
-
-                                                    <div class="form-check">
-                                                        <input
-                                                            class="form-check-input"
-                                                            type="radio"
-                                                            [name]="'stato-' + dettaglio._id"
-                                                            [id]="'stato-' + dettaglio._id + '-aperto'"
-                                                            [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Aperto"
-                                                            (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Aperto)"
-                                                        >
-                                                        <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-aperto'">
-                                                            {{ EnumStatiChiusura.Aperto }}
-                                                        </label>
-                                                    </div>
-
-                                                    <div class="form-check">
-                                                        <input
-                                                            class="form-check-input"
-                                                            type="radio"
-                                                            [name]="'stato-' + dettaglio._id"
-                                                            [id]="'stato-' + dettaglio._id + '-chiuso'"
-                                                            [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Chiuso"
-                                                            (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Chiuso)"
-                                                        >
-                                                        <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-chiuso'">
-                                                            {{ EnumStatiChiusura.Chiuso }}
-                                                        </label>
-                                                    </div>
-
-                                                    <div class="form-check">
-                                                        <input
-                                                            class="form-check-input"
-                                                            type="radio"
-                                                            [name]="'stato-' + dettaglio._id"
-                                                            [id]="'stato-' + dettaglio._id + '-vistato'"
-                                                            [disabled]="
-                                                                !intersection(
-                                                                    [ ROLES.BUSINESS_MANAGER, ROLES.AMMINISTRATORE ],
-                                                                    authService.user.roles
-                                                                ).length
-                                                            "
-                                                            [checked]="dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato"
-                                                            (change)="changeStatoValidazione(dettaglio, EnumStatiChiusura.Vistato)"
-                                                        >
-                                                        <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-vistato'">
-                                                            {{ EnumStatiChiusura.Vistato }}
-                                                        </label>
-                                                    </div>
-                                                </fieldset>
+                                                <label class="form-check-label" [for]="'stato-' + dettaglio._id + '-vistato'">
+                                                    {{ EnumStatiChiusura.Vistato }}
+                                                </label>
+                                            </div>
+                                        </fieldset>
                                     </td>
                                     <td class="text-center">
                                         <button
@@ -297,10 +305,10 @@
                                             [class.pulse]="dettaglio._dirty"
                                             [disabled]="
                                                 !intersection(
-                                                    [ ROLES.BUSINESS_MANAGER, ROLES.AMMINISTRATORE ],
+                                                    [ ROLES.AMMINISTRATORE, ROLES.BUSINESS_MANAGER ],
                                                     authService.user.roles
                                                 ).length
-                                              && dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato 
+                                             && dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato 
                                             "
                                             (click)="salvaDettaglio(dettaglio)"
                                         >
@@ -330,10 +338,17 @@
         </ng-template>
 
         <div
-            *ngIf="!loading && this.tabs.length === 0"
+            *ngIf="!loading && (!this.tabs || this.tabs && this.tabs.length === 0)"
             class="p-3 mb-3 text-center text-muted"
         >
-            Cerca <i class="bi bi-search"></i> per aggiungere schede
+            <ng-container *ngIf="!this.tabs; else initialized">
+                Cerca <i class="bi bi-search"></i> per aggiungere schede
+            </ng-container>
+            <ng-template #initialized>
+                <ng-container *ngIf="this.tabs!.length === 0">
+                    Nessun risultato trovato
+                </ng-container>
+            </ng-template>
         </div>
     </div>
 </div>
