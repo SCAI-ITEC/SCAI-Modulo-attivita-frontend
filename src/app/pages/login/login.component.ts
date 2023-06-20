@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { combineLatest, tap } from 'rxjs';
+import { MiscDataService } from 'src/app/dashboard/features/commons/services/miscellaneous-data.service';
 import { ROLES } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -35,6 +36,7 @@ export class LoginComponent {
   rolesFormatter = (role: any) => role.name?.split('-').pop().trim();
 
   constructor(
+    private miscData: MiscDataService,
     private authService: AuthService,
     private router: Router,
     private http: HttpClient
@@ -80,6 +82,11 @@ export class LoginComponent {
     });
   }
 
+  // Refresh utenti to fix undefined values when switching idAzienda programmatically
+  refreshUtenti() {
+    this.miscData.refresh({ utenti: true, commesse: false, clienti: false });
+  }
+
   login() {
 
     const val = this.loginForm.value;
@@ -93,6 +100,7 @@ export class LoginComponent {
         parseInt(val.idAzienda)
       )
       .subscribe(() => {
+        this.refreshUtenti();
         this.router.navigateByUrl('/');
       });
   }
@@ -114,6 +122,7 @@ export class LoginComponent {
         fakeRoles
       )
       .subscribe(() => {
+        this.refreshUtenti();
         this.router.navigateByUrl('/');
       });
   }
