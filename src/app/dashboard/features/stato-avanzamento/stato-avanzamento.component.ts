@@ -123,7 +123,16 @@ export class StatoAvanzamentoComponent {
         takeUntil(this.destroy$),
         map(() => {
 
-          const isAdmin = this.authService.user.roles.includes(ROLES.AMMINISTRATORE);
+          const adminRolesIntersect = intersection(
+            [
+              ROLES.AMMINISTRATORE ,
+              ROLES.SEGRETERIA,
+              ROLES.CONTROLLER
+            ],
+            this.authService.user.roles
+          );
+
+          const isAdmin = adminRolesIntersect.length > 0;
           const isBm = this.authService.user.roles.includes(ROLES.BUSINESS_MANAGER);
 
           return {
