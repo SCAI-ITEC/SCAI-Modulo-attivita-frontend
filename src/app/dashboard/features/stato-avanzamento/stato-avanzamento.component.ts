@@ -125,7 +125,8 @@ export class StatoAvanzamentoComponent {
 
           const adminRolesIntersect = intersection(
             [
-              ROLES.AMMINISTRATORE ,
+              ROLES.AMMINISTRATORE,
+              ROLES.RESPONSABILE_COMMERCIALE,
               ROLES.SEGRETERIA,
               ROLES.CONTROLLER
             ],
