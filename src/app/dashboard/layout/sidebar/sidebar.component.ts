@@ -47,7 +47,7 @@ export class DashboardSidebarComponent {
       isActive: false,
       title: 'Diarie',
       icon: 'bi bi-briefcase',
-      roles: [ ROLES.SEGRETERIA, ROLES.HR_MANAGER, ROLES.AMMINISTRATORE, ROLES.CONTROLLER ],
+      roles: [ ROLES.AMMINISTRATORE, ROLES.SEGRETERIA, ROLES.CONTROLLER, ROLES.HR_MANAGER ],
       children: [
         {
           path: "/diarie-azienda/creazione-tipo-trasferta",
