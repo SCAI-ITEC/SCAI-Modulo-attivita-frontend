@@ -140,7 +140,6 @@
                 {{ tab.title }}
             </a>
             <ng-template ngbNavContent>
-
                 <app-table
                     class="avanzamento-table"
                     #dt
@@ -149,17 +148,21 @@
                     [rowExpand]="rowExpand"
                     [items]="tab.avanzamento"
                     [searchable]="[
-                        'commessa.descrizione',
                         'commessa.codice',
+                        'commessa.descrizione',
+                        'sottoCommessa.codice',
+                        'sottoCommessa.descrizione',
                         'cliente.descrizione',
                         'clienteFinale.descrizione'
                     ]"
                     [paginated]="true"
-                    [pageSize]="10"
+                    [pageSize]="5"
+                    [pageSizes]="[ 5, 10, 25, 50, 100, 200 ]"
+                    [duplicateControls]="true"
                     [trackByFn]="trackByIdCommessa"
                     emptyMessage="Nessun risultato, effettua una ricerca"
                 >
-
+                
                     <ng-template #thead>
                         <th sortable="dettaglio.length" (sort)="dt.sort($event)"></th>
                         <th class="col-4" sortable="commessa.codice" (sort)="dt.sort($event)">Commessa</th>
@@ -172,19 +175,25 @@
                         <th class="text-end" sortable="stato" (sort)="dt.sort($event)">Totale %</th>
                     </ng-template>
 
-                    <ng-template #tbody let-avanzamento>
+                    <ng-template #tbody let-avanzamento let-term$="term$">
                         <td class="text-muted">({{ avanzamento.dettaglioAvanzamento.length }})</td>
                         <td>
-                            <div class="small fw-bold">{{ avanzamento.commessa.codice }}</div>
-                            {{ avanzamento.commessa.descrizione }}
+                            <div class="small fw-bold">
+                                <ngb-highlight [result]="avanzamento.commessa.codice" [term]="$any(term$ | async)"/>
+                            </div>
+                            <ngb-highlight [result]="avanzamento.commessa.descrizione" [term]="$any(term$ | async)"/>
                         </td>
                         <td>
-                            <div class="small fw-bold">{{ avanzamento.sottoCommessa.codice }}</div>
-                            {{ avanzamento.sottoCommessa.descrizione }}
+                            <div class="small fw-bold">
+                                <ngb-highlight [result]="avanzamento.sottoCommessa.codice" [term]="$any(term$ | async)"/>
+                            </div>
+                            <ngb-highlight [result]="avanzamento.sottoCommessa.descrizione" [term]="$any(term$ | async)"/>
                         </td>
                         <td>
-                            <div class="small fw-bold">{{ avanzamento.clienteFinale.descrizione }}</div>
-                            {{ avanzamento.cliente.descrizione }}
+                            <div class="small fw-bold">
+                                <ngb-highlight [result]="avanzamento.clienteFinale.descrizione" [term]="$any(term$ | async)"/>
+                            </div>
+                            <ngb-highlight [result]="avanzamento.cliente.descrizione" [term]="$any(term$ | async)"/>
                         </td>
                         <td class="text-end">{{ avanzamento.sottoCommessa.costoCompetenza | currency:"EUR":"symbol" }}</td>
                         <td class="text-end">{{ avanzamento.sottoCommessa.importo | currency:"EUR":"symbol" }}</td>
@@ -195,14 +204,34 @@
 
                     <ng-template #rowExpand let-avanzamento>
                         <div class="bg-white py-5 px-4">
+
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+
+                                <button
+                                    class="btn btn-outline-primary shadow"
+                                    (click)="selectChiusi(avanzamento.dettaglioAvanzamento)"
+                                >
+                                    Seleziona chiusi
+                                </button>
+
+                                <button
+                                    class="btn btn-outline-danger shadow"
+                                    [disabled]="dt2.selectedRows.length < 1"
+                                    (click)="vistaSelezionati(avanzamento.dettaglioAvanzamento)"
+                                >
+                                    Vista selezionati
+                                </button>
+                            </div>
+
                             <app-table
                                 #dt2
                                 class="shadow"
+                                maxHeight="65vh"
                                 [thead]="thead2"
                                 [tbody]="tbody2"
                                 [items]="avanzamento.dettaglioAvanzamento"
-                                maxHeight="65vh"
                                 [stickyHead]="true"
+                                [selectable]="true"
                             >
 
                                 <ng-template #thead2>
@@ -224,7 +253,7 @@
                                                 style="max-width: 5rem"
                                                 type="number"
                                                 class="form-control"
-                                                step="1"
+                                                step="0.01"
                                                 [value]="dettaglio.avanzamentoTotale"
                                                 [disabled]="dettaglio.statoValidazione.id !== EnumStatiChiusura.Aperto"
                                                 (input)="updateCumulativePercentages(avanzamento, dettaglio, percEl)"
