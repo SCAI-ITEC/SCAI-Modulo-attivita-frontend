@@ -140,6 +140,24 @@
                 {{ tab.title }}
             </a>
             <ng-template ngbNavContent>
+
+                <div class="d-flex flex-wrap gap-2 p-3">
+
+                    <button
+                        class="btn btn-outline-primary shadow"
+                        (click)="selectChiusiAvanzamento(tab.avanzamento)"
+                    >
+                        Seleziona chiusi<br>(tutte le commesse)
+                    </button>
+
+                    <button
+                        class="btn btn-outline-danger shadow"
+                        (click)="vistaSelezionatiAvanzamento(tab.avanzamento)"
+                    >
+                        Vista selezionati<br>(tutte le commesse)
+                    </button>
+                </div>
+
                 <app-table
                     class="avanzamento-table"
                     #dt
@@ -209,7 +227,7 @@
 
                                 <button
                                     class="btn btn-outline-primary shadow"
-                                    (click)="selectChiusi(avanzamento.dettaglioAvanzamento)"
+                                    (click)="selectChiusiDettaglio(avanzamento.dettaglioAvanzamento)"
                                 >
                                     Seleziona chiusi
                                 </button>
@@ -217,7 +235,7 @@
                                 <button
                                     class="btn btn-outline-danger shadow"
                                     [disabled]="dt2.selectedRows.length < 1"
-                                    (click)="vistaSelezionati(avanzamento.dettaglioAvanzamento)"
+                                    (click)="vistaSelezionatiDettaglio(avanzamento.dettaglioAvanzamento)"
                                 >
                                     Vista selezionati
                                 </button>

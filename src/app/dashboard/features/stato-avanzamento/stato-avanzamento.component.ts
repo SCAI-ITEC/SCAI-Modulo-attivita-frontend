@@ -482,16 +482,40 @@ export class StatoAvanzamentoComponent {
     (dettaglio as any)._dirty = true;
   }
 
-  selectChiusi(dettagliAvanzamento: DettaglioAvanzamento[]) {
-    dettagliAvanzamento
+  avanzamentoToDettaglio(avanzamento: GetSottoCommesseAvanzamentoResponse[]) {
+
+    // Gather all DettaglioAvanzamento of GetSottoCommesseAvanzamentoResponse into one array
+    const dettaglioAvanzamento = avanzamento
+    .reduce((acc, curr) =>
+      (acc = [ ...acc, ...(curr.dettaglioAvanzamento || []) ], acc),
+      [] as DettaglioAvanzamento[]
+    );
+
+    return dettaglioAvanzamento;
+  }
+
+  selectChiusiAvanzamento(avanzamento: GetSottoCommesseAvanzamentoResponse[]) {
+    this.selectChiusiDettaglio(
+      this.avanzamentoToDettaglio(avanzamento)
+    );
+  }
+
+  vistaSelezionatiAvanzamento(avanzamento: GetSottoCommesseAvanzamentoResponse[]) {
+    this.vistaSelezionatiDettaglio(
+      this.avanzamentoToDettaglio(avanzamento)
+    );
+  }
+
+  selectChiusiDettaglio(dettaglioAvanzamento: DettaglioAvanzamento[]) {
+    dettaglioAvanzamento
       .filter(d => d.statoValidazione?.id === EnumStatiChiusura.Chiuso)
       .forEach(d => (d as any)._selected = true);
   }
 
-  vistaSelezionati(dettagliAvanzamento: DettaglioAvanzamento[]) {
+  vistaSelezionatiDettaglio(dettaglioAvanzamento: DettaglioAvanzamento[]) {
 
     // Create a massive request
-    const requests = dettagliAvanzamento
+    const requests = dettaglioAvanzamento
       .filter(d => (d as any)._selected)
       .map(d =>
         this.statoAvanzamentoWrap
@@ -508,7 +532,7 @@ export class StatoAvanzamentoComponent {
     combineLatest(requests)
       .pipe(
         catchError(() => {
-          this.toastService.show("Qualcosa è andato storto durante la vistatura massiva.", { classname: 'bg-danger text-light', delay: 10000 });
+          this.toastService.show("Qualcosa è andato storto durante la vistatura massiva, alcuni record potrebbero comunque aver subito variazioni.", { classname: 'bg-danger text-light', delay: 10000 });
           hasError = true;
           return of(1); // Move on anyway maybe something worked...
         }),
