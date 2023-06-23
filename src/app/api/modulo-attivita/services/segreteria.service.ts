@@ -95,7 +95,7 @@ export class SegreteriaService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postReperibilitaCommesse()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postReperibilitaCommesse$Response(params: {
     idAzienda: number;
@@ -110,7 +110,7 @@ export class SegreteriaService extends BaseService {
     if (params) {
       rb.path('idAzienda', params.idAzienda, {});
       rb.path('idLegameReperibilita', params.idLegameReperibilita, {});
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -131,7 +131,7 @@ export class SegreteriaService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postReperibilitaCommesse$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postReperibilitaCommesse(params: {
     idAzienda: number;
@@ -214,7 +214,7 @@ export class SegreteriaService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postStraordinariTerzeParti()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postStraordinariTerzeParti$Response(params: {
     idAzienda: number;
@@ -229,7 +229,7 @@ export class SegreteriaService extends BaseService {
     if (params) {
       rb.path('idAzienda', params.idAzienda, {});
       rb.path('idLegameStraordinari', params.idLegameStraordinari, {});
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -250,7 +250,7 @@ export class SegreteriaService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postStraordinariTerzeParti$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postStraordinariTerzeParti(params: {
     idAzienda: number;
@@ -343,7 +343,7 @@ export class SegreteriaService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postGiorniPerUtente()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postGiorniPerUtente$Response(params: {
     idAzienda: number;
@@ -358,7 +358,7 @@ export class SegreteriaService extends BaseService {
     if (params) {
       rb.path('idAzienda', params.idAzienda, {});
       rb.path('idSottoCommessa', params.idSottoCommessa, {});
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -377,7 +377,7 @@ export class SegreteriaService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postGiorniPerUtente$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postGiorniPerUtente(params: {
     idAzienda: number;

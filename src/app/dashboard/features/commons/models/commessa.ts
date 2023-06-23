@@ -93,7 +93,6 @@ export interface UpdateCommessaParam {
 	idCliente: number;
 	idClienteFinale: number,
 	idBusinessManager: number,
-	idProjectManager: number,
 	descrizione: string,
 	tag: string | null
 }
@@ -104,7 +103,6 @@ export interface CreateCommessaParam {
     idCliente: number;
 	idClienteFinale: number;
 	idBusinessManager: number;
-	idProjectManager: number;
 	idTipoAttivita: number;
 	dataDecorrenza: string | null;
 	protocollo: string | null;
@@ -130,13 +128,14 @@ export interface OpportunitaDto {
 export interface CreateSottocommessaParam {
 	idCommessaPadre: number;
 	codiceCommessa: string;
-	idCommessaCollegata?: number | null;
-	idCommessaFatturazione?: number | null;
 	descrizione: string;
+	idProjectManager: number;
 	iniziativa: string | null;
 	tipoFatturazione: SimpleDto;
 	importo: number;
-	ribaltabileCliente: boolean;
+	idCommessaCollegata?: number | null;
+	idCommessaFatturazione?: number | null;
 	dataInizio: string;
 	dataFine: string;
+	ribaltabileCliente: boolean;
 }

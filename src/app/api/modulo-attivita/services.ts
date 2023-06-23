@@ -1,3 +1,4 @@
+export { CommesseService } from './services/commesse.service';
 export { CommonsService } from './services/commons.service';
 export { DatiOperativiService } from './services/dati-operativi.service';
 export { LegamiTaskUtenteService } from './services/legami-task-utente.service';

@@ -209,18 +209,16 @@ export class StatoAvanzamentoComponent {
       .pipe(
         switchMap(() =>
           combineLatest([
-            this.miscData
-              .getClienti$({
-                idBusinessManager: this.idBm,
-                idReferente: this.idPm,
-                idSottoCommessa: this.idSottocommessa
-              }),
-            this.miscData
-              .getSottocommesse$({
-                idBusinessManager: this.idBm,
-                idReferente: this.idPm,
-                idCliente: this.idCliente
-              })
+            this.miscData.getClienti$({
+              idBusinessManager: this.idBm,
+              idReferente: this.idPm,
+              idSottoCommessa: this.idSottocommessa
+            }),
+            this.miscData.getSottocommesse$({
+              idBusinessManager: this.idBm,
+              idReferente: this.idPm,
+              idCliente: this.idCliente
+            })
           ])
         ),
         tap(([ clienti, sottocommesse ]) => {
@@ -234,18 +232,16 @@ export class StatoAvanzamentoComponent {
       .pipe(
         switchMap(() =>
           combineLatest([
-            this.miscData
-              .getClienti$({
-                idBusinessManager: this.idBm,
-                idReferente: this.idPm,
-                idSottoCommessa: this.idSottocommessa
-              }),
-            this.miscData
-              .getSottocommesse$({
-                idBusinessManager: this.idBm,
-                idReferente: this.idPm,
-                idCliente: this.idCliente
-              })
+            this.miscData.getClienti$({
+              idBusinessManager: this.idBm,
+              idReferente: this.idPm,
+              idSottoCommessa: this.idSottocommessa
+            }),
+            this.miscData.getSottocommesse$({
+              idBusinessManager: this.idBm,
+              idReferente: this.idPm,
+              idCliente: this.idCliente
+            })
           ])
         ),
         tap(([ clienti, sottocommesse ]) => {
@@ -259,26 +255,23 @@ export class StatoAvanzamentoComponent {
       .pipe(
         switchMap(() =>
           combineLatest([
-            this.miscData
-              .getUtenti$({
-                IsPm: true,
-                IsBm: false,
-                idSottoCommessa: this.idSottocommessa,
-                idCliente: this.idCliente
-              }),
-            this.miscData
-              .getUtenti$({
-                IsPm: false,
-                IsBm: true,
-                idSottoCommessa: this.idSottocommessa,
-                idCliente: this.idCliente
-              }),
-            this.miscData
-              .getClienti$({
-                idBusinessManager: this.idBm,
-                idReferente: this.idPm,
-                idSottoCommessa: this.idSottocommessa
-              }),
+            this.miscData.getUtenti$({
+              IsPm: true,
+              IsBm: false,
+              idSottoCommessa: this.idSottocommessa,
+              idCliente: this.idCliente
+            }),
+            this.miscData.getUtenti$({
+              IsPm: false,
+              IsBm: true,
+              idSottoCommessa: this.idSottocommessa,
+              idCliente: this.idCliente
+            }),
+            this.miscData.getClienti$({
+              idBusinessManager: this.idBm,
+              idReferente: this.idPm,
+              idSottoCommessa: this.idSottocommessa
+            }),
           ])
         ),
         tap(([ pmList, bmList, clienti ]) => {
@@ -293,25 +286,22 @@ export class StatoAvanzamentoComponent {
       .pipe(
         switchMap(() =>
           combineLatest([
-            this.miscData
-              .getUtenti$({
-                IsPm: true,
-                IsBm: false,
-                idSottoCommessa: this.idSottocommessa,
-                idCliente: this.idCliente
-              }),
-            this.miscData
-              .getUtenti$({
-                IsPm: false,
-                IsBm: true,
-                idSottoCommessa: this.idSottocommessa,
-                idCliente: this.idCliente
-              }),
-            this.miscData
-              .getSottocommesse$({
-                idReferente: this.idPm,
-                idCliente: this.idCliente
-              })
+            this.miscData.getUtenti$({
+              IsPm: true,
+              IsBm: false,
+              idSottoCommessa: this.idSottocommessa,
+              idCliente: this.idCliente
+            }),
+            this.miscData.getUtenti$({
+              IsPm: false,
+              IsBm: true,
+              idSottoCommessa: this.idSottocommessa,
+              idCliente: this.idCliente
+            }),
+            this.miscData.getSottocommesse$({
+              idReferente: this.idPm,
+              idCliente: this.idCliente
+            })
           ])
         ),
         tap(([ pmList, bmList, sottocommesse ]) => {

@@ -22,16 +22,16 @@
 
             <form [formGroup]="form">
 
-                <div class="flexgrid flexgrid--2">
+                <div class="flexgrid flexgrid--3">
 
                     <app-input
                         type="autocomplete"
                         name="cliente"
                         label="Cliente diretto *"
-                        [options]="clientiDiretti"
+                        [options]="clienti"
                         [limit]="25"
                         [formatter]="clienteFormatter"
-                        [ngControl]="clienteDirettoCtrl"
+                        [ngControl]="form.controls['cliente']"
                         [disabled]="dialogMode === DIALOG_MODE.Update"
                         [floatingLabel]="true"
                     ></app-input>
@@ -43,57 +43,50 @@
                         [options]="clientiFinali"
                         [limit]="25"
                         [formatter]="clienteFormatter"
-                        [ngControl]="clienteFinaleCtrl"
+                        [ngControl]="form.controls['clienteFinale']"
                         [floatingLabel]="true"
                     ></app-input>
-
-                    <app-input
-                        type="autocomplete"
-                        name="projectManager"
-                        label="Project manager *"
-                        [options]="pmList"
-                        [formatter]="pmFormatter"
-                        [template]="pmTmpl"
-                        [ngControl]="pmCtrl"
-                        [floatingLabel]="true"
-                    ></app-input>
-                    <ng-template #pmTmpl let-r="result" let-t="term">
-                        <div class="my-1">
-                            <div class="small">{{ r.idUtente }}</div>
-                            <ngb-highlight [result]="r.cognome + ' '  + r.nome" [term]="t"></ngb-highlight>
-                        </div>
-                    </ng-template>
 
                     <app-input
                         type="autocomplete"
                         name="businessManager"
                         label="Business manager *"
-                        [options]="bmList"
-                        [formatter]="pmFormatter"
-                        [template]="pmTmpl"
-                        [ngControl]="bmCtrl"
+                        [options]="businessManagers"
+                        [formatter]="bmFormatter"
+                        [template]="bmTmpl"
+                        [ngControl]="form.controls['businessManager']"
                         [floatingLabel]="true"
                     ></app-input>
+                    <ng-template #bmTmpl let-r="result" let-t="term">
+                        <div class="my-1">
+                            <div class="small">{{ r.idUtente }}</div>
+                            <ngb-highlight [result]="r.cognome + ' '  + r.nome" [term]="t"></ngb-highlight>
+                        </div>
+                    </ng-template>
                 </div>
 
                 <div class="flexgrid flexgrid--2">
 
                     <app-input
-                        *rbacAllow="[SEGRETERIA]"
+                        *rbacAllow="[
+                            ROLES.AMMINISTRATORE,
+                            ROLES.CONTROLLER,
+                            ROLES.SEGRETERIA
+                        ]"
                         type="select"
                         name="tipoAttivita"
                         label="Tipo attivita"
-                        [ngControl]="tipoAttivitaCtrl"
+                        [ngControl]="form.controls['tipoAttivita']"
                         [options]="tipiAttivita"
                         [disabled]="dialogMode === DIALOG_MODE.Update"
                         [floatingLabel]="true"
                     ></app-input>
 
                     <app-input
-                        *ngIf="tipoAttivita == 2"
+                        *ngIf="form.value.tipoAttivita == 2"
                         name="codiceCommessa"
                         label="Codice commessa *"
-                        [ngControl]="codiceCommessaCtrl"
+                        [ngControl]="form.controls['codiceCommessa']"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>
@@ -103,14 +96,14 @@
                     <app-input
                         name="descrizione"
                         label="Descrizione *"
-                        [ngControl]="descrizioneCtrl"
+                        [ngControl]="form.controls['descrizione']"
                         [floatingLabel]="true"
                     ></app-input>
 
                     <app-input
                         name="tag"
                         label="Tag"
-                        [ngControl]="tagCtrl"
+                        [ngControl]="form.controls['tag']"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -118,17 +111,17 @@
                         type="date"
                         name="dataCreazione"
                         label="Data creazione"
-                        [ngControl]="dataCreazioneCtrl"
+                        [ngControl]="form.controls['dataInserimento']"
                         [floatingLabel]="true"
                         [disabled]="true"
                     ></app-input>
 
                     <app-input
-                        *ngIf="tipoAttivita == 1"
+                        *ngIf="form.value.tipoAttivita == 1"
                         type="date"
                         name="dataDecorrenza"
                         label="Data decorrenza *"
-                        [ngControl]="dataDecorrenzaCtrl"
+                        [ngControl]="form.controls['dataDecorrenza']"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>

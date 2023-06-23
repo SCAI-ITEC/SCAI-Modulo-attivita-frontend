@@ -51,14 +51,11 @@ export class CreazioneTipoTrasfertaComponent {
     const modalRef = this.modalService
       .open(
         TipoTrasfertaCreazioneModificaComponent,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
 
-    const result = await modalRef.result;
+    await modalRef.result;
+
     this.refresh$.next();
   }
 
@@ -67,15 +64,13 @@ export class CreazioneTipoTrasfertaComponent {
     const modalRef = this.modalService
       .open(
         TipoTrasfertaCreazioneModificaComponent,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.tipoTrasferta = tipoTrasferta;
 
     await modalRef.result;
+
     this.refresh$.next();
   }
 
@@ -84,12 +79,9 @@ export class CreazioneTipoTrasfertaComponent {
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
-        {
-          size: 'md',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'md', centered: true }
       );
+    
     modalRef.componentInstance.name = tipoTrasferta.descrizione;
     modalRef.componentInstance.message = "Stai eliminando definitivamente un tipo trasferta."
 

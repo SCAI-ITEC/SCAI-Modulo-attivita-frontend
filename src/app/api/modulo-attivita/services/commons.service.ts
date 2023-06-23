@@ -289,4 +289,66 @@ export class CommonsService extends BaseService {
     );
   }
 
+  /**
+   * Path part for operation getIniziative
+   */
+  static readonly GetIniziativePath = '/commonservices/iniziative';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `getIniziative()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getIniziative$Response(params: {
+    idBusinessManager: number;
+    idCliente: number;
+    idClienteFinale: number;
+    iniziativa?: string;
+  },
+  context?: HttpContext
+
+): Observable<StrictHttpResponse<Array<string>>> {
+
+    const rb = new RequestBuilder(this.rootUrl, CommonsService.GetIniziativePath, 'get');
+    if (params) {
+      rb.query('idBusinessManager', params.idBusinessManager, {});
+      rb.query('idCliente', params.idCliente, {});
+      rb.query('idClienteFinale', params.idClienteFinale, {});
+      rb.query('iniziativa', params.iniziativa, {});
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'json',
+      accept: 'application/json',
+      context: context
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<Array<string>>;
+      })
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `getIniziative$Response()` instead.
+   *
+   * This method doesn't expect any request body.
+   */
+  getIniziative(params: {
+    idBusinessManager: number;
+    idCliente: number;
+    idClienteFinale: number;
+    iniziativa?: string;
+  },
+  context?: HttpContext
+
+): Observable<Array<string>> {
+
+    return this.getIniziative$Response(params,context).pipe(
+      map((r: StrictHttpResponse<Array<string>>) => r.body as Array<string>)
+    );
+  }
+
 }

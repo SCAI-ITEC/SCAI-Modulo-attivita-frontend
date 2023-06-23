@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, filter } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { ROLES } from "src/app/models/user";
-import { CommessaDto } from "../../commons/models/commessa";
+import { GetCommessaResponse } from "src/app/api/modulo-attivita/models";
 
 @Injectable()
 export class AttivitaNavStateService {
@@ -14,28 +14,39 @@ export class AttivitaNavStateService {
         private authService: AuthService
     ) { }
 
-    private _commessa$ = new BehaviorSubject<CommessaDto | null>(null);
-    commessa$ = this._commessa$
-        .asObservable()
-        .pipe(
-            filter(commessa => !!commessa) // Only emit when it has a value
-        ) as Observable<CommessaDto>;
+    private _commessa$ = new BehaviorSubject<GetCommessaResponse | null>(null);
+    commessa$ = this._commessa$.asObservable()
+        .pipe(filter(x => !!x)) as Observable<GetCommessaResponse>;
 
-    set commessa(value: CommessaDto | null) {
+    set commessa(comm: GetCommessaResponse | null) {
 
-        this._commessa$.next(value);
+        this._commessa$.next(comm);
         
-        if (value) {
-
-            const isUserPm = this.authService.user.idUtente === value.idProjectManager;
-            if (isUserPm) this.userPmRole = ROLES.PROJECT_MANAGER;
-
-            const isUserBm = this.authService.user.idUtente === value.idBusinessManager
-            if (isUserBm) this.userBmRole = ROLES.BUSINESS_MANAGER;
+        if (comm && comm?.businessManager) {
+            if (this.authService.user.idUtente === comm.businessManager.id) {
+                this.userBmRole = ROLES.BUSINESS_MANAGER;
+            }
         }
     }
-    get commessa(): CommessaDto | null {
+
+    get commessa(): GetCommessaResponse | null {
         return this._commessa$.getValue();
+    }
+
+    private _sottocommessa$ = new BehaviorSubject<GetCommessaResponse | null>(null);
+    sottocommessa$ = this._sottocommessa$.asObservable()
+        .pipe(filter(x => !!x)) as Observable<GetCommessaResponse>;
+
+    set sottocommessa(sottocomm: GetCommessaResponse | null) {
+        if (sottocomm && sottocomm?.businessManager) {
+            if (this.authService.user.idUtente === sottocomm.businessManager.id) {
+                this.userPmRole = ROLES.PROJECT_MANAGER;
+            }
+        }
+    }
+
+    get sottocommessa(): GetCommessaResponse | null {
+        return this._sottocommessa$.getValue();
     }
 
 }

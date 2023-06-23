@@ -1,12 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SottocommessaService } from '../../services/sottocommessa.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-creazione-modifica/sottocommessa-creazione-modifica.component';
-import { UtentiAnagrafica } from 'src/app/api/modulo-attivita/models';
+import { GetCommessaResponse } from 'src/app/api/modulo-attivita/models';
 import { ROLES } from 'src/app/models/user';
 import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
-import { MiscDataService } from '../../../commons/services/miscellaneous-data.service';
-import { CommessaDto } from '../../../commons/models/commessa';
+import { CommesseService } from 'src/app/api/modulo-attivita/services';
 
 @Component({
   selector: 'app-sottocommessa-navigation',
@@ -19,26 +17,22 @@ export class SottocommessaNavigationComponent {
 
   @Input("idCommessa") idCommessa!: number;
   @Input("idSottocommessa") idSottocommessa!: number;
-  @Output("sottocommessaUpdate") sottocommessaUpdateEmitter = new EventEmitter<CommessaDto>();
-  sottocommessa?: CommessaDto;
-
-  pm?: UtentiAnagrafica;
+  @Output("sottocommessaUpdate") sottocommessaUpdateEmitter = new EventEmitter<GetCommessaResponse>();
+  sottocommessa?: GetCommessaResponse;
 
   activeTabId?: number;
 
   constructor(
     public attivitaNavState: AttivitaNavStateService,
-    private sottocommessaService: SottocommessaService,
-    private miscDataService: MiscDataService,
+    private commesseService: CommesseService,
     private modalService: NgbModal
   ) {}
 
   ngOnInit() {
-    this.sottocommessaService
-      .getSottocommessaById$(this.idSottocommessa)
+    this.commesseService
+      .getCommessa({ id: this.idSottocommessa })
       .subscribe(sottocommessa => {
         this.sottocommessa = sottocommessa;
-        this.pm = this.miscDataService.idUtenteUtente[sottocommessa?.idProjectManager];
       });
   }
 
@@ -47,22 +41,18 @@ export class SottocommessaNavigationComponent {
 		const modalRef = this.modalService
 		  .open(
         SottocommessaCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: "lg", centered: true }
 		  );
+    
 		modalRef.componentInstance.idCommessa = this.idCommessa;
 		modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
 	
 		await modalRef.result;
 
-		this.sottocommessaService
-			.getSottocommessaById$(this.idSottocommessa)
+		this.commesseService
+      .getCommessa({ id: this.idSottocommessa })
 			.subscribe(sottocommessa => {
 				this.sottocommessa = sottocommessa;
-        this.pm = this.miscDataService.idUtenteUtente[sottocommessa?.idProjectManager];
         this.sottocommessaUpdateEmitter.emit(sottocommessa);
 			});
 	}

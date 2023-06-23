@@ -9,9 +9,10 @@ import { RequestBuilder } from '../request-builder';
 import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
-import { DeleteLegameResponse } from '../models/delete-legame-response';
-import { Legame } from '../models/legame';
+import { GetLegameResponse } from '../models/get-legame-response';
+import { GetLegamiResponse } from '../models/get-legami-response';
 import { PostLegameBody } from '../models/post-legame-body';
+import { PostLegameResponse } from '../models/post-legame-response';
 
 @Injectable({
   providedIn: 'root',
@@ -36,17 +37,21 @@ export class LegamiTaskUtenteService extends BaseService {
    * This method doesn't expect any request body.
    */
   getLegami$Response(params?: {
+    idLegame?: number;
     idTask?: number;
     idUtente?: number;
+    idAzienda?: number;
   },
   context?: HttpContext
 
-): Observable<StrictHttpResponse<Array<Legame>>> {
+): Observable<StrictHttpResponse<Array<GetLegamiResponse>>> {
 
     const rb = new RequestBuilder(this.rootUrl, LegamiTaskUtenteService.GetLegamiPath, 'get');
     if (params) {
+      rb.query('idLegame', params.idLegame, {});
       rb.query('idTask', params.idTask, {});
       rb.query('idUtente', params.idUtente, {});
+      rb.query('idAzienda', params.idAzienda, {});
     }
 
     return this.http.request(rb.build({
@@ -56,7 +61,7 @@ export class LegamiTaskUtenteService extends BaseService {
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Array<Legame>>;
+        return r as StrictHttpResponse<Array<GetLegamiResponse>>;
       })
     );
   }
@@ -68,15 +73,17 @@ export class LegamiTaskUtenteService extends BaseService {
    * This method doesn't expect any request body.
    */
   getLegami(params?: {
+    idLegame?: number;
     idTask?: number;
     idUtente?: number;
+    idAzienda?: number;
   },
   context?: HttpContext
 
-): Observable<Array<Legame>> {
+): Observable<Array<GetLegamiResponse>> {
 
     return this.getLegami$Response(params,context).pipe(
-      map((r: StrictHttpResponse<Array<Legame>>) => r.body as Array<Legame>)
+      map((r: StrictHttpResponse<Array<GetLegamiResponse>>) => r.body as Array<GetLegamiResponse>)
     );
   }
 
@@ -89,18 +96,18 @@ export class LegamiTaskUtenteService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postLegame()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postLegame$Response(params?: {
     body?: PostLegameBody
   },
   context?: HttpContext
 
-): Observable<StrictHttpResponse<number>> {
+): Observable<StrictHttpResponse<PostLegameResponse>> {
 
     const rb = new RequestBuilder(this.rootUrl, LegamiTaskUtenteService.PostLegamePath, 'post');
     if (params) {
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -110,7 +117,7 @@ export class LegamiTaskUtenteService extends BaseService {
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return (r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }) as StrictHttpResponse<number>;
+        return r as StrictHttpResponse<PostLegameResponse>;
       })
     );
   }
@@ -119,17 +126,17 @@ export class LegamiTaskUtenteService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postLegame$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postLegame(params?: {
     body?: PostLegameBody
   },
   context?: HttpContext
 
-): Observable<number> {
+): Observable<PostLegameResponse> {
 
     return this.postLegame$Response(params,context).pipe(
-      map((r: StrictHttpResponse<number>) => r.body as number)
+      map((r: StrictHttpResponse<PostLegameResponse>) => r.body as PostLegameResponse)
     );
   }
 
@@ -149,7 +156,7 @@ export class LegamiTaskUtenteService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<StrictHttpResponse<Legame>> {
+): Observable<StrictHttpResponse<GetLegameResponse>> {
 
     const rb = new RequestBuilder(this.rootUrl, LegamiTaskUtenteService.GetLegamePath, 'get');
     if (params) {
@@ -163,7 +170,7 @@ export class LegamiTaskUtenteService extends BaseService {
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Legame>;
+        return r as StrictHttpResponse<GetLegameResponse>;
       })
     );
   }
@@ -179,10 +186,10 @@ export class LegamiTaskUtenteService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<Legame> {
+): Observable<GetLegameResponse> {
 
     return this.getLegame$Response(params,context).pipe(
-      map((r: StrictHttpResponse<Legame>) => r.body as Legame)
+      map((r: StrictHttpResponse<GetLegameResponse>) => r.body as GetLegameResponse)
     );
   }
 
@@ -202,7 +209,7 @@ export class LegamiTaskUtenteService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<StrictHttpResponse<DeleteLegameResponse>> {
+): Observable<StrictHttpResponse<number>> {
 
     const rb = new RequestBuilder(this.rootUrl, LegamiTaskUtenteService.DeleteLegamePath, 'delete');
     if (params) {
@@ -216,7 +223,7 @@ export class LegamiTaskUtenteService extends BaseService {
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<DeleteLegameResponse>;
+        return (r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }) as StrictHttpResponse<number>;
       })
     );
   }
@@ -232,10 +239,10 @@ export class LegamiTaskUtenteService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<DeleteLegameResponse> {
+): Observable<number> {
 
     return this.deleteLegame$Response(params,context).pipe(
-      map((r: StrictHttpResponse<DeleteLegameResponse>) => r.body as DeleteLegameResponse)
+      map((r: StrictHttpResponse<number>) => r.body as number)
     );
   }
 

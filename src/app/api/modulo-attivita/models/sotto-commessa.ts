@@ -2,10 +2,10 @@
 /* eslint-disable */
 export interface SottoCommessa {
   codice?: null | string;
-  costoCompetenza?: number;
+  costoCompetenza?: null | number;
   descrizione?: null | string;
   forzatureCosto?: number;
   id?: number;
   importo?: number;
-  tariffa?: number;
+  tariffa?: null | number;
 }

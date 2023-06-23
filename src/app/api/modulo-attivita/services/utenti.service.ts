@@ -9,9 +9,9 @@ import { RequestBuilder } from '../request-builder';
 import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
-import { GetAttoreResponse } from '../models/get-attore-response';
 import { GetUtentiPerReferenteResponse } from '../models/get-utenti-per-referente-response';
 import { GetUtentiResponse } from '../models/get-utenti-response';
+import { TokenUserInfo } from '../models/token-user-info';
 import { UtentiAnagrafica } from '../models/utenti-anagrafica';
 
 @Injectable({
@@ -124,7 +124,7 @@ export class UtentiService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<StrictHttpResponse<GetAttoreResponse>> {
+): Observable<StrictHttpResponse<TokenUserInfo>> {
 
     const rb = new RequestBuilder(this.rootUrl, UtentiService.GetAttorePath, 'get');
     if (params) {
@@ -138,7 +138,7 @@ export class UtentiService extends BaseService {
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<GetAttoreResponse>;
+        return r as StrictHttpResponse<TokenUserInfo>;
       })
     );
   }
@@ -154,10 +154,10 @@ export class UtentiService extends BaseService {
   },
   context?: HttpContext
 
-): Observable<GetAttoreResponse> {
+): Observable<TokenUserInfo> {
 
     return this.getAttore$Response(params,context).pipe(
-      map((r: StrictHttpResponse<GetAttoreResponse>) => r.body as GetAttoreResponse)
+      map((r: StrictHttpResponse<TokenUserInfo>) => r.body as TokenUserInfo)
     );
   }
 

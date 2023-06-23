@@ -4,6 +4,7 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
+import { CommesseService } from './services/commesse.service';
 import { CommonsService } from './services/commons.service';
 import { DatiOperativiService } from './services/dati-operativi.service';
 import { LegamiTaskUtenteService } from './services/legami-task-utente.service';
@@ -21,6 +22,7 @@ import { UtentiService } from './services/utenti.service';
   exports: [],
   declarations: [],
   providers: [
+    CommesseService,
     CommonsService,
     DatiOperativiService,
     LegamiTaskUtenteService,

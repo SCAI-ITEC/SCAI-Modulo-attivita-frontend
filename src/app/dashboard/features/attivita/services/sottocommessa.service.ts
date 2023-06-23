@@ -6,6 +6,9 @@ import { TaskService } from './task.service';
 import { RisorsaService } from './risorsa.service';
 import { TaskDto } from '../models/task';
 import { CommessaDto, CreateSottocommessaParam } from '../../commons/models/commessa';
+import { CommesseService, LegamiTaskUtenteService } from 'src/app/api/modulo-attivita/services';
+import { EnumTipiFatturazione, EnumTipoAttivita, GetCommessaResponse } from 'src/app/api/modulo-attivita/models';
+import { jsonCopy } from 'src/app/utils/json';
 
 @Injectable({
     providedIn: 'root'
@@ -14,86 +17,98 @@ export class SottocommessaService {
 
     constructor(
         private http: HttpClient,
+        private commesseService: CommesseService,
         private taskService: TaskService,
-        private risorsaService: RisorsaService,
+        private legamiTaskUtenteService: LegamiTaskUtenteService
     ) { }
 
-    checkExistingSottocommesseByIdCommessa$(idCommessa: number) {
-        const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/check-exist-sottocommesse/${idCommessa}`;
-        return this.http.get<boolean>(url);
-    }
+    // checkExistingSottocommesseByIdCommessa$(idCommessa: number) {
+    //     const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/check-exist-sottocommesse/${idCommessa}`;
+    //     return this.http.get<boolean>(url);
+    // }
 
-    getSottocommesseByIdCommessa$(idCommessa: number) {
-        const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/by-padre/id/${idCommessa}`;
-        return this.http
-            .get<CommessaDto[]>(url)
-            .pipe(map(sottocommesse => sottocommesse.reverse()))
-    }
+    // getSottocommesseByIdCommessa$(idCommessa: number) {
+    //     const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/by-padre/id/${idCommessa}`;
+    //     return this.http
+    //         .get<CommessaDto[]>(url)
+    //         .pipe(map(sottocommesse => sottocommesse.reverse()))
+    // }
 
-    getSottocommessaById$(idSottocommessa: number) {
-        const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/id/${idSottocommessa}`;
-        return this.http.get<CommessaDto>(url);
-    }
+    // getSottocommessaById$(idSottocommessa: number) {
+    //     const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/id/${idSottocommessa}`;
+    //     return this.http.get<CommessaDto>(url);
+    // }
 
-    getIniziative$(
-        clienteDiretto: number,
-        clienteFinale: number,
-        idBm: number
-    ) {
-        const url = `${environment.scaiRoot}/common-core-service/findIniziativa`;
-        return this.http.post<string[]>(url, {
-            terzaParteDiretta: clienteDiretto,
-            terzaParteFinale: clienteFinale,
-            idBusinessManager: idBm
-        });
-    }
+    // getIniziative$(
+    //     clienteDiretto: number,
+    //     clienteFinale: number,
+    //     idBm: number
+    // ) {
+    //     const url = `${environment.scaiRoot}/common-core-service/findIniziativa`;
+    //     return this.http.post<string[]>(url, {
+    //         terzaParteDiretta: clienteDiretto,
+    //         terzaParteFinale: clienteFinale,
+    //         idBusinessManager: idBm
+    //     });
+    // }
 
-    createSottocommessa$(input: CreateSottocommessaParam) {
-        const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/save`;
-        return this.http.post<number>(url, input);
-    }
+    // createSottocommessa$(input: CreateSottocommessaParam) {
+    //     const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/save`;
+    //     return this.http.post<number>(url, input);
+    // }
 
-    updateSottocommessa$(idSottocommessa: number, sottocommessa: CommessaDto) {
-        const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/update/id/${idSottocommessa}`;
-        return this.http.put<number>(url, sottocommessa);
-    }
+    // updateSottocommessa$(idSottocommessa: number, sottocommessa: CommessaDto) {
+    //     const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/update/id/${idSottocommessa}`;
+    //     return this.http.put<number>(url, sottocommessa);
+    // }
 
-    deleteSottocommessa$(idSottocommessa: number) {
-        const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/deleteSottocommessa/id/${idSottocommessa}`;
-        return this.http.delete(url);
-    }
+    // deleteSottocommessa$(idSottocommessa: number) {
+    //     const url = `${environment.scaiRoot}/modulo-attivita-be/commesse/deleteSottocommessa/id/${idSottocommessa}`;
+    //     return this.http.delete(url);
+    // }
 
-    async duplicateSottocommessa(sottocommessa: CommessaDto) {
+    async duplicateSottocommessa(sottocommessa: GetCommessaResponse) {
 
-        const idSottocommessa = await lastValueFrom(
-            this.createSottocommessa$({
-                idCommessaPadre: sottocommessa.idCommessaPadre,
-                codiceCommessa: `Copia di ${sottocommessa.codiceCommessa}`,
-                descrizione: sottocommessa.descrizione,
-                iniziativa: sottocommessa.iniziativa,
-                tipoFatturazione: sottocommessa.tipoFatturazione,
-                importo: +sottocommessa.importo,
-                ribaltabileCliente: sottocommessa.ribaltabileCliente,
-                dataInizio: sottocommessa.dataInizio,
-                dataFine: sottocommessa.dataFine
-            })
-        );
+        // Copy sottocommessa
+        const _sottocommessa = jsonCopy(sottocommessa) as GetCommessaResponse;
 
+        // Get all the tasks of the given sottocommessa
         const tasks = await lastValueFrom(
-            this.taskService.getTasksByIdSottocommessa$(sottocommessa.id)
+            this.taskService
+                .getTasksByIdSottocommessa$(_sottocommessa.id!)
         );
 
+        // Remove the id from the copy of sottocommessa
+        delete _sottocommessa.id;
+
+        // Get the ID of a newly created sottocommessa
+        const { id } = await lastValueFrom(
+            this.commesseService
+                .postCommessa({
+                    body: {
+                        ..._sottocommessa,
+                        codiceCommessa: `Copia di ${_sottocommessa.codiceCommessa}`,
+                        idProjectManager: _sottocommessa.projectManager?.id,
+                        idTipoFatturazione: _sottocommessa.tipoFatturazione?.id as unknown as EnumTipiFatturazione
+                    }
+                })
+        );
+
+        // Duplicate tasks into the newly created sottocommessa
         for (let i = 0; i < tasks.length; i++) {
-            this.duplicateTask(idSottocommessa, tasks[i])
+            this.duplicateTask(id!, tasks[i])
         }
     }
 
     async duplicateTask(idSottocommessa: number, task: TaskDto) {
 
+        // Get all the risorse of the given task
         const risorse = await lastValueFrom(
-            this.risorsaService.getLegamiByIdTask$(task.id)
+            this.legamiTaskUtenteService
+                .getLegami({ idTask: task.id })
         );
 
+        // Get the ID of a newly created task
         const idTask = await lastValueFrom(
             this.taskService
                 .createTask$({
@@ -110,15 +125,19 @@ export class SottocommessaService {
                 })
         );
 
+        // Duplicate risorse into the newly created task
         for (let j = 0; j < risorse.length; j++) {
-
             await lastValueFrom(
-                this.risorsaService
-                    .createLegame$({
-                        inizioAllocazione: risorse[j].inizioAllocazione,
-                        fineAllocazione: risorse[j].fineAllocazione,
-                        idTask: idTask,
-                        idUtente: risorse[j].idUtente,
+                this.legamiTaskUtenteService
+                    .postLegame({
+                        body: {
+                            idTask,
+                            idAzienda: risorse[j].idAzienda!,
+                            idUtente: risorse[j].utente?.idUtente,
+                            idDiaria: risorse[j].diaria?.id,
+                            inizio: risorse[j].inizio,
+                            fine: risorse[j].fine,
+                        }
                     })
             )
         }
