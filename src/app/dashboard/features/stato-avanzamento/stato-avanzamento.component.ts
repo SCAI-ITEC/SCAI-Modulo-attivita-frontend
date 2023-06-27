@@ -441,13 +441,10 @@ export class StatoAvanzamentoComponent {
           this.toastService.show(err.error, { classname: 'bg-danger text-light', delay: 10000 });
           return throwError(err);
         }),
-        switchMap(() =>
-          this.statoAvanzamentoWrap
-            .getAvanzamento$(this.lastSearchFilter)
-        ),
+        switchMap(() => this.statoAvanzamentoWrap.getAvanzamento$(this.lastSearchFilter)),
         tap(avanzamento => {
-          this.toastService.show("Dettaglio avanzamento salvato con successo!", { classname: 'bg-success text-light'  })
-          this.updateResults(avanzamento)
+          this.toastService.show("Dettaglio avanzamento salvato con successo!", { classname: 'bg-success text-light'  });
+          this.updateResults(avanzamento);
         })
       )
       .subscribe();
@@ -468,7 +465,7 @@ export class StatoAvanzamentoComponent {
 
     // Enforce min-max on input
     enforceMinMax(percentElement, 0, 100 - Math.ceil(sumOfTheRest));
-    dettaglio.avanzamentoTotale = parseInt(percentElement.value) || 0;
+    dettaglio.avanzamentoTotale = parseFloat(percentElement.value) || 0;
 
     // Recalculate cumulato
     for (let i = 0; i < dettagli.length; i++) {
@@ -483,6 +480,71 @@ export class StatoAvanzamentoComponent {
   changeStatoValidazione(dettaglio: DettaglioAvanzamento, stato: EnumStatiChiusura) {
     dettaglio.statoValidazione!.id = stato;
     (dettaglio as any)._dirty = true;
+  }
+
+  avanzamentoToDettaglio(avanzamento: GetSottoCommesseAvanzamentoResponse[]) {
+
+    // Gather all DettaglioAvanzamento of GetSottoCommesseAvanzamentoResponse into one array
+    const dettaglioAvanzamento = avanzamento
+    .reduce((acc, curr) =>
+      (acc = [ ...acc, ...(curr.dettaglioAvanzamento || []) ], acc),
+      [] as DettaglioAvanzamento[]
+    );
+
+    return dettaglioAvanzamento;
+  }
+
+  selectChiusiAvanzamento(avanzamento: GetSottoCommesseAvanzamentoResponse[]) {
+    this.selectChiusiDettaglio(
+      this.avanzamentoToDettaglio(avanzamento)
+    );
+  }
+
+  vistaSelezionatiAvanzamento(avanzamento: GetSottoCommesseAvanzamentoResponse[]) {
+    this.vistaSelezionatiDettaglio(
+      this.avanzamentoToDettaglio(avanzamento)
+    );
+  }
+
+  selectChiusiDettaglio(dettaglioAvanzamento: DettaglioAvanzamento[]) {
+    dettaglioAvanzamento
+      .filter(d => d.statoValidazione?.id === EnumStatiChiusura.Chiuso)
+      .forEach(d => (d as any)._selected = true);
+  }
+
+  vistaSelezionatiDettaglio(dettaglioAvanzamento: DettaglioAvanzamento[]) {
+
+    // Create a massive request
+    const requests = dettaglioAvanzamento
+      .filter(d => (d as any)._selected)
+      .map(d =>
+        this.statoAvanzamentoWrap
+          .postAvanzamento$({
+            ...d,
+            statoValidazione: {
+              ...d.statoValidazione,
+              id: EnumStatiChiusura.Vistato
+            }
+          })
+      );
+
+    let hasError = false;
+    combineLatest(requests)
+      .pipe(
+        catchError(() => {
+          this.toastService.show("Qualcosa è andato storto durante la vistatura massiva, alcuni record potrebbero comunque aver subito variazioni.", { classname: 'bg-danger text-light', delay: 10000 });
+          hasError = true;
+          return of(1); // Move on anyway maybe something worked...
+        }),
+        switchMap(() => this.statoAvanzamentoWrap.getAvanzamento$(this.lastSearchFilter)),
+        tap(avanzamento => {
+          if (!hasError) {
+            this.toastService.show("Dettagli avanzamento vistati con successo!", { classname: 'bg-success text-light'  });
+          }
+          this.updateResults(avanzamento);
+        })
+      )
+      .subscribe();
   }
 
   trackByIdCommessa(index: number, avanzamento: GetSottoCommesseAvanzamentoResponse) {
