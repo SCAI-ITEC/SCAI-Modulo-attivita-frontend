@@ -14,7 +14,7 @@
 
 runtime: custom
 env: flex
-service: modulo-attivita-fe-collaudo
+service: modulo-attivita-fe-production
 
 
 skip_files:
@@ -36,9 +36,4 @@ resources:
   cpu: 1
   memory_gb: 0.5
   disk_size_gb: 10
-
-network:
-  name: gke-vpc-coll
-  subnetwork_name: gke-vpc-coll-sub
-  session_affinity: true
 

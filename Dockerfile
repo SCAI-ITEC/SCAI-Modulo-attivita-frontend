@@ -6,7 +6,7 @@ COPY package.json /attivita-frontend
 RUN npm install 
 RUN npm install -g @angular/cli 
 COPY . .
-RUN npm run build-coll 
+RUN npm run build-prod 
 
 # Stage 2
 FROM nginx:1.17.1-alpine
