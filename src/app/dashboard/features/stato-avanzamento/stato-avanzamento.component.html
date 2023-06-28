@@ -68,7 +68,13 @@
             </ng-template>
 
             <app-input
-                *rbacAllow="[ ROLES.AMMINISTRATORE, ROLES.RESPONSABILE_COMMERCIALE, ROLES.SEGRETERIA, ROLES.CONTROLLER, ROLES.BUSINESS_MANAGER ]"
+                *rbacAllow="[
+                    ROLES.AMMINISTRATORE,
+                    ROLES.RESPONSABILE_COMMERCIALE,
+                    ROLES.CONTROLLER,
+                    ROLES.SEGRETERIA,
+                    ROLES.BUSINESS_MANAGER
+                ]"
                 #pmAutocomplete
                 type="autocomplete"
                 name="projectManager"
@@ -87,7 +93,12 @@
             </ng-template>
 
             <app-input
-                *rbacAllow="[ ROLES.AMMINISTRATORE, ROLES.RESPONSABILE_COMMERCIALE, ROLES.SEGRETERIA, ROLES.CONTROLLER, ]"
+                *rbacAllow="[
+                    ROLES.AMMINISTRATORE,
+                    ROLES.RESPONSABILE_COMMERCIALE,
+                    ROLES.CONTROLLER,
+                    ROLES.SEGRETERIA
+                ]"
                 #bmAutocomplete
                 type="autocomplete"
                 name="businessManager"
@@ -115,7 +126,14 @@
                     class="btn btn-primary"
                     [disabled]="
                         !intersection(
-                            [ ROLES.AMMINISTRATORE, ROLES.RESPONSABILE_COMMERCIALE, ROLES.SEGRETERIA, ROLES.CONTROLLER, ROLES.BUSINESS_MANAGER, ROLES.PROJECT_MANAGER ],
+                            [
+                                ROLES.AMMINISTRATORE,
+                                ROLES.RESPONSABILE_COMMERCIALE,
+                                ROLES.CONTROLLER,
+                                ROLES.SEGRETERIA,
+                                ROLES.BUSINESS_MANAGER,
+                                ROLES.PROJECT_MANAGER
+                            ],
                             authService.user.roles
                         ).length
                     "
@@ -290,7 +308,13 @@
                                             class="d-flex flex-wrap justify-content-center gap-2"
                                             [disabled]="
                                                 !intersection(
-                                                    [ ROLES.AMMINISTRATORE, ROLES.RESPONSABILE_COMMERCIALE, ROLES.SEGRETERIA, ROLES.CONTROLLER, ROLES.BUSINESS_MANAGER ],
+                                                    [
+                                                        ROLES.AMMINISTRATORE,
+                                                        ROLES.RESPONSABILE_COMMERCIALE,
+                                                        ROLES.CONTROLLER,
+                                                        ROLES.SEGRETERIA,
+                                                        ROLES.BUSINESS_MANAGER
+                                                    ],
                                                     authService.user.roles
                                                 ).length
                                              && dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato
@@ -333,7 +357,13 @@
                                                     [id]="'stato-' + dettaglio._id + '-vistato'"
                                                     [disabled]="
                                                         !intersection(
-                                                            [ ROLES.AMMINISTRATORE, ROLES.RESPONSABILE_COMMERCIALE, ROLES.SEGRETERIA, ROLES.CONTROLLER, ROLES.BUSINESS_MANAGER ],
+                                                            [
+                                                                ROLES.AMMINISTRATORE,
+                                                                ROLES.RESPONSABILE_COMMERCIALE,
+                                                                ROLES.CONTROLLER,
+                                                                ROLES.SEGRETERIA,
+                                                                ROLES.BUSINESS_MANAGER
+                                                            ],
                                                             authService.user.roles
                                                         ).length
                                                     "
@@ -352,7 +382,13 @@
                                             [class.pulse]="dettaglio._dirty"
                                             [disabled]="
                                                 !intersection(
-                                                    [ ROLES.AMMINISTRATORE, ROLES.RESPONSABILE_COMMERCIALE, ROLES.SEGRETERIA, ROLES.CONTROLLER, ROLES.BUSINESS_MANAGER ],
+                                                    [
+                                                        ROLES.AMMINISTRATORE,
+                                                        ROLES.RESPONSABILE_COMMERCIALE,
+                                                        ROLES.CONTROLLER,
+                                                        ROLES.SEGRETERIA,
+                                                        ROLES.BUSINESS_MANAGER
+                                                    ],
                                                     authService.user.roles
                                                 ).length
                                              && dettaglio.statoValidazione.id === EnumStatiChiusura.Vistato 

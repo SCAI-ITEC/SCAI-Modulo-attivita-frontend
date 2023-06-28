@@ -6,10 +6,10 @@ import { Dettaglio, UtentiAnagrafica } from "src/app/api/modulo-attivita/models"
 import { ToastService } from "src/app/services/toast.service";
 import { jsonCopy } from "src/app/utils/json";
 import { DIALOG_MODE } from "../../models/dialog";
-import { SEGRETERIA } from "src/app/models/user";
 import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
 import { CommessaDto, CreateCommessaParam, UpdateCommessaParam } from "../../../commons/models/commessa";
 import { CommessaService } from "../../../commons/services/commessa.service";
+import { ROLES } from "src/app/models/user";
 
 @Component({
 	selector: 'app-commessa-creazione-modifica-dialog',
@@ -20,7 +20,7 @@ export class CommessaCreazioneModifica {
 
     @Input("idCommessa") idCommessa!: number;
     
-    SEGRETERIA = SEGRETERIA;
+    ROLES = ROLES;
     DIALOG_MODE = DIALOG_MODE;
     dialogMode!: DIALOG_MODE;
     isLoading = false;
