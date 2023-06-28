@@ -56,7 +56,7 @@ export class DashboardSidebarComponent {
           isActive: false,
           title: "Attività",
           icon: "bi bi-list-task",
-          externalLink: `https://scaiportal-quality.grupposcai.it/service-attivita/#/sso?token=Bearer%20${localStorage.getItem("token")}&accessToken=null&idAziendaSelezionata=${localStorage.getItem("id_azienda")}`
+          externalLink: `https://scaiportal.grupposcai.it/service-attivita/#/sso?token=Bearer%20${localStorage.getItem("token")}&accessToken=null&idAziendaSelezionata=${localStorage.getItem("id_azienda")}`
         }
       ]
     ),
