@@ -49,7 +49,7 @@ export class OffertaComponent {
 
       this.tipologie = tipologie
         .map(tipologia => ({
-          text: tipologia.descrizione,
+          text: tipologia.cod + " - " + tipologia.descrizione,
           value: tipologia.id
         }));
 

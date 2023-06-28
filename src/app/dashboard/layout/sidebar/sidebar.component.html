@@ -44,30 +44,52 @@
                     <div #collapse="ngbCollapse" [(ngbCollapse)]="!item.isActive" class="sb-sublinks">
                         <ng-container *ngFor="let subitem of item.children">
                             <ng-container *ngIf="!subitem.roles || intersection(user.roles, subitem.roles).length">
-                                <a
-                                    routerLinkActive="is-active"
-                                    [routerLink]="subitem.path"
-                                    class="sb-link text-reset text-decoration-none"
-                                >
-                                    <i *ngIf="subitem.icon" [ngClass]="subitem.icon" class="pe-3 bi"></i> 
-                                    {{ subitem.title }}
-                                </a>
+                                <ng-container *ngIf="subitem.externalLink; else childPath">
+                                    <a
+                                        [href]="subitem.externalLink"
+                                        class="sb-link text-reset text-decoration-none"
+                                    >
+                                        <i *ngIf="subitem.icon" [ngClass]="subitem.icon" class="pe-3 bi"></i> 
+                                        {{ subitem.title }}
+                                    </a>
+                                </ng-container>
+                                <ng-template #childPath>
+                                    <a
+                                        routerLinkActive="is-active"
+                                        [routerLink]="subitem.path"
+                                        class="sb-link text-reset text-decoration-none"
+                                    >
+                                        <i *ngIf="subitem.icon" [ngClass]="subitem.icon" class="pe-3 bi"></i> 
+                                        {{ subitem.title }}
+                                    </a>
+                                </ng-template>
                             </ng-container>
                         </ng-container>
                     </div>
                 </div>
 
-            
-                <a
-                    *ngIf="!item.children"
-                    routerLinkActive="is-active"
-                    #rla="routerLinkActive"
-                    [routerLink]="item.path"
-                    class="sb-link text-reset text-decoration-none"
-                >
-                    <i [ngClass]="item.icon" class="pe-3"></i> 
-                    {{ item.title }}
-                </a>
+                <ng-container *ngIf="!item.children">
+                    <ng-container *ngIf="item.externalLink; else parentPath">
+                        <a
+                            [href]="item.externalLink"
+                            class="sb-link text-reset text-decoration-none"
+                        >
+                            <i [ngClass]="item.icon" class="pe-3"></i> 
+                            {{ item.title }}
+                        </a>
+                    </ng-container>
+                    <ng-template #parentPath>
+                        <a
+                            routerLinkActive="is-active"
+                            #rla="routerLinkActive"
+                            [routerLink]="item.path"
+                            class="sb-link text-reset text-decoration-none"
+                        >
+                            <i [ngClass]="item.icon" class="pe-3"></i> 
+                            {{ item.title }}
+                        </a>
+                    </ng-template>
+                </ng-container>
             </ng-container>
         </ng-container>
     </ng-container>
