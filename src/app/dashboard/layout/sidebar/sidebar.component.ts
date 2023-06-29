@@ -86,20 +86,25 @@ export class DashboardSidebarComponent {
       ]
       : []
     ),
-    {
-      isActive: false,
-      title: "Stato Avanzamento",
-      icon: "bi bi-bar-chart-line-fill",
-      path: "/stato-avanzamento",
-      roles: [
-        ROLES.AMMINISTRATORE,
-        ROLES.RESPONSABILE_COMMERCIALE,
-        ROLES.CONTROLLER,
-        ROLES.SEGRETERIA,
-        ROLES.BUSINESS_MANAGER,
-        ROLES.PROJECT_MANAGER
+    ...([ 1, 9, 15 ].includes(+(localStorage.getItem("id_azienda") || "0"))
+      ? [
+          {
+          isActive: false,
+          title: "Stato Avanzamento",
+          icon: "bi bi-bar-chart-line-fill",
+          path: "/stato-avanzamento",
+          roles: [
+            ROLES.AMMINISTRATORE,
+            ROLES.RESPONSABILE_COMMERCIALE,
+            ROLES.CONTROLLER,
+            ROLES.SEGRETERIA,
+            ROLES.BUSINESS_MANAGER,
+            ROLES.PROJECT_MANAGER
+          ]
+        }
       ]
-    }
+      : []
+    )
   ];
 
   username$: Observable<string | undefined>; 
