@@ -18,7 +18,6 @@
 </div>
 
 <div class="sb-links">
-
     <ng-container *ngFor="let item of sidebarItems">
         <ng-container *ngLet="(authService.user$ | async) as user">
             <ng-container *ngIf="!item.roles || intersection(user.roles, item.roles).length">
