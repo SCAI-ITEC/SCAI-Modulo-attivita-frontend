@@ -13,6 +13,7 @@ interface SidebarSubitem {
   title: string;
   path?: string;
   externalLink?: string;
+  executable?: Function;
   icon?: string;
   roles?: string[];
 }
@@ -22,6 +23,7 @@ interface SidebarItem {
   title: string;
   path?: string;
   externalLink?: string;
+  executable?: Function;
   icon?: string;
   children?: SidebarSubitem[];
   roles?: string[];
@@ -56,7 +58,11 @@ export class DashboardSidebarComponent {
           isActive: false,
           title: "Attività",
           icon: "bi bi-list-task",
-          externalLink: `https://scaiportal.grupposcai.it/service-attivita/#/sso?token=Bearer%20${localStorage.getItem("token")}&accessToken=null&idAziendaSelezionata=${+localStorage.getItem("id_azienda")!}`
+          executable: () => {
+            const token = localStorage.getItem("token")!;
+            const idAzienda = parseFloat(localStorage.getItem("id_azienda")!);
+            window.location.href = `https://scaiportal.grupposcai.it/service-attivita/#/sso?token=Bearer%20${token}&accessToken=null&idAziendaSelezionata=${idAzienda}`;
+          } 
         }
       ]
     ),
