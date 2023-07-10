@@ -5,7 +5,6 @@ export interface AvanzamentiMensili {
   avanzamento?: null | number;
   dataAggiornamento?: null | string;
   descrizione?: null | string;
-  idAzienda?: null | number;
   idProjectManager?: number;
   idSottoCommessa?: number;
   meseValidazione?: null | string;

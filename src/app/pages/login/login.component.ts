@@ -36,7 +36,6 @@ export class LoginComponent {
   rolesFormatter = (role: any) => role.name?.split('-').pop().trim();
 
   constructor(
-    private miscData: MiscDataService,
     private authService: AuthService,
     private router: Router,
     private http: HttpClient
@@ -82,11 +81,6 @@ export class LoginComponent {
     });
   }
 
-  // Refresh utenti to fix undefined values when switching idAzienda programmatically
-  refreshUtenti() {
-    this.miscData.refresh({ utenti: true, commesse: false, clienti: false });
-  }
-
   login() {
 
     const val = this.loginForm.value;
@@ -100,7 +94,6 @@ export class LoginComponent {
         parseInt(val.idAzienda)
       )
       .subscribe(() => {
-        this.refreshUtenti();
         this.router.navigateByUrl('/');
       });
   }
@@ -122,7 +115,6 @@ export class LoginComponent {
         fakeRoles
       )
       .subscribe(() => {
-        this.refreshUtenti();
         this.router.navigateByUrl('/');
       });
   }

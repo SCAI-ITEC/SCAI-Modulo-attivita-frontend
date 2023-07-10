@@ -3,9 +3,9 @@
 export interface PostLegameBody {
   fine?: null | string;
   id?: null | number;
-  idAzienda?: number;
+  idAzienda?: null | number;
   idDiaria?: null | number;
-  idTask?: number;
-  idUtente?: number;
+  idTask?: null | number;
+  idUtente?: null | number;
   inizio?: null | string;
 }

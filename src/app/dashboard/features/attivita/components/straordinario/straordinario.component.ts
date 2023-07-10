@@ -55,15 +55,12 @@ export class StraordinarioComponent {
     const modalRef = this.modalService
       .open(
         StraordinariCreazioneComponent,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
 
-    const result = await modalRef.result;
+    await modalRef.result;
     this.refresh$.next();
   }
 
@@ -72,16 +69,14 @@ export class StraordinarioComponent {
     const modalRef = this.modalService
       .open(
         StraordinariCreazioneComponent,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
     modalRef.componentInstance.straordinario = straordinario;
 
-    const result = await modalRef.result;
+    await modalRef.result;
+
     this.refresh$.next();
   }
 
@@ -90,12 +85,9 @@ export class StraordinarioComponent {
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
-        {
-          size: 'md',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'md', centered: true }
       );
+    
     modalRef.componentInstance.name = straordinario.descrizione;
     modalRef.componentInstance.message = "Stai eliminando definitivamente uno straordinario."
 

@@ -47,16 +47,14 @@ export class ForzatureComponent {
     const modalRef = this.modalService
       .open(
         ForzaturaCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
     modalRef.componentInstance.categoria = this.categoria;
 
-    const result = await modalRef.result;
+    await modalRef.result;
+
     this.refresh$.next();
   }
 
@@ -65,17 +63,15 @@ export class ForzatureComponent {
     const modalRef = this.modalService
       .open(
         ForzaturaCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
     modalRef.componentInstance.idForzatura = forzatura.id;
     modalRef.componentInstance.categoria = this.categoria;
 
     await modalRef.result;
+
     this.refresh$.next();
   }
 
@@ -84,12 +80,9 @@ export class ForzatureComponent {
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
-        {
-          size: 'md',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'md', centered: true }
       );
+    
     modalRef.componentInstance.name = "forzatura";
     modalRef.componentInstance.message = "Stai eliminando definitivamente una forzatura."
 

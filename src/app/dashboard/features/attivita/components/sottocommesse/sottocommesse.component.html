@@ -49,7 +49,15 @@
         [tbody]="tbody"
         [animated]="true"
         [items]="sottocommesse"
-        [searchable]="['codiceCommessa', 'descrizione', 'tipoFatturazione.text']"
+        [searchable]="[
+            'codiceCommessa',
+            'descrizione',
+            'projectManager.cognome',
+            'projectManager.nome',
+            'supportoController.cognome',
+            'supportoController.nome',
+            'tipoFatturazione.text'
+        ]"
         [paginated]="true"
         [pageSize]="5"
         [emptyTemplate]="emptyTmpl"
@@ -58,8 +66,12 @@
         <ng-template #thead>
             <th sortable="codiceCommessa" (sort)="dt.sort($event)">Codice</th>
             <th sortable="descrizione" (sort)="dt.sort($event)">Descrizione</th>
-            <th sortable="giorniPrevisti" (sort)="dt.sort($event)">Giorni previsti</th>
+            <th sortable="projectManager.id" (sort)="dt.sort($event)">Project manager</th>
+            <th sortable="supportoController.id" (sort)="dt.sort($event)">Supporto controller</th>
             <th sortable="tipoFatturazione.id" (sort)="dt.sort($event)">Tipo fatturazione</th>
+            <th sortable="giorniPrevisti" (sort)="dt.sort($event)">Giorni previsti</th>
+            <th sortable="dataInizio" (sort)="dt.sort($event)">Inizio</th>
+            <th sortable="dataFine" (sort)="dt.sort($event)">Fine</th>
             <th style="width: 10rem"></th>
         </ng-template>
     
@@ -70,11 +82,35 @@
             <td data-label="Descrizione">
                 <ngb-highlight [result]="item.descrizione" [term]="$any(term$ | async)"/>
             </td>
-            <td data-label="Giorni previsti">
-                {{ item.giorniPrevisti ? item.giorniPrevisti : "ND" }}
+            <td data-label="Project manager">
+                <ngb-highlight
+                    [result]="
+                        item.projectManager
+                            ? item.projectManager.cognome + ' ' + item.projectManager.nome
+                            : 'ND'"
+                    [term]="$any(term$ | async)"
+                />
+            </td>
+            <td data-label="Supporto controller">
+                <ngb-highlight
+                    [result]="
+                        item.supportoController
+                            ? item.supportoController.cognome + ' ' + item.supportoController.nome
+                            : 'ND'"
+                    [term]="$any(term$ | async)"
+                />
             </td>
             <td data-label="Tipo fatturazione">
                 <ngb-highlight [result]="item.tipoFatturazione.text" [term]="$any(term$ | async)"/>
+            </td>
+            <td data-label="Giorni previsti">
+                {{ item.giorniPrevisti ? item.giorniPrevisti : "ND" }}
+            </td>
+            <td data-label="Inizio">
+                {{ item.dataInizio }}
+            </td>
+            <td data-label="Fine">
+                {{ item.dataFine }}
             </td>
             <td>
                 <div class="d-flex gap-2 justify-content-center">

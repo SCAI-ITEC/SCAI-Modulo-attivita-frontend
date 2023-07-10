@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from "rxjs";
 import { environment } from 'src/environments/environment';
 import { ENV_COLL, ENV_DEV, ENV_PROD } from 'src/environments/envs';
-import { GetAttoreResponse } from '../api/modulo-attivita/models';
 import { UtentiService } from '../api/modulo-attivita/services';
 import { User, UTENTE_BASE } from '../models/user';
 import { parseJwt } from '../utils/json';
+import { TokenUserInfo } from '../api/modulo-attivita/models';
 
 const ANONYMOUS_USER: User = {
   idUtente: undefined,
@@ -48,7 +48,7 @@ export class AuthService {
     return this.utentiService
       .getAttore({ idAzienda })
       .pipe(
-        tap((u: GetAttoreResponse) => {
+        tap((u: TokenUserInfo) => {
 
           // Why can "u.utente" be undefined? Blame the backend!!!
           const { idUtente, cognome, nome } = u.utente as any;

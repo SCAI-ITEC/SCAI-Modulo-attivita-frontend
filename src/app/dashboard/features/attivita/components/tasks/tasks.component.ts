@@ -98,17 +98,15 @@ export class TasksComponent {
     const modalRef = this.modalService
       .open(
         TaskCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
 
-    const result = await modalRef.result;
-    this.addTab(result.idTask, result.codiceTask);
+    const { idTask, codiceTask } = await modalRef.result;
+    this.addTab(idTask, codiceTask);
+
     this.refresh$.next();
   }
 
@@ -117,17 +115,15 @@ export class TasksComponent {
     const modalRef = this.modalService
       .open(
         TaskCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
     modalRef.componentInstance.idTask = task.id;
 
     await modalRef.result;
+
     this.refresh$.next();
   }
 
@@ -136,12 +132,9 @@ export class TasksComponent {
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
-        {
-          size: 'md',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'md', centered: true }
       );
+    
     modalRef.componentInstance.name = task.codiceTask;
     modalRef.componentInstance.message = "Stai eliminando definitivamente un task."
 

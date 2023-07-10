@@ -6,15 +6,13 @@ import { ToastService } from "src/app/services/toast.service";
 import { jsonCopy } from "src/app/utils/json";
 import { euroMask, euroMask2numStr, numStr2euroMask } from "src/app/utils/mask";
 import { DIALOG_MODE } from "../../models/dialog";
-import { SottocommessaService } from "../../services/sottocommessa.service";
-import { Dettaglio } from "src/app/api/modulo-attivita/models";
+import { Dettaglio, GetCommessaResponse } from "src/app/api/modulo-attivita/models";
 import { MonthpickerStruct } from "src/app/shared/components/monthpicker/monthpicker.component";
 import { ForzaturaService } from "../../services/forzatura.service";
 import { ForzaturaDto } from "../../models/forzatura";
 import { isoToStruct, structToIso } from "src/app/utils/date";
 import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
-import { CommessaDto } from "../../../commons/models/commessa";
-import { CommessaService } from "../../../commons/services/commessa.service";
+import { CommesseService } from "src/app/api/modulo-attivita/services";
 
 @Component({
 	selector: 'app-forzatura-creazione-modifica-dialog',
@@ -31,7 +29,7 @@ export class ForzaturaCreazioneModifica {
     dialogMode!: DIALOG_MODE;
     isLoading = false;
 
-    commessa!: CommessaDto;
+    commessa!: GetCommessaResponse;
     forzatura?: ForzaturaDto;
 
     form!: FormGroup;
@@ -39,16 +37,16 @@ export class ForzaturaCreazioneModifica {
     euroMask = euroMask;
 
     // Common controls (both "costo" and "ricavo")
-    sottocommessaCtrl = new FormControl<CommessaDto | null>(null, [Validators.required]);
+    sottocommessaCtrl = new FormControl<GetCommessaResponse | null>(null, [ Validators.required ]);
     get idSottocommessa() {
         return this.sottocommessaCtrl.value?.id;
     }
-    sottocommesse: CommessaDto[] = [];
-    sottocommessaFormatter = (sc: CommessaDto) => sc?.codiceCommessa + ' ' + sc?.descrizione;
+    sottocommesse: GetCommessaResponse[] = [];
+    sottocommessaFormatter = (sc: GetCommessaResponse) => sc?.codiceCommessa + ' ' + sc?.descrizione;
 
-    descrizioneCtrl = new FormControl<string | null>(null, [Validators.required]);
+    descrizioneCtrl = new FormControl<string | null>(null, [ Validators.required ]);
 
-    fornitoreCtrl = new FormControl<Dettaglio | null>(null, [Validators.required]);
+    fornitoreCtrl = new FormControl<Dettaglio | null>(null, [ Validators.required ]);
     get idFornitore() {
         return this.fornitoreCtrl.value?.id;
     }
@@ -99,9 +97,8 @@ export class ForzaturaCreazioneModifica {
 	constructor(
         public activeModal: NgbActiveModal,
         private toaster: ToastService,
-        private commessaService: CommessaService,
+        private commesseService: CommesseService,
         private forzaturaService: ForzaturaService,
-        private sottocommessaService: SottocommessaService,
         private miscData: MiscDataService
     ) { }
 
@@ -115,10 +112,8 @@ export class ForzaturaCreazioneModifica {
 
         if (this.dialogMode === DIALOG_MODE.Update) {
             combineLatest([
-                this.commessaService
-                    .getCommessaById(this.idCommessa),
-                this.forzaturaService
-                    .getForzaturaById$(this.idForzatura!, this.categoria)
+                this.commesseService.getCommessa({ id: this.idCommessa }),
+                this.forzaturaService.getForzaturaById$(this.idForzatura!, this.categoria)
             ])
             .subscribe(async ([ commessa, forzatura ]) => {
                 this.commessa = commessa;
@@ -130,8 +125,7 @@ export class ForzaturaCreazioneModifica {
             })
         }
         else {
-            this.commessaService
-                .getCommessaById(this.idCommessa)
+            this.commesseService.getCommessa({ id: this.idCommessa })
                 .subscribe(async commessa => {
                     this.commessa = commessa;
                     await this.initArrays();
@@ -158,10 +152,10 @@ export class ForzaturaCreazioneModifica {
 
     async initArrays() {
 
-        this.fornitori = this.miscData.clienti;
+        this.fornitori = await lastValueFrom(this.miscData.getClienti$());
 
         const requests = combineLatest([
-            this.sottocommessaService.getSottocommesseByIdCommessa$(this.idCommessa),
+            this.commesseService.getCommesse({ IdPadre: this.idCommessa }),
             this.forzaturaService.getCategorieForzature$(),
             this.forzaturaService.getClassificazioneDiCosto$()
         ]);
@@ -182,11 +176,11 @@ export class ForzaturaCreazioneModifica {
     initCtrlValidation() {
 
         if (this.categoria === "costo") {
-            this.costoCtrl.setValidators([Validators.required]);
+            this.costoCtrl.setValidators([ Validators.required ]);
             this.costoCtrl.updateValueAndValidity();
         }
         else {
-            this.ricavoCtrl.setValidators([Validators.required]);
+            this.ricavoCtrl.setValidators([ Validators.required ]);
             this.ricavoCtrl.updateValueAndValidity();
         }
 
@@ -200,16 +194,16 @@ export class ForzaturaCreazioneModifica {
                     const risconto = this.riscontoCtrl.value;
 
                     if (risconto === 2) {
-                        this.inizioCompetenzaGiornalieroCtrl.setValidators([Validators.required]);
-                        this.fineCompetenzaGiornalieroCtrl.setValidators([Validators.required]);
+                        this.inizioCompetenzaGiornalieroCtrl.setValidators([ Validators.required ]);
+                        this.fineCompetenzaGiornalieroCtrl.setValidators([ Validators.required ]);
                         this.inizioCompetenzaMensileCtrl.setValidators(null);
                         this.fineCompetenzaMensileCtrl.setValidators(null);
                     }
                     else {
                         this.inizioCompetenzaGiornalieroCtrl.setValidators(null);
                         this.fineCompetenzaGiornalieroCtrl.setValidators(null);
-                        this.inizioCompetenzaMensileCtrl.setValidators([Validators.required]);
-                        this.fineCompetenzaMensileCtrl.setValidators([Validators.required]);
+                        this.inizioCompetenzaMensileCtrl.setValidators([ Validators.required ]);
+                        this.fineCompetenzaMensileCtrl.setValidators([ Validators.required ]);
                     }
 
                     this.inizioCompetenzaGiornalieroCtrl.updateValueAndValidity();
@@ -249,57 +243,56 @@ export class ForzaturaCreazioneModifica {
         //     "classificazioneDiCosto": null
         // }
 
-        if (this.dialogMode === DIALOG_MODE.Update) {
+        if (!this.forzatura) return;
 
-            if (!this.forzatura) return;
+        const sottocommessa = this.sottocommesse
+            .find(sc => sc.id === this.forzatura?.commessa.id);
+        this.sottocommessaCtrl.setValue(sottocommessa!);
 
-            const sottocommessa = this.sottocommesse
-                .find(sc => sc.id === this.forzatura?.commessa.id);
-            this.sottocommessaCtrl.setValue(sottocommessa!);
+        const fornitore = this.fornitori
+            .find(f => f.id === this.forzatura?.idFornitore);
+        this.fornitoreCtrl.setValue(fornitore!);
 
-            const fornitore = this.fornitori
-                .find(f => f.id === this.forzatura?.idFornitore);
-            this.fornitoreCtrl.setValue(fornitore!);
+        this.categoriaForzaturaCtrl.setValue(this.forzatura.categoriaForzatura.id);
 
-            this.categoriaForzaturaCtrl.setValue(this.forzatura.categoriaForzatura.id);
+        let risconto = 0;
+        if (this.forzatura.riscontoMensile) {
+            risconto = 1;
+        }
+        if (this.forzatura.riscontoGiornaliero) {
+            risconto = 2;
+            
+        }
+        this.riscontoCtrl.setValue(risconto);
 
-            let risconto = 0;
-            if (this.forzatura.riscontoMensile) {
-                risconto = 1;
-            }
-            if (this.forzatura.riscontoGiornaliero) {
-                risconto = 2;
-                
-            }
-            this.riscontoCtrl.setValue(risconto);
+        this.inizioCompetenzaGiornalieroCtrl.setValue(this.forzatura.inizioPeriodo);
+        this.fineCompetenzaGiornalieroCtrl.setValue(this.forzatura.finePeriodo);
 
-            this.inizioCompetenzaGiornalieroCtrl.setValue(this.forzatura.inizioPeriodo);
-            this.fineCompetenzaGiornalieroCtrl.setValue(this.forzatura.finePeriodo);
+        this.inizioCompetenzaMensileCtrl.setValue(
+            isoToStruct(this.forzatura.inizioPeriodo)
+        );
+        this.fineCompetenzaMensileCtrl.setValue(
+            isoToStruct(this.forzatura.finePeriodo)
+        );
 
-            this.inizioCompetenzaMensileCtrl.setValue(
-                isoToStruct(this.forzatura.inizioPeriodo)
-            );
-            this.fineCompetenzaMensileCtrl.setValue(
-                isoToStruct(this.forzatura.finePeriodo)
-            );
+        this.descrizioneCtrl.setValue(this.forzatura.note);
 
-            this.descrizioneCtrl.setValue(this.forzatura.note);
-
-            if (this.categoria === "costo") {
-                this.costo = this.forzatura.costoTotale!;
-                this.classificazioneCostoCtrl.setValue(this.forzatura.classificazioneDiCosto?.id!);
-            }
-            else {
-                this.ricavo = this.forzatura.ricavoTotale!;
-            }
+        if (this.categoria === "costo") {
+            this.costo = this.forzatura.costoTotale!;
+            this.classificazioneCostoCtrl.setValue(this.forzatura.classificazioneDiCosto?.id!);
+        }
+        else {
+            this.ricavo = this.forzatura.ricavoTotale!;
         }
     }
 
     save() {
-        if (this.dialogMode === DIALOG_MODE.Create)
+        if (this.dialogMode === DIALOG_MODE.Create) {
             this.create();
-        else
+        }
+        else {
             this.update();
+        }
     }
 
     create() {
@@ -367,7 +360,7 @@ export class ForzaturaCreazioneModifica {
                 classificazioneDiCosto: {
                     id: this.classificazioneCostoCtrl.value!
                 },
-                idCliente: this.commessa.idCliente,
+                idCliente: this.commessa.cliente!.id!,
                 idFornitore: this.idFornitore!,
                 riscontoMensile: riscontoMensile,
                 riscontoGiornaliero: riscontoGiornaliero
@@ -405,7 +398,7 @@ export class ForzaturaCreazioneModifica {
                 categoriaForzatura: {
                     id: this.categoriaForzaturaCtrl.value!
                 },
-                idCliente: this.commessa.idCliente,
+                idCliente: this.commessa.cliente!.id!,
                 idFornitore: this.idFornitore!,
                 riscontoMensile: riscontoMensile,
                 riscontoGiornaliero: riscontoGiornaliero
