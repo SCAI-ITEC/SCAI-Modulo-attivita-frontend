@@ -1,15 +1,14 @@
 import { Component, Input } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { startWith } from "rxjs";
-import { Dettaglio, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
+import { lastValueFrom, combineLatest, startWith } from "rxjs";
+import { Dettaglio, EnumTipoAttivita, GetCommessaResponse, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
 import { ToastService } from "src/app/services/toast.service";
-import { jsonCopy } from "src/app/utils/json";
 import { DIALOG_MODE } from "../../models/dialog";
-import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
-import { CommessaDto, CreateCommessaParam, UpdateCommessaParam } from "../../../commons/models/commessa";
-import { CommessaService } from "../../../commons/services/commessa.service";
 import { ROLES } from "src/app/models/user";
+import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
+import { CommesseService } from "src/app/api/modulo-attivita/services";
+import { AuthService } from "src/app/services/auth.service";
 
 @Component({
 	selector: 'app-commessa-creazione-modifica-dialog',
@@ -25,67 +24,37 @@ export class CommessaCreazioneModifica {
     dialogMode!: DIALOG_MODE;
     isLoading = false;
 
-    commessa?: CommessaDto;
+    commessa?: GetCommessaResponse;
 
-    clienteDirettoCtrl = new FormControl<Dettaglio | null>(null, [Validators.required]);
-    get idClienteDiretto() {
-        return this.clienteDirettoCtrl.value?.id;
-    }
-    clientiDiretti: Dettaglio[] = [];
     clienteFormatter = (c: Dettaglio) => c.descrizione;
+    bmFormatter = (bm: UtentiAnagrafica) => bm.cognome + ' ' + bm.nome;
 
-    clienteFinaleCtrl = new FormControl<Dettaglio | null>(null, [Validators.required]);
-    get idClienteFinale() {
-        return this.clienteFinaleCtrl.value?.id;
-    }
+    clienti: Dettaglio[] = [];
     clientiFinali: Dettaglio[] = [];
-
-    pmCtrl = new FormControl<UtentiAnagrafica | null>(null, [Validators.required]);
-    get idPm() {
-        return this.pmCtrl.value?.idUtente;
-    }
-    pmList: UtentiAnagrafica[] = [];
-    pmFormatter = (pm: UtentiAnagrafica) => pm.cognome + ' ' + pm.nome;
-    
-    bmCtrl = new FormControl<UtentiAnagrafica | null>(null, [Validators.required]);
-    get idBm() {
-        return this.bmCtrl.value?.idUtente;
-    }
-    bmList: UtentiAnagrafica[] = [];
-
-    tipoAttivitaCtrl = new FormControl<number>(1);
-    get tipoAttivita() {
-        return this.tipoAttivitaCtrl.value;
-    }
+    businessManagers: UtentiAnagrafica[] = [];
     tipiAttivita = [
         { text: 'Opportunità', _descr: "optn", value: 1 },
         { text: 'Commessa interna', _descr: "cmint", value: 2 }
     ];
 
-    codiceCommessaCtrl = new FormControl<string | null>(null);
-    descrizioneCtrl = new FormControl<string | null>(null, [Validators.required]);
-    tagCtrl = new FormControl<string | null>(null, [Validators.maxLength(5)]);
-    dataCreazioneCtrl = new FormControl(new Date().toISOString().slice(0, 10));
-    dataDecorrenzaCtrl = new FormControl();
-
     form = new FormGroup({
-        cliente: this.clienteDirettoCtrl,
-        clienteFinale: this.clienteFinaleCtrl,
-        pm: this.pmCtrl,
-        bm: this.bmCtrl,
-        tipoAttivita: this.tipoAttivitaCtrl,
-        codiceCommessa: this.codiceCommessaCtrl,
-        descrizione: this.descrizioneCtrl,
-        tag: this.tagCtrl,
-        dataCreazione: this.dataCreazioneCtrl,
-        dataDecorrenza: this.dataDecorrenzaCtrl
+        cliente: new FormControl<Dettaglio | null>(null, [ Validators.required ]),
+        clienteFinale: new FormControl<Dettaglio | null>(null, [ Validators.required ]),
+        businessManager: new FormControl<UtentiAnagrafica | null>(null, [ Validators.required ]),
+        tipoAttivita: new FormControl<number>(1),
+        codiceCommessa: new FormControl<string | null>(null, [ Validators.required ]),
+        descrizione: new FormControl<string | null>(null, [ Validators.required ]),
+        tag: new FormControl<string | null>(null, [ Validators.maxLength(5) ]),
+        dataInserimento: new FormControl(new Date().toISOString().slice(0, 10)),
+        dataDecorrenza: new FormControl()
     });
 
 	constructor(
         public activeModal: NgbActiveModal,
+        private authService: AuthService,
         private toaster: ToastService,
-        private commessaService: CommessaService,
-        private miscDataService: MiscDataService
+        private commesseService: CommesseService,
+        private miscData: MiscDataService
     ) { }
 
     ngOnInit() {
@@ -96,8 +65,8 @@ export class CommessaCreazioneModifica {
 
         if (this.dialogMode === DIALOG_MODE.Update) {
             this.isLoading = true;
-            this.commessaService
-                .getCommessaById(this.idCommessa)
+            this.commesseService
+                .getCommessa({ id: this.idCommessa })
                 .subscribe(commessa => {
                     this.commessa = commessa;
                     this.initCtrlValues();
@@ -108,62 +77,53 @@ export class CommessaCreazioneModifica {
             this.initCtrlValues();
         }
 
-        // Dynamic validators
-        this.tipoAttivitaCtrl.valueChanges
+        // Dynamic validators (adds or removes required from controls when a third control changes)
+        this.form.controls.tipoAttivita.valueChanges
             .pipe(startWith(null))
-            .subscribe(() => {
+            .subscribe(idTipoAttivita => {
 
-                const ta = this.tipoAttivitaCtrl.value;
+                const ddCtrl = this.form.controls.dataDecorrenza;
+                const ccCtrl = this.form.controls.codiceCommessa;
 
-                this.codiceCommessaCtrl
-                    .setValidators(ta == 2 ? [Validators.required] : null);
-                this.codiceCommessaCtrl.updateValueAndValidity();
+                ddCtrl.setValidators(idTipoAttivita == 1 ? [ Validators.required ] : null);
+                ccCtrl.setValidators(idTipoAttivita == 2 ? [ Validators.required ] : null);
 
-                this.dataDecorrenzaCtrl
-                    .setValidators(ta == 1 ? [Validators.required] : null);
-                this.dataDecorrenzaCtrl.updateValueAndValidity();
+                ddCtrl.updateValueAndValidity();
+                ccCtrl.updateValueAndValidity();
 
                 this.form.updateValueAndValidity();
             });
     }
 
-    initCtrlValues() {
+    async initCtrlValues() {
 
-        this.pmList = this.miscDataService.pmList;
-        this.bmList = this.miscDataService.bmList;
+        if (!this.commessa) return;
 
-        this.clientiDiretti = jsonCopy(this.miscDataService.clienti);
-        this.clientiFinali = jsonCopy(this.miscDataService.clienti);
+        this.form.patchValue({
+            ...this.commessa,
+            dataInserimento: this.commessa.dataInserimento?.slice(0, 10), // I dunno why the BE includes the time here...
+            tipoAttivita: this.commessa.tipoAttivita?.id
+        });
 
-        if (this.dialogMode === DIALOG_MODE.Update) {
-
-            const clienteDiretto = this.miscDataService.idClienteCliente[this.commessa?.idCliente!];
-            this.clienteDirettoCtrl.setValue(clienteDiretto);
-
-            const clienteFinale = this.miscDataService.idClienteCliente[this.commessa?.idClienteFinale!];
-            this.clienteFinaleCtrl.setValue(clienteFinale);
-
-            this.codiceCommessaCtrl.setValue(this.commessa?.codiceCommessa!);
-            this.descrizioneCtrl.setValue(this.commessa?.descrizione!);
-            this.tagCtrl.setValue(this.commessa?.tag!);
-
-            const pm = this.miscDataService.idPmPm[this.commessa?.idProjectManager!];
-            this.pmCtrl.setValue(pm);
-
-            const bm = this.miscDataService.idUtenteUtente[this.commessa?.idBusinessManager!];
-            this.bmCtrl.setValue(bm);
-
-            const tipoAttivita = this.commessa?.tipoAttivita!;
-            this.tipoAttivitaCtrl.setValue(tipoAttivita.id);
-
-            this.dataCreazioneCtrl.setValue(
-                this.commessa?.dataInserimento?.slice(0, 10)!
-            );
-
-            this.dataDecorrenzaCtrl.setValue(
-                this.commessa?.decorrenzaAttivita?.slice(0, 10)!
-            );
+        // Manually setting the rest of the fields
+        if (this.commessa.businessManager) {
+            this.form.controls["businessManager"].setValue({
+                ...this.commessa.businessManager,
+                idUtente: this.commessa.businessManager?.id
+            })
         }
+
+        [
+            this.clienti,
+            this.businessManagers
+        ] = await lastValueFrom(
+            combineLatest([
+                this.miscData.getClienti$(),
+                this.miscData.getBusinessManagers$()
+            ])
+        );
+
+        this.clientiFinali = this.clienti;
     }
 
     save() {
@@ -173,24 +133,37 @@ export class CommessaCreazioneModifica {
             this.update();
     }
 
+    requestObject(id?: number) {
+
+        const { idAzienda } = this.authService.user;
+
+        const request = {
+            id,
+            idAzienda,
+            ...this.form.value,
+            idCliente: this.form.value.cliente?.id,
+            idClienteFinale: this.form.value.clienteFinale?.id,
+            idBusinessManager: this.form.value.businessManager?.idUtente,
+            idTipoAttivita: this.form.value.tipoAttivita as unknown as EnumTipoAttivita
+        };
+
+        if (this.form.value.tipoAttivita === 1) {
+            delete request.codiceCommessa; // Otherwise the server goes into error (Blame the BE!)
+        }
+
+        return request;
+    }
+
     create() {
 
-        const createObj: CreateCommessaParam = {
-            idCliente: this.idClienteDiretto!,
-            idClienteFinale: this.idClienteFinale!,
-            idProjectManager: this.idPm!,
-            idBusinessManager: this.idBm!,
-            idTipoAttivita: this.tipoAttivitaCtrl.value!,
-            dataDecorrenza: this.dataDecorrenzaCtrl.value,
-            protocollo: this.codiceCommessaCtrl.value,
-            descrizione: this.descrizioneCtrl.value!,
-            tag: this.tagCtrl.value,
-        };
-        
-        this.commessaService
-            .createCommessa$(createObj)
+        if (this.form.invalid) return;
+
+        this.commesseService
+            .postCommessa({
+                body: this.requestObject()
+            })
             .subscribe(
-                (result) => {
+                result => {
 
                     const txt = "Commessa creata con successo!";
                     this.toaster.show(txt, { classname: 'bg-success text-white' });
@@ -200,7 +173,7 @@ export class CommessaCreazioneModifica {
                         .close({
                             dialogMode: this.dialogMode,
                             idCommessa: result.id,
-                            codiceCommessa: result.protocollo
+                            codiceCommessa: result.codiceCommessa
                         });
                 },
                 () => {
@@ -212,19 +185,10 @@ export class CommessaCreazioneModifica {
 
     update() {
 
-        const updateObj: UpdateCommessaParam = {
-            id: this.commessa?.id!,
-            idCliente: this.idClienteDiretto!,
-            idClienteFinale: this.idClienteFinale!,
-            idProjectManager: this.idPm!,
-            idBusinessManager: this.idBm!,
-            codiceCommessa: this.codiceCommessaCtrl.value!,
-            descrizione: this.descrizioneCtrl.value!,
-            tag: this.tagCtrl.value,
-        };
+        if (!this.commessa || this.form.invalid) return;
 
-        this.commessaService
-            .updateCommessa$(updateObj)
+        this.commesseService
+            .postCommessa({ body: this.requestObject(this.commessa?.id) })
             .subscribe(
                 () => {
                     const txt = "Commessa modificata con successo!";

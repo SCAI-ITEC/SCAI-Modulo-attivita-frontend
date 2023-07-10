@@ -4,12 +4,12 @@ import { Commessa } from './commessa';
 import { StatoValidazione } from './stato-validazione';
 export interface DettaglioAvanzamento {
   avanzamentoTotale?: number;
-  costoCompetenza?: number;
-  cumulato?: number;
+  costoCompetenza?: null | number;
+  cumulato?: null | number;
   dataAggiornamento?: null | string;
   dataInserimento?: string;
   descrizione?: null | string;
-  forzatureCosto?: number;
+  forzatureCosto?: null | number;
   idAzienda?: null | number;
   idCommessa?: number;
   idProjectManager?: number;
@@ -20,6 +20,6 @@ export interface DettaglioAvanzamento {
   ricavoCompetenza?: null | number;
   sottoCommessa?: Commessa;
   statoValidazione?: StatoValidazione;
-  tariffa?: number;
+  tariffa?: null | number;
   valido?: number;
 }

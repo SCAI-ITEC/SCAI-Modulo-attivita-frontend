@@ -12,6 +12,7 @@ import { map, filter } from 'rxjs/operators';
 import { GetDiarieResponse } from '../models/get-diarie-response';
 import { GetTipiTrasfertaResponse } from '../models/get-tipi-trasferta-response';
 import { PatchTipiTrasferta } from '../models/patch-tipi-trasferta';
+import { PostAttivazioneDiarie } from '../models/post-attivazione-diarie';
 import { PostDiaria } from '../models/post-diaria';
 import { PostDiarieResponse } from '../models/post-diarie-response';
 import { PostTipiTrasferta } from '../models/post-tipi-trasferta';
@@ -99,7 +100,7 @@ export class TipiTrasfertaService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postTipiTrasferta()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postTipiTrasferta$Response(params?: {
     body?: PostTipiTrasferta
@@ -110,7 +111,7 @@ export class TipiTrasfertaService extends BaseService {
 
     const rb = new RequestBuilder(this.rootUrl, TipiTrasfertaService.PostTipiTrasfertaPath, 'post');
     if (params) {
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -129,7 +130,7 @@ export class TipiTrasfertaService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postTipiTrasferta$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postTipiTrasferta(params?: {
     body?: PostTipiTrasferta
@@ -205,7 +206,7 @@ export class TipiTrasfertaService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `patchTipiTrasferta()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   patchTipiTrasferta$Response(params: {
     id: number;
@@ -218,7 +219,7 @@ export class TipiTrasfertaService extends BaseService {
     const rb = new RequestBuilder(this.rootUrl, TipiTrasfertaService.PatchTipiTrasfertaPath, 'patch');
     if (params) {
       rb.path('id', params.id, {});
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -237,7 +238,7 @@ export class TipiTrasfertaService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `patchTipiTrasferta$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   patchTipiTrasferta(params: {
     id: number;
@@ -323,7 +324,7 @@ export class TipiTrasfertaService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postDiarie()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postDiarie$Response(params?: {
     body?: PostDiaria
@@ -334,7 +335,7 @@ export class TipiTrasfertaService extends BaseService {
 
     const rb = new RequestBuilder(this.rootUrl, TipiTrasfertaService.PostDiariePath, 'post');
     if (params) {
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -353,7 +354,7 @@ export class TipiTrasfertaService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postDiarie$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postDiarie(params?: {
     body?: PostDiaria
@@ -364,6 +365,62 @@ export class TipiTrasfertaService extends BaseService {
 
     return this.postDiarie$Response(params,context).pipe(
       map((r: StrictHttpResponse<PostDiarieResponse>) => r.body as PostDiarieResponse)
+    );
+  }
+
+  /**
+   * Path part for operation attivazioneDiarie
+   */
+  static readonly AttivazioneDiariePath = '/attivita/diarie/{id}';
+
+  /**
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `attivazioneDiarie()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  attivazioneDiarie$Response(params: {
+    id: number;
+    body?: PostAttivazioneDiarie
+  },
+  context?: HttpContext
+
+): Observable<StrictHttpResponse<number>> {
+
+    const rb = new RequestBuilder(this.rootUrl, TipiTrasfertaService.AttivazioneDiariePath, 'post');
+    if (params) {
+      rb.path('id', params.id, {});
+      rb.body(params.body, 'application/json');
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'json',
+      accept: 'application/json',
+      context: context
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return (r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }) as StrictHttpResponse<number>;
+      })
+    );
+  }
+
+  /**
+   * This method provides access only to the response body.
+   * To access the full response (for headers, for example), `attivazioneDiarie$Response()` instead.
+   *
+   * This method sends `application/json` and handles request body of type `application/json`.
+   */
+  attivazioneDiarie(params: {
+    id: number;
+    body?: PostAttivazioneDiarie
+  },
+  context?: HttpContext
+
+): Observable<number> {
+
+    return this.attivazioneDiarie$Response(params,context).pipe(
+      map((r: StrictHttpResponse<number>) => r.body as number)
     );
   }
 

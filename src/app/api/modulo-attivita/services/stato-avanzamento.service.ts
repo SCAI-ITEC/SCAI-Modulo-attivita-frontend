@@ -197,7 +197,7 @@ export class StatoAvanzamentoService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postCommesseAvanzamento()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postCommesseAvanzamento$Response(params: {
     idAzienda: number;
@@ -212,7 +212,7 @@ export class StatoAvanzamentoService extends BaseService {
     if (params) {
       rb.path('idAzienda', params.idAzienda, {});
       rb.path('IdAvanzamento', params.IdAvanzamento, {});
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -231,7 +231,7 @@ export class StatoAvanzamentoService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postCommesseAvanzamento$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postCommesseAvanzamento(params: {
     idAzienda: number;

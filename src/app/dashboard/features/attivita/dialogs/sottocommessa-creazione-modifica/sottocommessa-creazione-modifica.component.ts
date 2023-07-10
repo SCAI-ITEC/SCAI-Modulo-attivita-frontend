@@ -1,16 +1,13 @@
 import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { Subject, combineLatest, lastValueFrom, map, takeUntil, tap } from "rxjs";
+import { Subject, catchError, combineLatest, lastValueFrom, map, of, takeUntil, tap } from "rxjs";
 import { ToastService } from "src/app/services/toast.service";
-import { jsonCopy } from "src/app/utils/json";
 import { euroMask, euroMask2numStr, numStr2euroMask } from "src/app/utils/mask";
 import { DIALOG_MODE } from "../../models/dialog";
-import { SottocommessaService } from "../../services/sottocommessa.service";
-import { CommessaDto, CommessaSearchDto, CreateSottocommessaParam, SimpleDto } from "../../../commons/models/commessa";
-import { CommessaService } from "../../../commons/services/commessa.service";
-import { CommonsService } from "src/app/api/modulo-attivita/services";
-import { GetTipoFatturazioneResponse } from "src/app/api/modulo-attivita/models";
+import { CommesseService, CommonsService } from "src/app/api/modulo-attivita/services";
+import { EnumTipiFatturazione, GetCommessaResponse, GetCommesseResponse, GetTipoFatturazioneResponse, UtentiAnagrafica } from "src/app/api/modulo-attivita/models";
+import { MiscDataService } from "../../../commons/services/miscellaneous-data.service";
 
 @Component({
 	selector: 'app-sottocommessa-creazione-modifica-dialog',
@@ -26,61 +23,44 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
     dialogMode!: DIALOG_MODE;
     isLoading = false;
 
-    commessa?: CommessaDto;
-    sottocommessa?: CommessaDto;
+    commessa?: GetCommessaResponse;
+    sottocommessa?: GetCommessaResponse;
 
-    codiceSottocommessaCtrl = new FormControl<string | null>(null, [Validators.required]);
-    descrizioneCtrl = new FormControl<string | null>(null, [Validators.required]);
-
-    iniziativaCtrl = new FormControl();
-    iniziative: { text: string, value: string }[] = [];
-
-    tipoFatturazioneCtrl = new FormControl<GetTipoFatturazioneResponse | null>(null, [Validators.required]);
-    get tipoFatturazione(): SimpleDto {
-        const { id, descrizione: text } = this.tipoFatturazioneCtrl.value!;
-        return { id: id!, text: text! }; // God... Why is all nullable? Blame the BE!!!
-    }
+    utenteFormatter = (u: UtentiAnagrafica) => u.cognome + " " + u.nome;
     tipoFatturazioneFormatter = (tf: GetTipoFatturazioneResponse) => tf.descrizione;
+    commessaFormatter = (sc: GetCommesseResponse) => sc?.codiceCommessa + ' ' + sc?.descrizione;
+
+    // Lists
+    utenti: UtentiAnagrafica[] = [];
+    projectManagers: UtentiAnagrafica[] = [];
+    iniziative: { text: string, value: string }[] = [];
     tipiFatturazione: GetTipoFatturazioneResponse[] = [];
+    commesse: GetCommesseResponse[] = [];
 
-    commessaRendicontazioneCtrl = new FormControl<CommessaSearchDto | null>(null);
-    get idCommessaRendicontazione() {
-        return this.commessaRendicontazioneCtrl.value?.id;
-    }
-    commessaFatturazioneCtrl = new FormControl<CommessaSearchDto | null>(null);
-    get idCommessaFatturazione() {
-        return this.commessaFatturazioneCtrl.value?.id;
-    }
-    commesse: CommessaSearchDto[] = [];
-    commessaFormatter = (sc: CommessaSearchDto) => sc?.codiceCommessa + ' ' + sc?.descrizione;
-
-    dataInizioCtrl = new FormControl();
-    dataFineCtrl = new FormControl();
-
+    // Stuff related to importo
     euroMask = euroMask;
     get importo() {
-        const masked = this.importoCtrl.value!;
+        const masked = this.form.value.importo!;
         return euroMask2numStr(masked);
     }
-    set importo(unmasked: string) {
-        const masked = numStr2euroMask(unmasked);
-        this.importoCtrl.setValue(masked);
+    set importo(unmasked: string | null) {
+        const masked = numStr2euroMask(unmasked || "0");
+        this.form.controls.importo.setValue(masked);
     }
-	importoCtrl = new FormControl("0", [Validators.required]);
-
-    trasfertaRibaltabileClienteCtrl = new FormControl();
-    abilitazioneReperibilitaCtrl = new FormControl();
-    abilitazioneStraordinarioCtrl = new FormControl();
 
     form = new FormGroup({
-        codiceSottocommessa: this.codiceSottocommessaCtrl,
-        dataInizio: this.dataInizioCtrl,
-        dataFine: this.dataFineCtrl,
-        descrizione: this.descrizioneCtrl,
-        iniziativa: this.iniziativaCtrl,
-        tipoFatturazione: this.tipoFatturazioneCtrl,
-        importo: this.importoCtrl,
-        trafertaRibaltabileCliente: this.trasfertaRibaltabileClienteCtrl
+        codiceCommessa: new FormControl<string | null>(null, [ Validators.required ]),
+        descrizione: new FormControl<string | null>(null, [ Validators.required ]),
+        projectManager: new FormControl<UtentiAnagrafica | null>(null, [ Validators.required ]),
+        supportoController: new FormControl<UtentiAnagrafica | null>(null, [ Validators.required ]),
+        iniziativa: new FormControl(),
+        tipoFatturazione: new FormControl<GetTipoFatturazioneResponse | null>(null, [ Validators.required ]),
+        commessaRendicontazione: new FormControl<GetCommesseResponse | null>(null),
+        commessaFatturazione: new FormControl<GetCommesseResponse | null>(null),
+        importo: new FormControl("0", [ Validators.required ]),
+        dataInizio: new FormControl(),
+        dataFine: new FormControl(),
+        ribaltabileCliente: new FormControl(false)
     });
 
     destroy$ = new Subject<void>();
@@ -88,9 +68,9 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
 	constructor(
         public activeModal: NgbActiveModal,
         private toaster: ToastService,
-        private commessaService: CommessaService,
-        private sottocommessaService: SottocommessaService,
-        private commons: CommonsService
+        private miscData: MiscDataService,
+        private commesseService: CommesseService,
+        private commonsService: CommonsService
     ) { }
 
     ngOnInit() {
@@ -103,48 +83,50 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
 
         if (this.dialogMode === DIALOG_MODE.Update) {
             combineLatest([
-                this.commessaService.getCommessaById(this.idCommessa),
-                this.sottocommessaService.getSottocommessaById$(this.idSottocommessa)
+                this.commesseService.getCommessa({ id: this.idCommessa }),
+                this.commesseService.getCommessa({ id: this.idSottocommessa })
             ])
             .subscribe(async ([ commessa, sottocommessa ]) => {
                 this.commessa = commessa;
                 this.sottocommessa = sottocommessa;
                 await this.initArrays();
-                this.initCtrlValues();
+                this.initCtrlValuesUpdate();
                 this.isLoading = false;
             });
         }
         else {
-            this.commessaService
-                .getCommessaById(this.idCommessa)
+            this.commesseService
+                .getCommessa({ id: this.idCommessa })
                 .subscribe(async commessa => {
                     this.commessa = commessa;
                     await this.initArrays();
-                    this.initCreationCtrlValues();
+                    this.initCtrlValuesCreate();
                     this.isLoading = false;
                 });
         }
 
-        this.form
-            .valueChanges
+        this.form.valueChanges
             .pipe(
                 takeUntil(this.destroy$),
                 tap(() => {
 
-                    const isoInizio = this.dataInizioCtrl.value || "";
-                    const isoFine = this.dataFineCtrl.value || "";
+                    const inizioCtrl = this.form.controls.dataInizio;
+                    const fineCtrl = this.form.controls.dataFine;
+
+                    const isoInizio = inizioCtrl.value || "";
+                    const isoFine = fineCtrl.value || "";
 
                     if (isoInizio > isoFine) {
-                        this.dataInizioCtrl.setErrors({ date: "Too big" });
-                        this.dataFineCtrl.setErrors({ date: "Too small" });
+                        inizioCtrl.setErrors({ date: "Too big" });
+                        fineCtrl.setErrors({ date: "Too small" });
                     }
                     else {
-                        this.dataInizioCtrl.setErrors(null);
-                        this.dataFineCtrl.setErrors(null);
+                        inizioCtrl.setErrors(null);
+                        fineCtrl.setErrors(null);
                     }
 
-                    this.dataInizioCtrl.markAsTouched();
-                    this.dataFineCtrl.markAsTouched();
+                    inizioCtrl.markAsTouched();
+                    fineCtrl.markAsTouched();
                 })
             )
             .subscribe();
@@ -158,133 +140,125 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
 
         if (!this.commessa) return;
 
-        let checkAziendaPropria = true;
-        try {
-            checkAziendaPropria = await lastValueFrom(
-                this.commessaService
-                    .checkAziendaPropria$(this.commessa.idCliente)
-            );
-        }
-        catch(e) {
-            console.error("checkAziendaPropria failed...");
-        }
+        const checkAziendaPropria = await lastValueFrom(
+            this.commonsService
+                .getTerzaParteCheckAziendaPropria({ idCliente: this.commessa.cliente?.id })
+        );
 
-        let iniziative: string[] = [];
-        if (checkAziendaPropria) {
-            iniziative = [ "Struttura", "Stand By", "Non fatturato" ];
-        }
-        else {
-            try {
-                iniziative = await lastValueFrom(
-                    this.sottocommessaService
-                        .getIniziative$(
-                            this.commessa.idCliente,
-                            this.commessa.idClienteFinale,
-                            this.commessa.idBusinessManager
-                        ) // This call might fail sometime
+        const iniziative = checkAziendaPropria
+                ? [ "Struttura", "Stand By", "Non fatturato" ]
+                : await lastValueFrom(
+                    this.commonsService
+                        .getIniziative({
+                            idCliente: this.commessa.cliente?.id!,
+                            idClienteFinale: this.commessa.clienteFinale?.id!,
+                            idBusinessManager: this.commessa.businessManager?.id!
+                        })
+                        .pipe(
+                            catchError(() => of([])) // Guard against failure because some old commesse don't have a business manager
+                        )
                 );
-            }
-            catch(e) {
-                console.error("getIniziativa failed...");
-            }
-        }
 
-        this.iniziative = iniziative.map(inz => ({ text: inz, value: inz }));
+        this.iniziative = iniziative.map(iniz => ({ value: iniz, text: iniz }));
+        this.form.controls.iniziativa.setValue(this.iniziative[0]?.value);
 
-        if (this.iniziative[0]?.value)
-            this.iniziativaCtrl.setValue(this.iniziative[0].value);
-
-        try {
-            this.tipiFatturazione = await lastValueFrom(
-                this.commons.getTipoFatturazione()
-                    .pipe(
-                        map(tipiFatturazione => tipiFatturazione.filter(tipoFatturazione => !tipoFatturazione.disabled))
+        this.tipiFatturazione = await lastValueFrom(
+            this.commonsService.getTipoFatturazione()
+                .pipe(
+                    map(tipiFatturazione =>
+                        tipiFatturazione.filter(tipoFatturazione =>
+                            !tipoFatturazione.disabled
+                        )
                     )
-            );
-        }
-        catch(e) {
-            console.error("getTipiFatturazione failed...");
-        }
+                )
+        );
 
-        this.commesse = await lastValueFrom(
-            this.commessaService.getAllCommesse$()
+        [
+            this.utenti,
+            this.projectManagers,
+            this.commesse
+        ] = await lastValueFrom(
+            combineLatest([
+                this.miscData.getUtenti$(),
+                this.miscData.getProjectManagers$(),
+                this.miscData.getCommesse$()
+            ])
         );
     }
 
-    initCreationCtrlValues() {
-
+    initCtrlValuesCreate() {
         if (!this.commessa) return;
-
-        this.codiceSottocommessaCtrl.setValue(this.commessa.codiceCommessa);
+        this.form.controls.codiceCommessa.setValue(this.commessa.codiceCommessa!);
     }
 
-    initCtrlValues() {
+    initCtrlValuesUpdate() {
 
-        if (this.dialogMode === DIALOG_MODE.Update) {
+        if (!this.sottocommessa) return;
 
-            if (!this.sottocommessa) return;
+        this.form.patchValue({
+            ...this.sottocommessa,
+            importo: (this.sottocommessa.importo || 0) + ""
+        });
 
-            this.codiceSottocommessaCtrl.setValue(this.sottocommessa.codiceCommessa);
-            this.descrizioneCtrl.setValue(this.sottocommessa.descrizione);
-
-            this.iniziativaCtrl.setValue(this.sottocommessa.iniziativa);
-
-            const idTipoFatturazione = this.sottocommessa.tipoFatturazione.id;
-            const tipoFatturazione = this.tipiFatturazione.find(tf =>
-                tf.id === idTipoFatturazione
-            )
-            this.tipoFatturazioneCtrl.setValue(tipoFatturazione!);
-
-            const idCommessaRendicontazione = this.sottocommessa.idCommessaCollegata;
-            const commessaRendicontazione = this.commesse.find(c =>
-                c.id === idCommessaRendicontazione   
-            );
-            this.commessaRendicontazioneCtrl.setValue(commessaRendicontazione!);
-
-            const idCommessaFatturazione = this.sottocommessa.idCommessaFatturazione;
-            const commessaFatturazione = this.commesse.find(c =>
-                c.id === idCommessaFatturazione   
-            );
-            this.commessaFatturazioneCtrl.setValue(commessaFatturazione!);
-
-            this.dataInizioCtrl.setValue(this.sottocommessa.dataInizio);
-            this.dataFineCtrl.setValue(this.sottocommessa.dataFine);
-
-            this.importo = this.sottocommessa.importo;
-
-            this.trasfertaRibaltabileClienteCtrl.setValue(this.sottocommessa.ribaltabileCliente);
+        // Manually setting the rest of the fields
+        if (this.sottocommessa.projectManager) {
+            this.form.controls.projectManager.setValue({
+                ...this.sottocommessa.projectManager,
+                idUtente: this.sottocommessa.projectManager?.id
+            })
         }
+
+        if (this.sottocommessa.supportoController) {
+            this.form.controls.supportoController.setValue({
+                ...this.sottocommessa.supportoController,
+                idUtente: this.sottocommessa.supportoController?.id
+            })
+        }
+
+        const idTipoFatturazione = this.sottocommessa.tipoFatturazione?.id;
+        const tipoFatturazione = this.tipiFatturazione.find(tf => tf.id === idTipoFatturazione)
+        this.form.controls.tipoFatturazione.setValue(tipoFatturazione!);
+
+        const idCommessaRendicontazione = this.sottocommessa.idCommessaCollegata;
+        const commessaRendicontazione = this.commesse.find(c => c.id === idCommessaRendicontazione);
+        this.form.controls.commessaRendicontazione.setValue(commessaRendicontazione!);
+
+        const idCommessaFatturazione = this.sottocommessa.idCommessaFatturazione;
+        const commessaFatturazione = this.commesse.find(c => c.id === idCommessaFatturazione);
+        this.form.controls.commessaFatturazione.setValue(commessaFatturazione!);
     }
 
     save() {
-        if (this.dialogMode === DIALOG_MODE.Create)
+        if (this.dialogMode === DIALOG_MODE.Create){
             this.create();
-        else
+        }
+        else {
             this.update();
+        }
+    }
+
+    getRequest(id?: number | null) {
+        return {
+            id,
+            ...this.form.value,
+            idCommessaPadre: this.idCommessa,
+            importo: parseFloat(this.importo || "0"),
+            idProjectManager: this.form.value.projectManager?.idUtente,
+            idSupportoController: this.form.value.supportoController?.idUtente,
+            idTipoFatturazione: this.form.value.tipoFatturazione?.id as unknown as EnumTipiFatturazione, // WHY ON EARTH...?!
+            idCommessaCollegata: this.form.value.commessaRendicontazione?.id,
+            idCommessaFatturazione: this.form.value.commessaFatturazione?.id,
+        };
     }
 
     create() {
 
         if (this.form.invalid) return;
 
-        const createObj: CreateSottocommessaParam = {
-            idCommessaPadre: this.idCommessa,
-            codiceCommessa: this.codiceSottocommessaCtrl.value!,
-            idCommessaCollegata: this.idCommessaRendicontazione,
-            idCommessaFatturazione: this.idCommessaFatturazione,
-            descrizione: this.descrizioneCtrl.value!,
-            iniziativa: this.iniziativaCtrl.value!,
-            tipoFatturazione: this.tipoFatturazione,
-            dataInizio: this.dataInizioCtrl.value,
-            dataFine: this.dataInizioCtrl.value,
-            importo: +this.importo, // Dunno why on update is a string and in create is a number...
-            ribaltabileCliente: !!this.trasfertaRibaltabileClienteCtrl.value
-        };
-        
-        this.sottocommessaService
-            .createSottocommessa$(createObj)
+        this.commesseService
+            .postCommessa({ body: this.getRequest() })
             .subscribe(
-                (idSottocommessa) => {
+                (sottocommessa) => {
 
                     const txt = "Sottocommessa creata con successo!";
                     this.toaster.show(txt, { classname: 'bg-success text-white' });
@@ -293,8 +267,7 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
                     this.activeModal
                         .close({
                             dialogMode: this.dialogMode,
-                            idSottocommessa,
-                            codiceSottocommessa: this.codiceSottocommessaCtrl.value
+                            item: sottocommessa
                         });
                 },
                 () => {
@@ -308,31 +281,15 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
 
         if (!this.sottocommessa || this.form.invalid) return;
 
-        const copyOfSottocommessa: CommessaDto = jsonCopy(this.sottocommessa);
-        
-        copyOfSottocommessa.codiceCommessa = this.codiceSottocommessaCtrl.value!;
-        copyOfSottocommessa.descrizione = this.descrizioneCtrl.value!;
-        copyOfSottocommessa.iniziativa = this.iniziativaCtrl.value!;
-        copyOfSottocommessa.tipoFatturazione = this.tipoFatturazione;
-        copyOfSottocommessa.idCommessaCollegata = this.idCommessaRendicontazione;
-        copyOfSottocommessa.idCommessaFatturazione = this.idCommessaFatturazione;
-        copyOfSottocommessa.dataInizio = this.dataInizioCtrl.value;
-        copyOfSottocommessa.dataFine = this.dataFineCtrl.value;
-        copyOfSottocommessa.importo = this.importo;
-        copyOfSottocommessa.ribaltabileCliente = !!this.trasfertaRibaltabileClienteCtrl.value;
-
-        this.sottocommessaService
-            .updateSottocommessa$(
-                this.idSottocommessa,
-                copyOfSottocommessa
-            )
+        this.commesseService
+            .postCommessa({ body: this.getRequest(this.sottocommessa.id) })
             .subscribe(
-                () => {
+                (sottocommessa) => {
                     const txt = "Sottocommessa modificata con successo!";
                     this.toaster.show(txt, { classname: 'bg-success text-white' });
                     this.activeModal.close({
                         dialogMode: this.dialogMode,
-                        item: copyOfSottocommessa
+                        item: sottocommessa
                     });
                 },
                 () => {
