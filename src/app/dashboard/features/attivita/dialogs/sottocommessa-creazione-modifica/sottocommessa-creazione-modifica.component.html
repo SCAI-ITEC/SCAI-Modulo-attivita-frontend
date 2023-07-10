@@ -18,7 +18,14 @@
         ></button>
         </div>
 
-        <div class="modal-body" style="min-height: 40vh">
+        <div class="modal-body">
+
+            <ng-template #utenteTmpl let-r="result" let-t="term">
+                <div class="my-1">
+                    <div class="small">{{ r.idUtente }}</div>
+                    <ngb-highlight [result]="r.cognome + ' '  + r.nome" [term]="t"></ngb-highlight>
+                </div>
+            </ng-template>
 
             <form [formGroup]="form">
 
@@ -27,22 +34,52 @@
                     <app-input
                         name="codiceSottocommessa"
                         label="Codice sottocommessa *"
-                        [ngControl]="codiceSottocommessaCtrl"
+                        [ngControl]="form.controls.codiceCommessa"
                         [floatingLabel]="true"
                     ></app-input>
 
                     <app-input
                         name="descrizione"
                         label="Descrizione *"
-                        [ngControl]="descrizioneCtrl"
+                        [ngControl]="form.controls.descrizione"
                         [floatingLabel]="true"
                     ></app-input>
 
                     <app-input
+                        type="autocomplete"
+                        name="projectManager"
+                        label="Project manager *"
+                        [options]="projectManagers"
+                        [formatter]="utenteFormatter"
+                        [template]="utenteTmpl"
+                        [ngControl]="form.controls.projectManager"
+                        [floatingLabel]="true"
+                    ></app-input>
+
+                    <app-input
+                        type="autocomplete"
+                        name="supportoController"
+                        label="Supporto controller"
+                        [options]="utenti"
+                        [formatter]="utenteFormatter"
+                        [template]="utenteTmpl"
+                        [ngControl]="form.controls.supportoController"
+                        [floatingLabel]="true"
+                    ></app-input>
+                </div>
+
+                <div class="flexgrid flexgrid--3">
+                    
+                    <app-input
                         type="select"
                         name="iniziativa"
                         label="Iniziativa"
-                        [ngControl]="iniziativaCtrl"
+                        [helper]="
+                            !iniziative.length
+                                ? 'Non ci sono iniziative per questa commessa'
+                                : ''
+                        "
+                        [ngControl]="form.controls.iniziativa"
                         [options]="iniziative"
                         [floatingLabel]="true"
                         [disabled]="!iniziative.length"
@@ -54,9 +91,20 @@
                         label="Tipo fatturazione *"
                         [options]="tipiFatturazione"
                         [formatter]="tipoFatturazioneFormatter"
-                        [ngControl]="tipoFatturazioneCtrl"
+                        [ngControl]="form.controls.tipoFatturazione"
                         [floatingLabel]="true"
                     ></app-input>
+
+                    <app-input
+                        name="importo"
+                        label="Importo *"
+                        [mask]="euroMask"
+                        [ngControl]="form.controls.importo"
+                        [floatingLabel]="true"
+                    ></app-input>
+                </div>
+
+                <div class="flexgrid flexgrid--2">
 
                     <app-input
                         type="autocomplete"
@@ -65,7 +113,7 @@
                         [options]="commesse"
                         [limit]="25"
                         [formatter]="commessaFormatter"
-                        [ngControl]="commessaRendicontazioneCtrl"
+                        [ngControl]="form.controls.commessaRendicontazione"
                         [floatingLabel]="true"
                     ></app-input>
     
@@ -76,7 +124,7 @@
                         [options]="commesse"
                         [limit]="25"
                         [formatter]="commessaFormatter"
-                        [ngControl]="commessaFatturazioneCtrl"
+                        [ngControl]="form.controls.commessaFatturazione"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -84,8 +132,8 @@
                         type="date"
                         name="dataInizio"
                         label="Data inizio"
-                        [max]="dataFineCtrl.value"
-                        [ngControl]="dataInizioCtrl"
+                        [max]="form.value.dataFine"
+                        [ngControl]="form.controls.dataInizio"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -93,26 +141,18 @@
                         type="date"
                         name="dataFine"
                         label="Data fine"
-                        [min]="dataInizioCtrl.value"
-                        [ngControl]="dataFineCtrl"
+                        [min]="form.value.dataInizio"
+                        [ngControl]="form.controls.dataFine"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>
 
-                <div class="flexgrid flexgrid--1">
-
-                    <app-input
-                        name="importo"
-                        label="Importo *"
-                        [mask]="euroMask"
-                        [ngControl]="importoCtrl"
-                    ></app-input>
-
+                <div class="flexgrid">
                     <app-input
                         type="checkbox"
-                        name="trasfertaRibaltabileCliente"
+                        name="ribaltabileCliente"
                         label="Spese trasferta ribaltabili al cliente"
-                        [ngControl]="trasfertaRibaltabileClienteCtrl"
+                        [ngControl]="form.controls.ribaltabileCliente"
                     ></app-input>
                 </div>
             </form>

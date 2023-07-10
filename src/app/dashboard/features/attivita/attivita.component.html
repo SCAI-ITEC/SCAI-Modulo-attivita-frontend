@@ -5,41 +5,38 @@
         <p class="lead">Da qui puoi cercare/creare/modificare le commesse.</p>
     </div>
 
-    <div class="col-md-8 mx-auto mb-4 card card-body shadow">
+    <div class="col-md-10 mx-auto mb-4 card card-body shadow">
         
         <h5>Filtri ricerca commesse</h5>
 
-        <div class="flexgrid flexgrid--2">
+        <div class="flexgrid flexgrid--4">
 
             <app-input
-                #clienteDirettoAutocomplete
+                #clienteAC
                 type="autocomplete"
                 name="clienteDiretto"
                 label="Cliente diretto"
-                [options]="clientiDiretti"
+                [options]="clienti"
                 [limit]="25"
                 [formatter]="clienteFormatter"
-                [ngControl]="clienteDirettoCtrl"
+                [ngControl]="form.controls.cliente"
                 [floatingLabel]="true"
             ></app-input>
 
             <app-input
-                #clienteFinaleAutocomplete
+                #clienteFinaleAC
                 type="autocomplete"
                 name="clienteFinale"
                 label="Cliente finale"
                 [options]="clientiFinali"
                 [limit]="25"
                 [formatter]="clienteFormatter"
-                [ngControl]="clienteFinaleCtrl"
+                [ngControl]="form.controls.clienteFinale"
                 [floatingLabel]="true"
             ></app-input>
-        </div>
-
-        <div class="flexgrid flexgrid--3">
 
             <app-input
-                #commessaAutocomplete
+                #commessaAC
                 type="autocomplete"
                 name="commessa"
                 label="Commessa"
@@ -47,7 +44,7 @@
                 [limit]="25"
                 [formatter]="commessaFormatter"
                 [template]="cTmpl"
-                [ngControl]="commessaCtrl"
+                [ngControl]="form.controls.commessa"
                 [floatingLabel]="true"
             ></app-input>
             <ng-template #cTmpl let-r="result" let-t="term">
@@ -58,17 +55,17 @@
             </ng-template>
 
             <app-input
-                #pmAutocomplete
+                #bmAC
                 type="autocomplete"
-                name="projectManager"
-                label="Project manager"
-                [options]="pmList"
-                [formatter]="pmFormatter"
-                [template]="pmTmpl"
-                [ngControl]="pmCtrl"
+                name="businessManager"
+                label="Business manager"
+                [options]="businessManagers"
+                [formatter]="bmFormatter"
+                [template]="bmTmpl"
+                [ngControl]="form.controls.businessManager"
                 [floatingLabel]="true"
             ></app-input>
-            <ng-template #pmTmpl let-r="result" let-t="term">
+            <ng-template #bmTmpl let-r="result" let-t="term">
                 <div class="my-1">
                     <div class="small">{{ r.idUtente }}</div>
                     <ngb-highlight [result]="r.cognome + ' '  + r.nome" [term]="t"></ngb-highlight>
@@ -76,25 +73,10 @@
             </ng-template>
 
             <app-input
-                #bmAutocomplete
-                type="autocomplete"
-                name="businessManager"
-                label="Business manager"
-                [options]="bmList"
-                [formatter]="pmFormatter"
-                [template]="pmTmpl"
-                [ngControl]="bmCtrl"
-                [floatingLabel]="true"
-            ></app-input>
-        </div>
-
-        <div class="flexgrid flexgrid--4">
-
-            <app-input
                 type="select"
                 name="tipoAttivita"
                 label="Tipo attivita"
-                [ngControl]="tipoAttivitaCtrl"
+                [ngControl]="form.controls.idTipoAttivita"
                 [options]="tipiAttivita"
                 [floatingLabel]="true"
             ></app-input>
@@ -103,7 +85,7 @@
                 type="select"
                 name="stato"
                 label="Stato"
-                [ngControl]="statoCtrl"
+                [ngControl]="form.controls.stato"
                 [options]="stati"
                 [floatingLabel]="true"
             ></app-input>
@@ -111,18 +93,18 @@
             <app-input
                 type="date"
                 name="dataInizio"
-                label="Data inizio"
-                [max]="dataFine"
-                [ngControl]="dataInizioCtrl"
+                label="Data inserimento da"
+                [max]="form.value.fine"
+                [ngControl]="form.controls.inizio"
                 [floatingLabel]="true"
             ></app-input>
 
             <app-input
                 type="date"
                 name="dataFine"
-                label="Data fine"
-                [min]="dataInizio"
-                [ngControl]="dataFineCtrl"
+                label="Data inserimento a"
+                [min]="form.value.inizio"
+                [ngControl]="form.controls.fine"
                 [floatingLabel]="true"
             ></app-input>
         </div>
@@ -196,6 +178,7 @@
                 <ng-template #abc>
                     <ng-container *ngIf="isLoading">
                         <span class="spinner-border"></span>
+                        <div class="fst-italic">Potrebbe metterci un po'...</div>
                     </ng-container>
                 </ng-template>
             </div>
@@ -209,13 +192,11 @@
             [animated]="true"
             [items]="commesseResults"
             [searchable]="[
-                'descrizioneCliente',
+                'cliente.descrizione',
                 'descrizione',
                 'codiceCommessa',
-                'nomeBusinessManager',
-                'cognomeBusinessManager',
-                'nomeProjectManager',
-                'cognomeProjectManager'
+                'businessManager.cognome',
+                'businessManager.nome'
             ]"
             [paginated]="true"
             [pageSize]="5"
@@ -223,41 +204,37 @@
         >
 
             <ng-template #thead>
-                <th sortable="descrizioneCliente" (sort)="dt.sort($event)">Cliente</th>
+                <th sortable="cliente.descrizione" (sort)="dt.sort($event)">Cliente</th>
                 <th sortable="tipoAttivita.id" (sort)="dt.sort($event)">Tipo attività</th>
                 <th sortable="valido" (sort)="dt.sort($event)">Stato</th>
                 <th sortable="descrizione" (sort)="dt.sort($event)">Commessa</th>
-                <th sortable="cognomeProjectManager" (sort)="dt.sort($event)">PM</th>
-                <th sortable="cognomeBusinessManager" (sort)="dt.sort($event)">BM</th>
-                <th sortable="data" (sort)="dt.sort($event)">Data</th>
+                <th sortable="businessManager.cognome" (sort)="dt.sort($event)">Business manager</th>
+                <th sortable="dataInserimento" (sort)="dt.sort($event)">Data inserimento</th>
                 <th style="width: 10rem"></th>
             </ng-template>
 
             <ng-template #tbody let-item let-term$="term$">
-                <td data-label="Cliente">
-                    <ngb-highlight [result]="item.descrizioneCliente" [term]="$any(term$ | async)"/>
+                <td data-label="Cliente" style="max-width: 40ch">
+                    <ngb-highlight [result]="item.cliente.descrizione" [term]="$any(term$ | async)"/>
                 </td>
                 <td data-label="Tipo attività">{{ item.tipoAttivita.id === 1 ? 'Opportunità' : 'Commessa int.' }}</td>
                 <td data-label="Stato">{{ item.valido ? 'Valida' : 'Annullata' }}</td>
-                <td data-label="Commessa">
+                <td data-label="Commessa" style="max-width: 40ch">
                     <div class="small fw-bold">
                         <ngb-highlight [result]="item.codiceCommessa" [term]="$any(term$ | async)"/>
                     </div>
                     <ngb-highlight [result]="item.descrizione" [term]="$any(term$ | async)"/>
                 </td>
-                <td data-label="Project manager">
-                    <ngb-highlight
-                        [result]="(item.cognomeProjectManager || '') + ' ' + (item.nomeProjectManager || '')"
-                        [term]="$any(term$ | async)"
-                    />
-                </td>
                 <td data-label="Business manager">
                     <ngb-highlight
-                        [result]="(item.cognomeBusinessManager || '') + ' ' + (item.nomeBusinessManager || '')"
+                        [result]="
+                            item.businessManager
+                                ? item.businessManager.cognome + ' ' + item.businessManager.nome
+                                : 'ND'"
                         [term]="$any(term$ | async)"
                     />
                 </td>
-                <td data-label="Data">{{ item.data | date:'yyyy-MM-dd' }}</td>
+                <td data-label="Data inserimento">{{ item.dataInserimento | date:'yyyy-MM-dd' }}</td>
                 <td>
                     <div
                         *ngIf="item.valido; else annullatoActions"
@@ -295,17 +272,9 @@
                             ]"
                             type="button"
                             class="btn btn-danger shadow"
-                            (click)="
-                                item.tipoAttivita.id === 1
-                                    ? cancelOpportunita(item)
-                                    : deleteCommessaInterna(item)
-                            "
+                            (click)="disableCommessa(item)"
                         >
-                            <i
-                                class="bi"
-                                [class.bi-x-circle]="item.tipoAttivita.id === 1"
-                                [class.bi-trash3]="item.tipoAttivita.id === 2"
-                            ></i>
+                            <i class="bi bi-x-circle"></i>
                         </button>
                     </div>
 
@@ -314,7 +283,7 @@
                             <button
                                 type="button"
                                 class="btn btn-outline-primary"
-                                (click)="restore(item)"
+                                (click)="restoreCommessa(item)"
                             >
                                 <i class="bi bi-arrow-counterclockwise"></i>
                             </button>

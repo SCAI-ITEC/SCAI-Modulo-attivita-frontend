@@ -55,15 +55,13 @@ export class ReperibilitaComponent {
     const modalRef = this.modalService
       .open(
         ReperibilitaCreazioneComponent,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
 
-    const result = await modalRef.result;
+    await modalRef.result;
+
     this.refresh$.next();
   }
 
@@ -74,14 +72,15 @@ export class ReperibilitaComponent {
         ReperibilitaCreazioneComponent,
         {
           size: 'lg',
-          centered: true,
-          scrollable: true
+          centered: true
         }
       );
+
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
     modalRef.componentInstance.reperibilita = reperibilita;
 
-    const result = await modalRef.result;
+    await modalRef.result;
+    
     this.refresh$.next();
   }
 
@@ -90,12 +89,9 @@ export class ReperibilitaComponent {
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
-        {
-          size: 'md',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'md', centered: true }
       );
+    
     modalRef.componentInstance.name = reperibilita.descrizione;
     modalRef.componentInstance.message = "Stai eliminando definitivamente una reperibilità."
 

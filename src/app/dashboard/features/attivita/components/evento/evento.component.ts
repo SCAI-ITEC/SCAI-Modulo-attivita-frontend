@@ -43,15 +43,13 @@ export class EventoComponent {
     const modalRef = this.modalService
       .open(
         EventoCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
 
-    const result = await modalRef.result;
+    await modalRef.result;
+
     this.refresh$.next();
   }
 
@@ -60,16 +58,14 @@ export class EventoComponent {
     const modalRef = this.modalService
       .open(
         EventoCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
     modalRef.componentInstance.evento = evento;
 
     await modalRef.result;
+    
     this.refresh$.next();
   }
 }

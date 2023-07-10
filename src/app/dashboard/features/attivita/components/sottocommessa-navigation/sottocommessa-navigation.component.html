@@ -19,7 +19,13 @@
 
                 <div>
                     <div class="small text-muted">Project manager</div>
-                    <div>{{ pm?.cognome + ' ' + pm?.nome }}</div>
+                    <div>
+                        {{
+                            sottocommessa?.projectManager
+                                ? sottocommessa?.projectManager?.cognome + " " + sottocommessa?.projectManager?.nome
+                                : "ND"
+                            }}
+                    </div>
                 </div>
 
                 <div>
@@ -34,12 +40,12 @@
 
                 <div>
                     <div class="small text-muted">Data inizio</div>
-                    <div>{{ sottocommessa?.dataInizio | date:'yyyy-MM-dd' }}</div>
+                    <div>{{ sottocommessa?.dataInizio | date: "yyyy-MM-dd" }}</div>
                 </div>
     
                 <div>
                     <div class="small text-muted">Data fine</div>
-                    <div>{{ sottocommessa?.dataFine | date:'yyyy-MM-dd' }}</div>
+                    <div>{{ sottocommessa?.dataFine | date: "yyyy-MM-dd" }}</div>
                 </div>
 
                 <div><!-- just a filler --></div>
