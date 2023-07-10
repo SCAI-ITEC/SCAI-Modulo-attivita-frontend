@@ -45,7 +45,7 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
     }
     set importo(unmasked: string | null) {
         const masked = numStr2euroMask(unmasked || "0");
-        this.form.controls["importo"].setValue(masked);
+        this.form.controls.importo.setValue(masked);
     }
 
     form = new FormGroup({
@@ -105,14 +105,13 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
                 });
         }
 
-        this.form
-            .valueChanges
+        this.form.valueChanges
             .pipe(
                 takeUntil(this.destroy$),
                 tap(() => {
 
-                    const inizioCtrl = this.form.controls["dataInizio"];
-                    const fineCtrl = this.form.controls["dataFine"];
+                    const inizioCtrl = this.form.controls.dataInizio;
+                    const fineCtrl = this.form.controls.dataFine;
 
                     const isoInizio = inizioCtrl.value || "";
                     const isoFine = fineCtrl.value || "";
@@ -161,7 +160,7 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
                 );
 
         this.iniziative = iniziative.map(iniz => ({ value: iniz, text: iniz }));
-        this.form.controls["iniziativa"].setValue(this.iniziative[0]?.value);
+        this.form.controls.iniziativa.setValue(this.iniziative[0]?.value);
 
         this.tipiFatturazione = await lastValueFrom(
             this.commonsService.getTipoFatturazione()
@@ -189,7 +188,7 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
 
     initCtrlValuesCreate() {
         if (!this.commessa) return;
-        this.form.controls["codiceCommessa"].setValue(this.commessa.codiceCommessa!);
+        this.form.controls.codiceCommessa.setValue(this.commessa.codiceCommessa!);
     }
 
     initCtrlValuesUpdate() {
@@ -203,14 +202,14 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
 
         // Manually setting the rest of the fields
         if (this.sottocommessa.projectManager) {
-            this.form.controls["projectManager"].setValue({
+            this.form.controls.projectManager.setValue({
                 ...this.sottocommessa.projectManager,
                 idUtente: this.sottocommessa.projectManager?.id
             })
         }
 
         if (this.sottocommessa.supportoController) {
-            this.form.controls["supportoController"].setValue({
+            this.form.controls.supportoController.setValue({
                 ...this.sottocommessa.supportoController,
                 idUtente: this.sottocommessa.supportoController?.id
             })
@@ -218,15 +217,15 @@ export class SottocommessaCreazioneModifica implements OnInit, OnDestroy {
 
         const idTipoFatturazione = this.sottocommessa.tipoFatturazione?.id;
         const tipoFatturazione = this.tipiFatturazione.find(tf => tf.id === idTipoFatturazione)
-        this.form.controls["tipoFatturazione"].setValue(tipoFatturazione!);
+        this.form.controls.tipoFatturazione.setValue(tipoFatturazione!);
 
         const idCommessaRendicontazione = this.sottocommessa.idCommessaCollegata;
         const commessaRendicontazione = this.commesse.find(c => c.id === idCommessaRendicontazione);
-        this.form.controls["commessaRendicontazione"].setValue(commessaRendicontazione!);
+        this.form.controls.commessaRendicontazione.setValue(commessaRendicontazione!);
 
         const idCommessaFatturazione = this.sottocommessa.idCommessaFatturazione;
         const commessaFatturazione = this.commesse.find(c => c.id === idCommessaFatturazione);
-        this.form.controls["commessaFatturazione"].setValue(commessaFatturazione!);
+        this.form.controls.commessaFatturazione.setValue(commessaFatturazione!);
     }
 
     save() {

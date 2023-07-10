@@ -31,7 +31,7 @@
                         [options]="clienti"
                         [limit]="25"
                         [formatter]="clienteFormatter"
-                        [ngControl]="form.controls['cliente']"
+                        [ngControl]="form.controls.cliente"
                         [disabled]="dialogMode === DIALOG_MODE.Update"
                         [floatingLabel]="true"
                     ></app-input>
@@ -43,7 +43,7 @@
                         [options]="clientiFinali"
                         [limit]="25"
                         [formatter]="clienteFormatter"
-                        [ngControl]="form.controls['clienteFinale']"
+                        [ngControl]="form.controls.clienteFinale"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -54,7 +54,7 @@
                         [options]="businessManagers"
                         [formatter]="bmFormatter"
                         [template]="bmTmpl"
-                        [ngControl]="form.controls['businessManager']"
+                        [ngControl]="form.controls.businessManager"
                         [floatingLabel]="true"
                     ></app-input>
                     <ng-template #bmTmpl let-r="result" let-t="term">
@@ -76,7 +76,7 @@
                         type="select"
                         name="tipoAttivita"
                         label="Tipo attivita"
-                        [ngControl]="form.controls['tipoAttivita']"
+                        [ngControl]="form.controls.tipoAttivita"
                         [options]="tipiAttivita"
                         [disabled]="dialogMode === DIALOG_MODE.Update"
                         [floatingLabel]="true"
@@ -86,7 +86,7 @@
                         *ngIf="form.value.tipoAttivita == 2"
                         name="codiceCommessa"
                         label="Codice commessa *"
-                        [ngControl]="form.controls['codiceCommessa']"
+                        [ngControl]="form.controls.codiceCommessa"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>
@@ -96,14 +96,14 @@
                     <app-input
                         name="descrizione"
                         label="Descrizione *"
-                        [ngControl]="form.controls['descrizione']"
+                        [ngControl]="form.controls.descrizione"
                         [floatingLabel]="true"
                     ></app-input>
 
                     <app-input
                         name="tag"
                         label="Tag"
-                        [ngControl]="form.controls['tag']"
+                        [ngControl]="form.controls.tag"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -111,7 +111,7 @@
                         type="date"
                         name="dataCreazione"
                         label="Data creazione"
-                        [ngControl]="form.controls['dataInserimento']"
+                        [ngControl]="form.controls.dataInserimento"
                         [floatingLabel]="true"
                         [disabled]="true"
                     ></app-input>
@@ -121,7 +121,7 @@
                         type="date"
                         name="dataDecorrenza"
                         label="Data decorrenza *"
-                        [ngControl]="form.controls['dataDecorrenza']"
+                        [ngControl]="form.controls.dataDecorrenza"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>

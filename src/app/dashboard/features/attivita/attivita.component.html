@@ -19,7 +19,7 @@
                 [options]="clienti"
                 [limit]="25"
                 [formatter]="clienteFormatter"
-                [ngControl]="form.controls['cliente']"
+                [ngControl]="form.controls.cliente"
                 [floatingLabel]="true"
             ></app-input>
 
@@ -31,7 +31,7 @@
                 [options]="clientiFinali"
                 [limit]="25"
                 [formatter]="clienteFormatter"
-                [ngControl]="form.controls['clienteFinale']"
+                [ngControl]="form.controls.clienteFinale"
                 [floatingLabel]="true"
             ></app-input>
 
@@ -44,7 +44,7 @@
                 [limit]="25"
                 [formatter]="commessaFormatter"
                 [template]="cTmpl"
-                [ngControl]="form.controls['commessa']"
+                [ngControl]="form.controls.commessa"
                 [floatingLabel]="true"
             ></app-input>
             <ng-template #cTmpl let-r="result" let-t="term">
@@ -62,7 +62,7 @@
                 [options]="businessManagers"
                 [formatter]="bmFormatter"
                 [template]="bmTmpl"
-                [ngControl]="form.controls['businessManager']"
+                [ngControl]="form.controls.businessManager"
                 [floatingLabel]="true"
             ></app-input>
             <ng-template #bmTmpl let-r="result" let-t="term">
@@ -76,7 +76,7 @@
                 type="select"
                 name="tipoAttivita"
                 label="Tipo attivita"
-                [ngControl]="form.controls['idTipoAttivita']"
+                [ngControl]="form.controls.idTipoAttivita"
                 [options]="tipiAttivita"
                 [floatingLabel]="true"
             ></app-input>
@@ -85,7 +85,7 @@
                 type="select"
                 name="stato"
                 label="Stato"
-                [ngControl]="form.controls['stato']"
+                [ngControl]="form.controls.stato"
                 [options]="stati"
                 [floatingLabel]="true"
             ></app-input>
@@ -95,7 +95,7 @@
                 name="dataInizio"
                 label="Data inserimento da"
                 [max]="form.value.fine"
-                [ngControl]="form.controls['inizio']"
+                [ngControl]="form.controls.inizio"
                 [floatingLabel]="true"
             ></app-input>
 
@@ -104,7 +104,7 @@
                 name="dataFine"
                 label="Data inserimento a"
                 [min]="form.value.inizio"
-                [ngControl]="form.controls['fine']"
+                [ngControl]="form.controls.fine"
                 [floatingLabel]="true"
             ></app-input>
         </div>

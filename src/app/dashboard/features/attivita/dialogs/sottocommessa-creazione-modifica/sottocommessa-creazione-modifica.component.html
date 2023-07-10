@@ -34,14 +34,14 @@
                     <app-input
                         name="codiceSottocommessa"
                         label="Codice sottocommessa *"
-                        [ngControl]="form.controls['codiceCommessa']"
+                        [ngControl]="form.controls.codiceCommessa"
                         [floatingLabel]="true"
                     ></app-input>
 
                     <app-input
                         name="descrizione"
                         label="Descrizione *"
-                        [ngControl]="form.controls['descrizione']"
+                        [ngControl]="form.controls.descrizione"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -52,7 +52,7 @@
                         [options]="projectManagers"
                         [formatter]="utenteFormatter"
                         [template]="utenteTmpl"
-                        [ngControl]="form.controls['projectManager']"
+                        [ngControl]="form.controls.projectManager"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -63,7 +63,7 @@
                         [options]="utenti"
                         [formatter]="utenteFormatter"
                         [template]="utenteTmpl"
-                        [ngControl]="form.controls['supportoController']"
+                        [ngControl]="form.controls.supportoController"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>
@@ -79,7 +79,7 @@
                                 ? 'Non ci sono iniziative per questa commessa'
                                 : ''
                         "
-                        [ngControl]="form.controls['iniziativa']"
+                        [ngControl]="form.controls.iniziativa"
                         [options]="iniziative"
                         [floatingLabel]="true"
                         [disabled]="!iniziative.length"
@@ -91,7 +91,7 @@
                         label="Tipo fatturazione *"
                         [options]="tipiFatturazione"
                         [formatter]="tipoFatturazioneFormatter"
-                        [ngControl]="form.controls['tipoFatturazione']"
+                        [ngControl]="form.controls.tipoFatturazione"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -99,7 +99,7 @@
                         name="importo"
                         label="Importo *"
                         [mask]="euroMask"
-                        [ngControl]="form.controls['importo']"
+                        [ngControl]="form.controls.importo"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>
@@ -113,7 +113,7 @@
                         [options]="commesse"
                         [limit]="25"
                         [formatter]="commessaFormatter"
-                        [ngControl]="form.controls['commessaRendicontazione']"
+                        [ngControl]="form.controls.commessaRendicontazione"
                         [floatingLabel]="true"
                     ></app-input>
     
@@ -124,7 +124,7 @@
                         [options]="commesse"
                         [limit]="25"
                         [formatter]="commessaFormatter"
-                        [ngControl]="form.controls['commessaFatturazione']"
+                        [ngControl]="form.controls.commessaFatturazione"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -133,7 +133,7 @@
                         name="dataInizio"
                         label="Data inizio"
                         [max]="form.value.dataFine"
-                        [ngControl]="form.controls['dataInizio']"
+                        [ngControl]="form.controls.dataInizio"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -142,7 +142,7 @@
                         name="dataFine"
                         label="Data fine"
                         [min]="form.value.dataInizio"
-                        [ngControl]="form.controls['dataFine']"
+                        [ngControl]="form.controls.dataFine"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>
@@ -152,7 +152,7 @@
                         type="checkbox"
                         name="ribaltabileCliente"
                         label="Spese trasferta ribaltabili al cliente"
-                        [ngControl]="form.controls['ribaltabileCliente']"
+                        [ngControl]="form.controls.ribaltabileCliente"
                     ></app-input>
                 </div>
             </form>

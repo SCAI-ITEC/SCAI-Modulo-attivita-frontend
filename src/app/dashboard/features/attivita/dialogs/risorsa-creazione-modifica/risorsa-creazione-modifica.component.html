@@ -50,7 +50,7 @@
                             [limit]="25"
                             [formatter]="utenteFormatter"
                             [template]="uTmpl"
-                            [ngControl]="form.controls['utenti']"
+                            [ngControl]="form.controls.utenti"
                         ></app-input>
                         <ng-template #uTmpl let-r="result" let-t="term">
                             <div class="my-1">
@@ -68,7 +68,7 @@
                         name="inizio"
                         label="Data inizio *"
                         [max]="form.value.fine"
-                        [ngControl]="form.controls['inizio']"
+                        [ngControl]="form.controls.inizio"
                         [floatingLabel]="true"
                     ></app-input>
 
@@ -77,15 +77,15 @@
                         name="fine"
                         label="Data fine *"
                         [min]="form.value.inizio"
-                        [ngControl]="form.controls['fine']"
+                        [ngControl]="form.controls.fine"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>
 
                 <div
                     *ngIf="
-                        form.controls['inizio'].touched
-                     && form.controls['fine'].touched
+                        form.controls.inizio.touched
+                     && form.controls.fine.touched
                      && form.errors?.dates
                     "
                     class="alert alert-danger"
@@ -101,7 +101,7 @@
                         [options]="diarie"
                         [limit]="25"
                         [formatter]="diariaFormatter"
-                        [ngControl]="form.controls['diaria']"
+                        [ngControl]="form.controls.diaria"
                         [floatingLabel]="true"
                     ></app-input>
                 </div>

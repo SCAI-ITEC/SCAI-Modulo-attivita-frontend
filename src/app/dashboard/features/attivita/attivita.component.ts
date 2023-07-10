@@ -77,19 +77,19 @@ export class AttivitaComponent {
   });
 
   get idCli() {
-    return this.form.controls["cliente"].value?.id;
+    return this.form.controls.cliente.value?.id;
   }
   get idCliFin() {
-    return this.form.controls["clienteFinale"].value?.id;
+    return this.form.controls.clienteFinale.value?.id;
   }
   get idBm() {
-    return this.form.controls["businessManager"].value?.idUtente;
+    return this.form.controls.businessManager.value?.idUtente;
   }
   get idComm() {
-    return this.form.controls["commessa"].value?.id;
+    return this.form.controls.commessa.value?.id;
   }
   get codComm() {
-    return this.form.controls["commessa"].value?.codiceCommessa;
+    return this.form.controls.commessa.value?.codiceCommessa;
   }
 
   constructor(
@@ -198,7 +198,7 @@ export class AttivitaComponent {
       });
 
     // Dynamic cross-field filtering
-    this.form.controls["cliente"].valueChanges
+    this.form.controls.cliente.valueChanges
       .pipe(
         switchMap(() =>
           combineLatest([ getBmReq(), getCommQuery() ])
@@ -209,7 +209,7 @@ export class AttivitaComponent {
         this.commesse = commesse;
       });
 
-    this.form.controls["commessa"].valueChanges
+    this.form.controls.commessa.valueChanges
       .pipe(
         switchMap(() =>
           combineLatest([  getBmReq(), getCliReq() ])
@@ -220,7 +220,7 @@ export class AttivitaComponent {
         this.clienti = clienti;
       });
 
-    this.form.controls["businessManager"].valueChanges
+    this.form.controls.businessManager.valueChanges
       .pipe(
         switchMap(() =>
           combineLatest([ getCliReq(), getCommQuery() ])

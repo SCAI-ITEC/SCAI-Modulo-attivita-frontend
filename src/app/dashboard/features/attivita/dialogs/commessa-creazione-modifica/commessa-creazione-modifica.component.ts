@@ -78,12 +78,12 @@ export class CommessaCreazioneModifica {
         }
 
         // Dynamic validators (adds or removes required from controls when a third control changes)
-        this.form.controls["tipoAttivita"].valueChanges
+        this.form.controls.tipoAttivita.valueChanges
             .pipe(startWith(null))
             .subscribe(idTipoAttivita => {
 
-                const ddCtrl = this.form.controls["dataDecorrenza"];
-                const ccCtrl = this.form.controls["codiceCommessa"];
+                const ddCtrl = this.form.controls.dataDecorrenza;
+                const ccCtrl = this.form.controls.codiceCommessa;
 
                 ddCtrl.setValidators(idTipoAttivita == 1 ? [ Validators.required ] : null);
                 ccCtrl.setValidators(idTipoAttivita == 2 ? [ Validators.required ] : null);
