@@ -454,7 +454,7 @@ export class StatoAvanzamentoComponent {
       .reduce((a, b: any) => a + b.avanzamentoTotale, 0);
 
     // Enforce min-max on input
-    enforceMinMax(percentElement, 0, 100 - Math.ceil(sumOfTheRest));
+    enforceMinMax(percentElement, 0, 100 - sumOfTheRest);
     dettaglio.avanzamentoTotale = parseFloat(percentElement.value) || 0;
 
     // Recalculate cumulato

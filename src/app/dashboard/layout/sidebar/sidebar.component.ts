@@ -6,10 +6,14 @@ import { SidebarService } from 'src/app/services/sidebar.service';
 import { MiscDataService } from '../../features/commons/services/miscellaneous-data.service';
 import { intersection } from 'src/app/utils/array';
 import { ROLES } from 'src/app/models/user';
+import { environment } from 'src/environments/environment';
+import { ENV_COLL, ENV_DEV } from 'src/environments/envs';
 
 interface SidebarSubitem {
   title: string;
-  path: string;
+  path?: string;
+  externalLink?: string;
+  executable?: Function;
   icon?: string;
   roles?: string[];
 }
@@ -18,6 +22,8 @@ interface SidebarItem {
   isActive: boolean; // Make the collapse work
   title: string;
   path?: string;
+  externalLink?: string;
+  executable?: Function;
   icon?: string;
   children?: SidebarSubitem[];
   roles?: string[];
@@ -36,34 +42,69 @@ export class DashboardSidebarComponent {
   
   intersection = intersection;
 
+  // TODO: Remove temporary links
   sidebarItems: SidebarItem[] = [
-    {
-      isActive: false,
-      title: 'Attività',
-      icon: 'bi bi-list-task',
-      path: '/attivita',
-    },
-    {
-      isActive: false,
-      title: 'Diarie',
-      icon: 'bi bi-briefcase',
-      roles: [ ROLES.AMMINISTRATORE, ROLES.SEGRETERIA, ROLES.CONTROLLER, ROLES.HR_MANAGER ],
-      children: [
+    ...([ ENV_DEV, ENV_COLL ].includes(environment.name)
+      ? [
         {
-          path: "/diarie-azienda/creazione-tipo-trasferta",
-          title: "Creazione tipo trasferta"
-        },
-        {
-          path: "/diarie-azienda/abilitazione-diaria-azienda",
-          title: "Abilitazione diaria azienda",
+          isActive: false,
+          title: "Attività",
+          icon: "bi bi-list-task",
+          path: "/attivita",
         }
       ]
-    },
+      : [
+        {
+          isActive: false,
+          title: "Attività",
+          icon: "bi bi-list-task",
+          executable: () => {
+            const token = localStorage.getItem("token")!;
+            const idAzienda = parseFloat(localStorage.getItem("id_azienda")!);
+            window.location.href = `https://scaiportal.grupposcai.it/service-attivita/#/sso?token=Bearer%20${token}&accessToken=null&idAziendaSelezionata=${idAzienda}`;
+          } 
+        }
+      ]
+    ),
+    ...([ ENV_DEV, ENV_COLL ].includes(environment.name)
+      ? [
+        {
+          isActive: false,
+          title: "Diarie",
+          icon: "bi bi-briefcase",
+          roles: [
+            ROLES.AMMINISTRATORE,
+            ROLES.CONTROLLER,
+            ROLES.SEGRETERIA,
+            ROLES.HR_MANAGER
+          ],
+          children: [
+            {
+              path: "/diarie-azienda/creazione-tipo-trasferta",
+              title: "Creazione tipo trasferta"
+            },
+            {
+              path: "/diarie-azienda/abilitazione-diaria-azienda",
+              title: "Abilitazione diaria azienda",
+            }
+          ]
+        }
+      ]
+      : []
+    ),
     {
       isActive: false,
-      title: 'Stato Avanzamento',
-      icon: 'bi bi-bar-chart-line-fill',
-      path: '/stato-avanzamento',
+      title: "Stato Avanzamento",
+      icon: "bi bi-bar-chart-line-fill",
+      path: "/stato-avanzamento",
+      roles: [
+        ROLES.AMMINISTRATORE,
+        ROLES.RESPONSABILE_COMMERCIALE,
+        ROLES.CONTROLLER,
+        ROLES.SEGRETERIA,
+        ROLES.BUSINESS_MANAGER,
+        ROLES.PROJECT_MANAGER
+      ]
     }
   ];
 
@@ -88,9 +129,10 @@ export class DashboardSidebarComponent {
       const activeItemIndex = this.rlaList.toArray()
         .findIndex(x => x.isActive);
 
-      // If there's and active item, then expand it
-      if (activeItemIndex > -1)
+      // If there's an active item, then expand it
+      if (activeItemIndex > -1) {
         this.sidebarItems[activeItemIndex].isActive = true;
+      }
     }, 150);
   }
 }

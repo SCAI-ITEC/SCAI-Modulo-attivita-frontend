@@ -21,12 +21,15 @@ export class SplashComponent {
     const qp = this.route.snapshot.queryParams;
 
     if (qp.token && qp.idAziendaSelezionata) {
-      const bareToken = qp.token.replace('Bearer ', '');
+
+      const token = qp.token.replace("Bearer ", "");
+      const idAzienda = parseInt(qp.idAziendaSelezionata);
+      
       this.authService
-        .login(bareToken, qp.idAziendaSelezionata)
+        .login(token, idAzienda)
         .subscribe(
-          () => this.router.navigate(['/']),
-          () => this.toaster.show("Non è stato possibile recuperare le informazioni dell'utente collegato", { classname: 'bg-warning' })
+          () => this.router.navigate(["/"]),
+          () => this.toaster.show("Non è stato possibile recuperare le informazioni dell'utente collegato", { classname: "bg-warning" })
         );
     }
   }
