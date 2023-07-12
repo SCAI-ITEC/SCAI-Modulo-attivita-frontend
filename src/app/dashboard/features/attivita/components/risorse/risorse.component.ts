@@ -11,7 +11,7 @@ import { ROLES } from 'src/app/models/user';
 import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { LegamiTaskUtenteService } from 'src/app/api/modulo-attivita/services';
-import { Legame } from 'src/app/api/modulo-attivita/models';
+import { GetLegamiResponse } from 'src/app/api/modulo-attivita/models';
 
 @Component({
   selector: 'app-risorse',
@@ -30,7 +30,7 @@ export class RisorseComponent {
 
   refresh$ = new Subject<void>();
 
-  risorseTask: Legame[] = [];
+  risorseTask: GetLegamiResponse[] = [];
 
   constructor(
     public attivitaNavState: AttivitaNavStateService,
@@ -52,7 +52,10 @@ export class RisorseComponent {
         startWith(null),
         switchMap(() =>
           this.legamiTaskUtenteService
-            .getLegami({ idTask: this.idTask })
+            .getLegami({
+              idAzienda: this.authService.user.idAzienda,
+              idTask: this.idTask
+            })
             .pipe(
               map(legami => legami.reverse()) // Most recent on top
             )
@@ -66,11 +69,9 @@ export class RisorseComponent {
 		const modalRef = this.modalService
 		  .open(
         TaskCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true
-        }
+        { size: 'lg', centered: true }
 		  );
+    
 		modalRef.componentInstance.idCommessa = this.idCommessa;
 		modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
 		modalRef.componentInstance.idTask = this.idTask;
@@ -90,47 +91,42 @@ export class RisorseComponent {
     const modalRef = this.modalService
       .open(
         RisorsaCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
     modalRef.componentInstance.idTask = this.idTask;
 
-    const result = await modalRef.result;
+    await modalRef.result;
+
     this.refresh$.next();
   }
 
-  async update(legame: Legame) {
+  async update(legame: GetLegamiResponse) {
 
     const modalRef = this.modalService
       .open(
         RisorsaCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true
-        }
+        { size: 'lg', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
     modalRef.componentInstance.idSottocommessa = this.idSottocommessa;
     modalRef.componentInstance.idTask = this.idTask;
     modalRef.componentInstance.idLegame = legame.id;
 
     await modalRef.result;
+
     this.refresh$.next();
   }
 
-  async delete(legame: Legame) {
+  async delete(legame: GetLegamiResponse) {
 
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
-        {
-          size: 'md',
-          centered: true
-        }
+        { size: 'md', centered: true }
       );
     
     const utenteCognomeNome = legame.utente!.cognome + " " + legame.utente!.nome;

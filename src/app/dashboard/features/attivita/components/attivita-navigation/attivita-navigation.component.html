@@ -10,14 +10,14 @@
                 <div>
                     <div class="small text-muted">Cliente diretto</div>
                     <div>
-                        {{ clienteDiretto?.descrizione }}
+                        {{ commessa?.cliente?.descrizione }}
                     </div>
                 </div>
         
                 <div>
                     <div class="small text-muted">Cliente finale</div>
                     <div>
-                        {{ clienteFinale?.descrizione }}
+                        {{ commessa?.clienteFinale?.descrizione }}
                     </div>
                 </div>
 
@@ -30,20 +30,21 @@
                     <div class="small text-muted">Descrizione</div>
                     <div>{{ commessa?.descrizione }}</div>
                 </div>
-
-                <div>
-                    <div class="small text-muted">Project manager</div>
-                    <div>{{ pm?.cognome ? pm?.cognome + ' ' + pm?.nome : "ND" }}</div>
-                </div>
         
                 <div>
                     <div class="small text-muted">Business manager</div>
-                    <div>{{ bm?.cognome ? bm?.cognome + ' ' + bm?.nome : "ND" }}</div>
+                    <div>
+                        {{
+                            commessa?.businessManager
+                                ? commessa?.businessManager?.cognome + " " + commessa?.businessManager?.nome
+                                : "ND"
+                        }}
+                    </div>
                 </div>
                 
                 <div>
                     <div class="small text-muted">Tipo attivita</div>
-                    <div>{{ commessa?.tipoAttivita?.id === 1 ? 'Opportunità' : 'Commessa interna' }}</div>
+                    <div>{{ commessa?.tipoAttivita?.id === 1 ? "Opportunità" : "Commessa interna" }}</div>
                 </div>
 
                 <div>
@@ -53,8 +54,10 @@
 
                 <div>
                     <div class="small text-muted">Data inserimento</div>
-                    <div>{{ commessa?.dataInserimento | date:'yyyy-MM-dd' }}</div>
+                    <div>{{ commessa?.dataInserimento | date: "yyyy-MM-dd" }}</div>
                 </div>
+
+                <div><!-- just a filler --></div>
             </div>
         
             <button

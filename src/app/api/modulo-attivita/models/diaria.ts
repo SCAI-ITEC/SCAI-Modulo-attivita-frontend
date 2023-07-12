@@ -3,5 +3,4 @@
 export interface Diaria {
   descrizione?: null | string;
   id?: number;
-  importo?: null | number;
 }

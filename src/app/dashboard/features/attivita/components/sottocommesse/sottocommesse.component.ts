@@ -5,11 +5,12 @@ import { ToastService } from 'src/app/services/toast.service';
 import { delayedScrollTo } from 'src/app/utils/dom';
 import { EliminazioneDialog } from '../../dialogs/eliminazione.dialog';
 import { SottocommessaCreazioneModifica } from '../../dialogs/sottocommessa-creazione-modifica/sottocommessa-creazione-modifica.component';
-import { SottocommessaService } from '../../services/sottocommessa.service';
 import { ROLES } from 'src/app/models/user';
 import { AttivitaNavStateService } from '../../services/attivita-nav-state.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { CommessaDto } from '../../../commons/models/commessa';
+import { CommesseService } from 'src/app/api/modulo-attivita/services';
+import { GetCommessaResponse } from 'src/app/api/modulo-attivita/models';
+import { SottocommessaService } from '../../services/sottocommessa.service';
 
 interface Tab {
   id: number;
@@ -34,11 +35,12 @@ export class SottocommesseComponent {
 
   duplicating = false;
 
-  sottocommesse: CommessaDto[] = [];
+  sottocommesse: GetCommessaResponse[] = [];
 
   constructor(
     public attivitaNavState: AttivitaNavStateService,
     public authService: AuthService,
+    private commesseService: CommesseService,
     private sottocommessaService: SottocommessaService,
     private toaster: ToastService,
     private modalService: NgbModal
@@ -50,11 +52,13 @@ export class SottocommesseComponent {
       .pipe(
         startWith(null),
         switchMap(() =>
-          this.sottocommessaService
-            .getSottocommesseByIdCommessa$(this.idCommessa)
+          this.commesseService
+            .getCommesse({ IdPadre: this.idCommessa })
         )
       )
-      .subscribe(sottocommesse => this.sottocommesse = sottocommesse);
+      .subscribe(sottocommesse =>
+        this.sottocommesse = sottocommesse
+      );
   }
 
   addTab(id: number, codiceCommessa: string) {
@@ -100,62 +104,55 @@ export class SottocommesseComponent {
     const modalRef = this.modalService
       .open(
         SottocommessaCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'xl', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
 
-    const result = await modalRef.result;
-    this.addTab(result.idSottocommessa, result.codiceSottocommessa);
+    const { id, codiceSottocommessa } = await modalRef.result;
+    this.addTab(id, codiceSottocommessa);
+
     this.refresh$.next();
   }
 
-  async update(sottocommessa: CommessaDto) {
+  async update(sottocommessa: GetCommessaResponse) {
 
     const modalRef = this.modalService
       .open(
         SottocommessaCreazioneModifica,
-        {
-          size: 'lg',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'xl', centered: true }
       );
+    
     modalRef.componentInstance.idCommessa = this.idCommessa;
     modalRef.componentInstance.idSottocommessa = sottocommessa.id;
 
     await modalRef.result;
+
     this.refresh$.next();
   }
 
-  async delete(sottocommessa: CommessaDto) {
+  async delete(sottocommessa: GetCommessaResponse) {
 
     const modalRef = this.modalService
       .open(
         EliminazioneDialog,
-        {
-          size: 'md',
-          centered: true,
-          scrollable: true
-        }
+        { size: 'md', centered: true }
       );
+    
     modalRef.componentInstance.name = sottocommessa.codiceCommessa;
     modalRef.componentInstance.message = "Stai eliminando definitivamente una sottocommessa."
 
     await modalRef.result;
 
-    this.sottocommessaService
-      .deleteSottocommessa$(sottocommessa.id)
+    this.commesseService
+      .deleteSottoCommessa({ idSottoCommessa: sottocommessa.id! })
       .subscribe(
         () => {
 
           const txt = "Sottocommessa eliminata con successo!";
           this.toaster.show(txt, { classname: 'bg-success text-white' });
 
-          this.closeTab(sottocommessa.id);
+          this.closeTab(sottocommessa.id!);
 
           this.refresh$.next();
         },
@@ -165,17 +162,15 @@ export class SottocommesseComponent {
       );
   }
 
-  async duplicate(sottocommessa: CommessaDto) {
-
-    const _sottocommessa = sottocommessa as any;
+  async duplicate(sottocommessa: GetCommessaResponse) {
 
     try {
-      _sottocommessa.duplicating = true;
+      (sottocommessa as any).duplicating = true;
       await this.sottocommessaService
         .duplicateSottocommessa(sottocommessa);
     }
     finally {
-      _sottocommessa.duplicating = false;
+      (sottocommessa as any).duplicating = false;
     }
     
     this.refresh$.next();

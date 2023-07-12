@@ -52,7 +52,6 @@ export class StatoAvanzamentoWrapService {
           avanzamento: dettaglio.avanzamentoTotale,
           descrizione: "Modulo Attività - Stato Avanzamento",
           statoValidazione: dettaglio.statoValidazione!.id,
-          idAzienda: this.authService.user.idAzienda,
           idProjectManager: dettaglio.idProjectManager,
           ricavoCompetenza: dettaglio.ricavoCompetenza,
           dataAggiornamento: dettaglio.dataAggiornamento,

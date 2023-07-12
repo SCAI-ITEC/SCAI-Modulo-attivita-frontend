@@ -94,7 +94,7 @@ export class DatiOperativiService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postReperibilitaOperativiStorico()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postReperibilitaOperativiStorico$Response(params: {
     idUtente: number;
@@ -109,7 +109,7 @@ export class DatiOperativiService extends BaseService {
     if (params) {
       rb.path('idUtente', params.idUtente, {});
       rb.path('idSottoCommessa', params.idSottoCommessa, {});
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -128,7 +128,7 @@ export class DatiOperativiService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postReperibilitaOperativiStorico$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postReperibilitaOperativiStorico(params: {
     idUtente: number;
@@ -209,7 +209,7 @@ export class DatiOperativiService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postStraordinariOperativiStorico()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postStraordinariOperativiStorico$Response(params: {
     idUtente: number;
@@ -224,7 +224,7 @@ export class DatiOperativiService extends BaseService {
     if (params) {
       rb.path('idUtente', params.idUtente, {});
       rb.path('idSottoCommessa', params.idSottoCommessa, {});
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -243,7 +243,7 @@ export class DatiOperativiService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postStraordinariOperativiStorico$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postStraordinariOperativiStorico(params: {
     idUtente: number;
@@ -327,7 +327,7 @@ export class DatiOperativiService extends BaseService {
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `postDiarieUtenti()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postDiarieUtenti$Response(params: {
     idAzienda: number;
@@ -346,7 +346,7 @@ export class DatiOperativiService extends BaseService {
       rb.path('idUtente', params.idUtente, {});
       rb.path('idAttivita', params.idAttivita, {});
       rb.path('idDiaria', params.idDiaria, {});
-      rb.body(params.body, 'application/*+json');
+      rb.body(params.body, 'application/json');
     }
 
     return this.http.request(rb.build({
@@ -365,7 +365,7 @@ export class DatiOperativiService extends BaseService {
    * This method provides access only to the response body.
    * To access the full response (for headers, for example), `postDiarieUtenti$Response()` instead.
    *
-   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   * This method sends `application/json` and handles request body of type `application/json`.
    */
   postDiarieUtenti(params: {
     idAzienda: number;
